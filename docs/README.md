@@ -1,0 +1,231 @@
+# Docs Index
+
+This repository uses progressive disclosure.
+
+Start small, then go deeper only when the task needs it.
+
+## First Working Docs
+
+- `ALEXANDRIA_CHARTER.md`: candidate reimagined charter for Alexandria's recursive deep-research telos
+- `PLAN_TO_CREATE_ALEXANDRIA.md`: root plan for creating the reimagined Alexandria runtime
+- `docs/design-docs/reimagined_alexandria_authority_ledger_2026_04_21.md`: authority ledger for root plan, charter candidate, legacy specs, donor artifacts, and proof receipts
+- `docs/KNOWLEDGE_MAP.md`: plain-language repo tour for humans and future agents
+- `docs/SYSTEM_MAP.md`: concrete map from Alexandria concepts to the current code, tests, and proof surfaces
+- `docs/WORKFLOW.md`: how specs, beads, plans, code, CI, and delivery fit together
+- `docs/PLANS.md`: when to create an ExecPlan and how to keep it alive
+- `docs/GOLDEN_RULES.md`: anti-drift rules for future coding-agent runs
+- `docs/QUALITY_SCORE.md`: current posture and quality grades
+- `docs/KNOWN_DEBT.md`: active gaps and cleanup targets
+
+## Design Docs
+
+- `docs/design-docs/alexandria_agent_architecture.md`: cited architecture document for Alexandria's runtime design
+- `docs/design-docs/alexandria_agent_architecture_audit_2026_04_05.md`: repo-local adversarial audit of the cited architecture document
+- `docs/design-docs/index.md`: design-map entry point
+- `docs/design-docs/alexandria_runtime_grounding.md`: canonical teleological grounding, architecture translation, and first vertical-plan stack
+- `docs/design-docs/alexandria_runtime_explained_2026_04_15.md`: third-party-readable runtime memo explaining the current kernel, control plane, task programs, topology families, continuity law, report closure, claim governance, Program `80`-`82` proof stack, and non-claims
+- `docs/design-docs/third_party_reimagining_artifact_registry_2026_04_20.md`: durable registry for third-party CHARTER, context-pack, and proposed-spec artifacts, including authority class, relevance triggers, and non-substitution rules
+- `docs/design-docs/alexandria_reimagining_context_pack_intake_2026_04_20.md`: ordered read ledger and teleological compression for the Linear Charter, Commissioning Brief, and Context Pack 00-06 intake; records Pack 07 as missing until obtained or waived
+- `docs/design-docs/alexandria_frankenengine_plan_donor_analysis_2026_04_21.md`: structural donor analysis of the FrankenEngine plan and its translation into Alexandria's plan architecture
+- `docs/design-docs/agent_topology_legibility_2026_04_13.md`: compact parent/child/provider/truth map for the current agent topology, written for progressive disclosure and low-memory review
+- `docs/design-docs/alexandria_runtime_topology_audit_2026_04_09.md`: runtime-backed topology audit of what Alexandria proves today versus what remains scaffolded or absent
+- `docs/generated/runtime/phase0_gating_architecture_audit_2026_04_10.md`: decision-grade runtime audit that answers the five gating architecture questions from current code rather than from doctrine alone
+- `docs/design-docs/post_wave1_architect_session_brief_2026_04_10.md`: single-source architect handoff brief for the current post-Wave-1 proof lane, intended to prevent mis-briefing when chat context is unavailable
+- `docs/design-docs/core_claim_closure_ticket_stack_2026_04_11.md`: queue-contract document for the current Active Now Wave 61 tickets, the conditional-next Wave 62 core-claim closure tickets, and the held-downstream comparison substrate ticket
+- `docs/design-docs/runtime_to_artifact_closure_queue_contract_2026_04_12.md`: queue-contract amendment after third-party review, tightening the minimum report floor in `62.*` and inserting the report-semantic Wave `64` between runtime closure and comparison topology
+- `docs/design-docs/session_trajectory_skillization_2026_04_11.md`: extraction note showing how a long legibility session became a reusable investigation protocol and repo-local skills
+- `docs/design-docs/comparison_topology_v0_design_lock_2026_04_10.md`: Wave 1 design lock proving comparison topology is still absent in code, plus the future normalized-substrate contract and migration order
+- `docs/design-docs/comparison_topology_v1_runtime_checkpoint_2026_04_12.md`: implemented checkpoint for comparison-native runtime state, matrix projection, checkpoint/restore persistence, normalized inspection output, and the real acceptance eval superseding the old negative-only guard
+- `docs/design-docs/wave1_post_closure_proof_boundary_2026_04_10.md`: post-Wave-1 proof packet stating which claims are now justified versus still blocked before any delegation expansion
+- `docs/exec-plans/active/post_wave1_real_corpus_and_multibranch_proof_wave.md`: active proof-first follow-on wave that opens the remaining real-corpus, no-compaction-restore, multi-branch, and comparison-eval obligations after Wave 1 closure
+- `docs/design-docs/runtime_topology_closure_wave_2026_04_09.md`: active closure-wave grounding that turns the topology audit into hard backpressure rules and ticket structure
+- `docs/design-docs/bounded_child_runtime_contract_2026_04_09.md`: design-lock contract for the bounded child runtime that gates topology implementation work
+- `docs/design-docs/postscript_eval_checkpoint_2026_04_09.md`: dated legibility checkpoint over the fresh postscript runtime-law bundle, live OpenAI call-boundary smoke probe, and inherited bounded `cxdb` eval lane
+- `docs/design-docs/runtime_strict_canon_closure_grounding_2026_04_05.md`: corrected doctrine that demo does not relax canon and that runtime closure uses pre-mortems plus red/green TDD
+- `docs/design-docs/runtime_strict_canon_gap_audit_2026_04_05.md`: bead-31 pre-mortem and section-by-section gap audit for the remaining runtime proof rows
+- `docs/design-docs/runtime_program_cross_examination_2026_04_05.md`: next-wave runtime cross-examination, planning risks, and prove-first gates
+- `docs/design-docs/runtime_spec_bead_proof_map_2026_04_05.md`: canon-to-bead traceability for the current proof spine and runtime queue
+- `docs/design-docs/runtime_proof_artifact_contract_2026_04_05.md`: first consumer contract for runtime proof artifacts used by UI and Remotion
+- `docs/design-docs/live_corpus_retrieval_bridge_2026_04_06.md`: retrieval/evidence bridge from the local JPM Postgres corpus into runtime-owned tools and source-traceable Evidence
+- `docs/design-docs/reporting_transition_point_2026_04_06.md`: transition-point note and retrieval rule for the next report-first Alexandria phase, including the pointer to the durable Linear planning reference
+- `docs/exec-plans/completed/report_first_runtime_wave.md`: completed work plan for the report-first Alexandria wave, including lanes, dependencies, pre-mortems, red/green framing, and bead ids
+- `docs/design-docs/reporting_node_gap_audit_2026_04_06.md`: canon-backed explanation of the gap between today's proven runtime and a first-class report-producing research agent
+- `docs/design-docs/reporting_node_contract_2026_04_06.md`: explicit REPORTING node contract, prompt surface, and completion rule for the report-first Alexandria wave
+- `docs/design-docs/reporting_boundary_schema_contract_2026_04_06.md`: report-facing pydantic boundary schemas, output contract, and validation rules for the REPORTING node
+- `docs/design-docs/report_evolution_and_nlspec_implications_2026_04_07.md`: durable note on how the live-corpus report evolved, what the current report does and does not prove, and how the numbered NLSpecs may need to evolve to force the right runtime semantics
+- `docs/design-docs/contradiction_reconciliation_runtime_audit_2026_04_07.md`: durable runtime-backed audit of contradiction scouting, merge, parent authority, and the deferred parent-owned reconciliation slice
+- `docs/design-docs/runtime_context_observability_boundary_audit_2026_04_07.md`: front-door evidence gate for the context-observability wave, including the runtime-truth owner, bounded proving slice, retention boundary, and the block on downstream `cxdb` projection before upstream observability surfaces land
+- `docs/design-docs/cxdb_system_checkpoint_2026_04_07_cxdb_system_proof.md`: dated checkpoint brief for the bounded deterministic execution replay / ablation / multi-run `cxdb` proof system
+- `docs/design-docs/cxdb_system_legibility_2026_04_07.md`: product-facing explanation of what the bounded `cxdb` system does for the runtime, the deep-research wedge, and the pharma-shaped proof path
+- `docs/design-docs/report_first_ui_contract_2026_04_06.md`: report-first UI contract for rendering the runtime-owned report artifact with citation and evidence drilldown
+- `docs/design-docs/report_first_runtime_checkpoint_2026_04_06.md`: dated checkpoint brief for the completed report-first runtime wave
+- `docs/generated/runtime/live_corpus_report_packet.json`: historical report-first checkpoint artifact, not the active report lane
+- `docs/generated/runtime/live_corpus_report_prompt.md`: historical REPORTING-node prompt snapshot from the report-first checkpoint wave
+- `docs/generated/runtime/live_corpus_report_draft.md`: historical readable draft from the report-first checkpoint wave, not the current bounded readable lane
+- `docs/generated/runtime/live_corpus_report_provenance.json`: historical provenance snapshot paired with the report-first checkpoint draft
+- `docs/generated/runtime/latest_long_duration_acceptance_probe.json`: stable machine pointer to the latest long-duration acceptance bundle, including the post-restore report, provider-on parity report, and governor claim memo for the minimum report-floor closure
+- `docs/generated/runtime/latest_report_quality_demoability_probe.json`: stable pointer to the latest report-quality/demoability eval bundle over the long-duration acceptance path
+- `docs/generated/runtime/latest_report_semantic_demo_pack.json`: stable pointer to the latest third-party inspection/demo pack, including the readable report, structured inspection bundle, raw semantic view, normalized semantic view, and runtime/provenance summary
+- `docs/generated/runtime/latest_transition_semantic_red_team_probe.json`: stable pointer to the latest transition red-team bundle, covering resume-after-steer, ground-patch reconcile, child-merge conflict invalidation, and post-resume answer-case rebuild behavior
+- `docs/generated/runtime/latest_modest_acceptance_matrix_probe.json`: stable pointer to the latest modest multi-corpus, multi-shape acceptance matrix bundle, including claim notes and the summary markdown over the current bounded generalization lane
+- `docs/generated/runtime/latest_resilience_probe.json`: stable pointer to the latest degraded-environment and partial-failure resilience bundle, including the failure-mode matrix, claim notes, and per-case report artifacts
+- `docs/generated/runtime/latest_product_lane_envelope_probe.json`: stable pointer to the latest product-lane envelope bundle, including measured ranges for provider projection, compaction, checkpoint/restore, resume, and recorded drift thresholds
+- `docs/generated/runtime/latest_bounded_multi_agent_utility_probe.json`: stable pointer to the latest bounded multi-agent utility bundle, including the admissibility report, utility matrix, and merge-tax traces across the current task-shape suite
+- `docs/generated/runtime/report_semantic_demo_pack_validation_2026_04_13.md`: dated validation receipt for demo-pack pointer integrity, selected-source coherence, and readable-mode honesty
+- `docs/generated/runtime/latest_comparison_topology_probe.json`: stable pointer to the latest many-to-many comparison topology bundle, including normalized rows, adjudications, unresolved disagreements, and the structural matrix
+- `docs/generated/runtime/latest_comparison_report.md`: stable pointer to the latest readable comparison report projected from comparison-native runtime state
+- `docs/generated/runtime/latest_comparison_normalized_inspection_bundle.json`: stable pointer to the latest normalized inspection view over comparison-native runtime state
+- `docs/generated/runtime/latest_comparison_acceptance_eval.json`: stable pointer to the latest many-to-many comparison acceptance eval that supersedes the old negative-control rubric
+- `docs/generated/runtime/latest_domain_adjudication_harness.json`: stable pointer to the latest finance/pharma domain adjudication pressure bundle and summary
+- `docs/generated/runtime/latest_domain_acceptance_probe.json`: stable pointer to the latest bounded finance/pharma domain acceptance bundle, including readable case files, rubric results, and inspection bundles
+- `docs/generated/runtime/latest_domain_governor_demo_packs.json`: stable pointer to the latest governor-facing bounded domain demo-pack bundle, including readable case files, normalized inspection, raw inspection, per-domain rubrics, and explicit bounded claim notes
+- `docs/generated/runtime/latest_finance_domain_demo_pack.json`: stable pointer to the latest finance governor demo pack
+- `docs/generated/runtime/latest_pharma_domain_demo_pack.json`: stable pointer to the latest pharma governor demo pack
+- `docs/generated/runtime/latest_release_gate_validation.json`: stable pointer to the latest release-gate validation log over runtime, product, artifact, and claim-boundary integrity
+- `docs/generated/runtime/latest_north_star_gate_validation.json`: stable pointer to the latest single-case north-star gate validation over the chosen task-shaped real-query case
+- `docs/generated/runtime/latest_allowed_claims_registry.json`: stable pointer to the maintained allowed-claims registry, including allowed tiers, forbidden claims, evidence requirements, and surface claim profiles
+- `docs/generated/runtime/latest_fresh_review_simulation.json`: stable pointer to the latest simulated fresh-review path over the current claim, release, demo-pack, domain-pack, and steering surfaces
+- `docs/generated/runtime/latest_product_surface_drift_monitor.json`: stable pointer to the latest active-path clarity, artifact freshness, and provider-off parity drift monitor
+- `docs/generated/runtime/latest_core_runtime_claim_boundary_bundle.json`: stable pointer to the governor-facing closure pack that separates proved runtime law, bounded product closure, one passing north-star real-query case, modest generalization, bounded topology extensions, bounded domain lanes, and still-unproved broader claims
+- `docs/design-docs/gpt54pro_full_closure_program_2026_04_13.md`: full post-threshold closure program from GPT-5.4PRO, covering Waves 65–71 after bounded product-threshold crossing
+- `docs/exec-plans/active/post_threshold_product_closure_program.md`: active execution plan for the post-threshold closure program
+- `docs/design-docs/april_13_bounded_product_memo_audit_2026_04_13.md`: independent audit of the April 13 memo against code, generated artifacts, and stable pointers
+- `docs/design-docs/domain_case_file_contracts_2026_04_13.md`: explicit finance/pharma case-file contracts, runtime-surface mappings, comparison extension points, and acceptance-rubric grounding for the Wave 70 domain lane
+- `docs/design-docs/domain_adjudication_harnesses_2026_04_13.md`: domain-shaped finance/pharma contradiction and adjudication harnesses, failure taxonomy, and proof posture for the Wave 70 pressure lane
+- `docs/design-docs/domain_acceptance_packs_2026_04_13.md`: bounded finance/pharma acceptance-pack note, including the contested-provenance posture correction and the readable blocked-case / partial-case artifact split
+- `docs/design-docs/domain_governor_demo_packs_2026_04_13.md`: governor-facing bounded domain demo-pack note, including the readable/normalized/raw inspection split and the per-domain review-rubric posture
+- `docs/design-docs/release_gate_matrix_2026_04_13.md`: release-failure matrix for the new release gate, including blocking rationale, fast-path separation, and proof surfaces
+- `docs/design-docs/allowed_claims_registry_2026_04_13.md`: operational claim-governance registry tying allowed and forbidden claim language to named proof surfaces and outward-facing pack profiles
+- `docs/design-docs/reporting_path_audit_2026_04_13.md`: active-path audit that demotes historical thin report surfaces and names the current report-semantic lane clearly
+- `docs/design-docs/pre_live_runtime_synthesis_substrate_postmortem_2026_04_13.md`: pre-live diagnosis of the remaining synthesis weakness, including teleological grounding, evidence-first gate, root-cause taxonomy, and the exact blocking ticket for go-live
+- `docs/design-docs/gpt54pro_architectural_correction_provider_off_2026_04_13.md`: explicit correction that `provider-off` is a degraded-mode / resilience lane rather than the real research-synthesis closure bar; read this before treating fallback readability as product closure
+- `docs/design-docs/north_star_real_query_test_2026_04_13.md`: governing product question for all future closure claims; on a real query, Alexandria itself must think, investigate, reconcile, and report with durable truth and genuine synthesis
+- `docs/design-docs/north_star_case_contract_2026_04_13.md`: fixed north-star case selection for Epic `73`, including the real JPM query, bound task taxonomy, chosen topology, and the eleven first-class output contracts
+- `docs/exec-plans/active/epic73_north_star_real_query_agent_closure.md`: proposed pre-bead execution plan for the only first-class remaining epic, including deficits, dependencies, pre-mortems, and red/green TDD for `73.1`–`73.7`
+- `docs/design-docs/gpt54pro_epic73_north_star_closure_update_2026_04_14.md`: detailed architect update on what Epic `73` actually closed, what code and proof surfaces changed, what failures were encountered during closure, and what remains outside the current claim boundary
+- `docs/design-docs/gpt54pro_program80_architecture_audit_update_2026_04_14.md`: architect-facing memo for the completed Program `80` front-door audit slice, including the machine-readable migration map, the `PX1`-`PX11` pre-mortem registry, the primary-path inventory, and the validator-backed non-claims
+- `docs/design-docs/gpt54pro_program80_kernel_contract_update_2026_04_14.md`: architect-facing memo for the completed Program `80.1` kernel-contract slice, including the explicit kernel surfaces, checkpoint/restore and compaction rewiring, emitted proof bundle, and honest non-claims
+- `docs/design-docs/gpt54pro_program80_control_plane_update_2026_04_14.md`: architect-facing memo for the completed Program `80.2` control-plane slice, including the persisted plan/source-policy/task-board surfaces, checkpoint/restore proof, runtime-enforced policy failure behavior, and honest non-claims
+- `docs/design-docs/gpt54pro_program80_taskprogram_layer_update_2026_04_14.md`: architect-facing memo for the completed Program `80.3` TaskProgram slice, including the typed task-program contracts, session/runtime wiring, seven-program end-to-end proof, A/B transport comparison, and honest non-claims
+- `docs/design-docs/gpt54pro_program80_topology_closure_update_2026_04_14.md`: architect-facing memo for the completed Program `80.4`-`80.10` topology/closure tranche, including the two topology families, case-file-to-report closure, continuity proof, two-case gate, superseded-path quarantine, and honest non-claims
+- `docs/design-docs/gpt54pro_program81_post80_claim_boundary_update_2026_04_15.md`: architect-facing memo for the completed Program `81.0` governance slice, freezing the active post-80 claim ceiling at two-case architectural closure and naming robustness, domain-family, and parity non-claims
+- `docs/design-docs/gpt54pro_program81_topology_robustness_update_2026_04_15.md`: architect-facing memo for the completed Program `81.1` robustness-matrix slice, covering neighboring inquiry-shape pressure, negative controls, attribution layers, generated artifacts, validation, and unchanged claim ceiling
+- `docs/design-docs/gpt54pro_program81_delegation_admissibility_update_2026_04_15.md`: architect-facing memo for the completed Program `81.2` delegation-admissibility slice, covering helped/neutral/refused outcomes, refusal-first ordering, parent-owned truth, branch-cap posture, generated artifacts, validation, and honest non-claims
+- `docs/design-docs/gpt54pro_program81_resilience_matrix_update_2026_04_15.md`: architect-facing memo for the completed Program `81.3` resilience-matrix slice, covering interruption, stale branch/lane behavior, reconcile pressure, provider failure, concrete attribution layers, generated artifacts, validation, and honest non-claims
+- `docs/design-docs/gpt54pro_program81_inspectability_update_2026_04_15.md`: architect-facing memo for the completed Program `81.4` inspectability slice, covering artifact-first operator/governor review paths, plan/task/merge/adjudication/unresolved/continuity dimensions, generated artifacts, validation, and unchanged claim ceiling
+- `docs/design-docs/gpt54pro_program81_bounded_maturity_update_2026_04_15.md`: architect-facing memo for the completed Program `81.5` claim-boundary slice, covering the bounded multi-topology maturity ceiling, supporting Program `81.1`-`81.4` proof waves, release/registry/runbook updates, and still-blocked Program `82` claims
+- `docs/design-docs/gpt54pro_program82_parity_rubric_update_2026_04_15.md`: architect-facing memo for the completed Program `82.0` rubric slice, covering bounded parity, bounded exceeding, required artifacts, negative controls, downstream ticket contracts, and the unchanged Program `81` claim boundary
+- `docs/design-docs/gpt54pro_program82_finance_case_family_update_2026_04_15.md`: architect-facing memo for the completed Program `82.1` finance-family slice, covering the bounded AI-capex family contract, current rebuilt-runtime reruns, explicit adjudication-pressure failure packet, lane-bounded scorecard, and still-blocked finance parity claims
+- `docs/design-docs/gpt54pro_program82_pharma_case_family_update_2026_04_15.md`: architect-facing memo for the completed Program `82.2` pharma-family slice, covering the bounded cold-chain family contract, current partial-progress and release-conflict reruns, explicit failure packet, lane-bounded scorecard, and still-blocked pharma parity claims
+- `docs/design-docs/gpt54pro_program82_evidence_admission_update_2026_04_15.md`: architect-facing memo for the completed Program `82.3` source-policy and evidence-admission pressure slice, covering source-policy violations, thin-evidence overclaim blocking, multimodal table/figure fail-closed controls, first-class failure packets, and synthesis gating
+- `docs/design-docs/gpt54pro_program82_long_horizon_gain_update_2026_04_15.md`: architect-facing memo for the completed Program `82.4` long-horizon epistemic-gain slice, covering same-question gain and no-gain proofs, first-class failure-shape artifacts, metric discipline, validation, and unchanged claim ceiling
+- `docs/design-docs/gpt54pro_program82_final_verdict_update_2026_04_15.md`: architect-facing memo for the completed Program `82.5` final verdict slice, covering the bounded parity-exceeding verdict pack, claim-ceiling delta, refreshed registry/runbook/drift/release surfaces, validation, and still-blocked broad claims
+- `docs/design-docs/program80_taskprogram_layer_plain_language_brief_2026_04_14.md`: plain-language explanation of Program `80.3` for readers who do not know Alexandria internals and want a simple statement of what changed, why it matters, what was proven, and what is still not claimed
+- `docs/generated/runtime/latest_program80_architecture_migration_map.json`: stable pointer to the Program `80` migration map that marks the preserved kernel, the wrong current center of gravity, the missing control-plane center, and the explicit deletion candidates
+- `docs/generated/runtime/latest_program80_premortem_axis_registry.json`: stable pointer to the Program `80` pre-mortem axis registry used by later tickets and proof artifacts
+- `docs/generated/runtime/latest_program80_primary_path_inventory.json`: stable pointer to the Program `80` primary-path inventory over the current research-driving scripts and stable pointers
+- `docs/generated/runtime/latest_program80_architecture_audit_validation.json`: stable pointer to the Program `80` audit validator proving the artifacts are present, current, and coherently mapped
+- `docs/generated/runtime/latest_program80_kernel_contract.json`: stable pointer to the Program `80.1` kernel-contract proof bundle over runtime-owned truth, continuity, convergence, steering, compaction, checkpoint, branch, and tool-execution surfaces
+- `docs/generated/runtime/latest_program80_kernel_contract_validation.json`: stable pointer to the Program `80.1` kernel-contract validator proving the artifact bundle and checks are current and passing
+- `docs/generated/runtime/latest_program80_control_plane.json`: stable pointer to the Program `80.2` control-plane proof bundle over plan state, source policy, working set, task board, lease lifecycle, checkpoint/restore continuity, and runtime-enforced policy failure
+- `docs/generated/runtime/latest_program80_control_plane_validation.json`: stable pointer to the Program `80.2` control-plane validator proving the artifact bundle and checks are current and passing
+- `docs/generated/runtime/latest_program80_taskprogram_layer.json`: stable pointer to the Program `80.3` TaskProgram proof bundle over typed program contracts, live end-to-end usage, invocation-packet binding, and A/B transport behavior change without kernel-truth drift
+- `docs/generated/runtime/latest_program80_taskprogram_layer_validation.json`: stable pointer to the Program `80.3` TaskProgram validator proving the artifact bundle and checks are current and passing
+- `docs/generated/runtime/latest_program80_central_casefile_topology.json`: stable pointer to the Program `80.4` single-object topology proof bundle over central case-file ownership, helper proposal-only behavior, and parent-owned report closure
+- `docs/generated/runtime/latest_program80_central_casefile_topology_validation.json`: stable pointer to the Program `80.4` validator proving the artifact bundle and checks are current and passing
+- `docs/generated/runtime/latest_program80_bounded_scouts.json`: stable pointer to the Program `80.5` bounded-scouts proof bundle over scout task/result packets, parent-owned merge law, explicit conflict candidates, and restart-safe scout lifecycle
+- `docs/generated/runtime/latest_program80_bounded_scouts_validation.json`: stable pointer to the Program `80.5` validator proving the artifact bundle and checks are current and passing
+- `docs/generated/runtime/latest_program80_comparison_ledger_topology.json`: stable pointer to the Program `80.6` structured-comparison proof bundle over comparison schema, comparator lanes, normalized ledger cells, and central adjudication
+- `docs/generated/runtime/latest_program80_comparison_ledger_topology_validation.json`: stable pointer to the Program `80.6` validator proving the artifact bundle and checks are current and passing
+- `docs/generated/runtime/latest_program80_casefile_report_closure.json`: stable pointer to the Program `80.7` case-file-to-report closure bundle over verification, reconciliation, synthesis, reporting, and stale-report blocking
+- `docs/generated/runtime/latest_program80_casefile_report_closure_validation.json`: stable pointer to the Program `80.7` validator proving the artifact bundle and checks are current and passing
+- `docs/generated/runtime/latest_program80_continuity_and_intervention.json`: stable pointer to the Program `80.8` continuity bundle over checkpoint/resume, post-resume steering, replan/regress, pending-human-pause survival, and comparison-topology continuity
+- `docs/generated/runtime/latest_program80_continuity_and_intervention_validation.json`: stable pointer to the Program `80.8` validator proving the artifact bundle and checks are current and passing
+- `docs/generated/runtime/latest_program80_two_case_gate.json`: stable pointer to the Program `80.9` two-case architectural gate over the single-object and structured-comparison families, negative controls, and claim-boundary limit
+- `docs/generated/runtime/latest_program80_two_case_gate_validation.json`: stable pointer to the Program `80.9` validator proving the gate is current and passing
+- `docs/generated/runtime/latest_program80_superseded_architecture.json`: stable pointer to the Program `80.10` superseded-architecture quarantine bundle over deprecated executor-centric paths, the new primary reasoning path, and release-closure authority
+- `docs/generated/runtime/latest_program80_superseded_architecture_validation.json`: stable pointer to the Program `80.10` validator proving the quarantine bundle is current and passing
+- `docs/design-docs/program80_primary_reasoning_path_runbook_2026_04_14.md`: operator/governor runbook for the new primary reasoning path after Program `80` topology closure
+- `docs/generated/runtime/latest_program81_post80_claim_boundary.json`: stable pointer to the Program `81.0` post-80 claim boundary that freezes the active ceiling at two-case architectural closure
+- `docs/generated/runtime/latest_program81_post80_claim_boundary_validation.json`: stable pointer to the Program `81.0` validator proving the post-80 claim boundary is current and passing
+- `docs/generated/runtime/latest_program81_topology_robustness_matrix.json`: stable pointer to the Program `81.1` topology robustness matrix over neighboring single-object and comparison inquiry shapes, including negative controls and attribution layers
+- `docs/generated/runtime/latest_program81_topology_robustness_matrix_validation.json`: stable pointer to the Program `81.1` validator proving the topology robustness matrix is current, passing, and does not widen the post-80 claim boundary
+- `docs/generated/runtime/latest_program81_topology_robustness_matrix.md`: stable human-readable brief for the Program `81.1` topology robustness matrix
+- `docs/generated/runtime/latest_program81_delegation_admissibility.json`: stable pointer to the Program `81.2` delegation admissibility bundle recording helped, neutral, and refused delegation cases across both topology families
+- `docs/generated/runtime/latest_program81_delegation_admissibility_validation.json`: stable pointer to the Program `81.2` validator proving delegation admissibility accounting is current, passing, and does not widen the branch cap or post-80 claim ceiling
+- `docs/generated/runtime/latest_program81_delegation_admissibility.md`: stable human-readable brief for the Program `81.2` delegation admissibility release surface
+- `docs/generated/runtime/latest_program81_resilience_matrix.json`: stable pointer to the Program `81.3` resilience matrix over interruption, stale branch/lane behavior, reconcile pressure, and provider failure across both topology families
+- `docs/generated/runtime/latest_program81_resilience_matrix_validation.json`: stable pointer to the Program `81.3` validator proving the resilience matrix is current, passing, and uses concrete attribution layers instead of generic `NOT_PASS`
+- `docs/generated/runtime/latest_program81_resilience_matrix.md`: stable human-readable brief for the Program `81.3` resilience and failure-shape matrix
+- `docs/generated/runtime/latest_program81_control_plane_inspectability.json`: stable pointer to the Program `81.4` control-plane inspectability bundle mapping plan, tasks, merge state, adjudication, unresolveds, and continuity to artifact-first review surfaces
+- `docs/generated/runtime/latest_program81_control_plane_inspectability_validation.json`: stable pointer to the Program `81.4` validator proving operator/governor review paths are rebuilt-control-plane-first and prompt/report-first drift is blocked
+- `docs/generated/runtime/latest_program81_control_plane_inspectability.md`: stable human-readable brief for the Program `81.4` inspectability bundle
+- `docs/generated/runtime/latest_program81_bounded_maturity_claim_boundary.json`: stable pointer to the Program `81.5` bounded multi-topology maturity claim boundary
+- `docs/generated/runtime/latest_program81_bounded_maturity_claim_boundary_validation.json`: stable pointer to the Program `81.5` validator proving the bounded maturity boundary is current, cites the completed Program `81` proof waves, and blocks Program `82` claims
+- `docs/generated/runtime/latest_program81_bounded_maturity_claim_boundary.md`: stable human-readable brief for the Program `81.5` bounded maturity boundary
+- `docs/generated/runtime/latest_program82_parity_rubric.json`: stable pointer to the Program `82.0` parity and parity-exceeding rubric
+- `docs/generated/runtime/latest_program82_parity_rubric_validation.json`: stable pointer to the Program `82.0` validator proving the rubric blocks overclaims, defines parity/exceeding standards, names controls/artifacts, and binds downstream Program `82` tickets
+- `docs/generated/runtime/latest_program82_parity_rubric.md`: stable human-readable brief for the Program `82.0` parity rubric
+- `docs/generated/runtime/latest_program82_finance_case_family.json`: stable pointer to the Program `82.1` bounded finance case-family bundle
+- `docs/generated/runtime/latest_program82_finance_case_family_validation.json`: stable pointer to the Program `82.1` validator proving the finance-family contract, gold schema, admitted failure packet, rebuilt-architecture binding, and lane-bounded claim delta are current
+- `docs/generated/runtime/latest_program82_finance_case_family.md`: stable human-readable brief for the Program `82.1` finance-family proof surface
+- `docs/generated/runtime/latest_program82_pharma_case_family.json`: stable pointer to the Program `82.2` bounded pharma case-family bundle
+- `docs/generated/runtime/latest_program82_pharma_case_family_validation.json`: stable pointer to the Program `82.2` validator proving the pharma-family contract, gold schema, admitted release-conflict failure packet, rebuilt-architecture binding, and lane-bounded claim delta are current
+- `docs/generated/runtime/latest_program82_pharma_case_family.md`: stable human-readable brief for the Program `82.2` pharma-family proof surface
+- `docs/generated/runtime/latest_program82_evidence_admission_pressure.json`: stable pointer to the Program `82.3` source-policy and evidence-admission pressure bundle
+- `docs/generated/runtime/latest_program82_evidence_admission_pressure_validation.json`: stable pointer to the Program `82.3` validator proving source-policy, thin-evidence, report-outrun, unresolved-smoothing, and multimodal fail-closed controls are current
+- `docs/generated/runtime/latest_program82_evidence_admission_pressure.md`: stable human-readable brief for the Program `82.3` evidence-admission pressure surface
+- `docs/generated/runtime/latest_program82_long_horizon_gain.json`: stable pointer to the Program `82.4` long-horizon epistemic-gain bundle
+- `docs/generated/runtime/latest_program82_long_horizon_gain_validation.json`: stable pointer to the Program `82.4` validator proving the same-question gain proof, honest no-gain control, first-class failure-shape artifacts, and metric discipline are current
+- `docs/generated/runtime/latest_program82_long_horizon_gain.md`: stable human-readable brief for the Program `82.4` long-horizon epistemic-gain proof surface
+- `docs/generated/runtime/latest_program82_verdict_pack.json`: stable pointer to the Program `82.5` final verdict pack that widens the active claim ceiling only to bounded named Program `82` parity-exceeding proof
+- `docs/generated/runtime/latest_program82_verdict_pack_validation.json`: stable pointer to the Program `82.5` validator proving all prerequisite Program `82` lanes pass and unsupported broad claims remain blocked
+- `docs/generated/runtime/latest_program82_verdict_pack.md`: stable human-readable brief for the Program `82.5` final verdict pack
+- `docs/design-docs/allowed_claims_registry_2026_04_15.md`: active Program `82` allowed-claims registry; older runtime, product, topology, domain, Program `80`, and Program `81` tiers are retained as lineage or supporting context rather than the current outward ceiling
+- `docs/generated/runtime/latest_north_star_closure_layer_audit.json`: stable pointer to the latest north-star closure-layer audit, separating substrate defects from provider-on projection defects and degraded-mode honesty
+- `docs/runbooks/operator_review_runbook_2026_04_13.md`: operator-facing path for reading the current claim boundary, release gate, demo packs, failures, and steering surfaces honestly
+- `docs/runbooks/governor_review_runbook_2026_04_13.md`: governor-facing path for deciding what Alexandria may honestly claim today and which pack to inspect next
+- `docs/runbooks/fresh_session_principal_engineer_bootstrap_2026_04_17.md`: opening runbook and paste-ready prompt for a fresh-session principal engineer doing planning-stage retrospective, architecture recovery, and bead/ExecPlan packaging
+- `docs/generated/runtime/latest_live_corpus_demo_checkpoint.json`: stable machine pointer to the latest live-corpus demo-proof checkpoint bundle
+- `docs/design-docs/live_corpus_demo_proof_checkpoint_2026_04_06_live_corpus_demo_proof.md`: dated checkpoint brief for the latest live-corpus demo-proof posture
+- `docs/generated/runtime/latest_live_corpus_demo_operator_report.md`: latest operator-facing Markdown summary for the live-corpus demo-proof checkpoint
+- `docs/generated/runtime/latest_cxdb_system_checkpoint.json`: stable machine pointer to the latest cxdb system checkpoint bundle
+- `docs/generated/runtime/latest_cxdb_system_operator_report.md`: latest operator-facing Markdown summary for the latest cxdb system checkpoint
+- `docs/generated/runtime/latest_postscript_eval_operator_report.md`: latest operator-facing Markdown summary for the postscript eval proof checkpoint
+- `docs/generated/runtime/latest_runtime_checkpoint.json`: stable machine pointer to the latest immutable runtime checkpoint bundle
+- `docs/design-docs/runtime_proof_matrix_checkpoint_2026_04_05_strict_canon_closure.md`: dated checkpoint brief for the latest strict canon-closure runtime proof posture
+- `docs/generated/runtime/latest_runtime_operator_report.md`: latest operator-facing Markdown summary over the latest immutable runtime checkpoint bundle
+- `docs/generated/runtime/latest_runtime_dashboard.html`: latest static dashboard over the latest immutable runtime checkpoint bundle
+- `docs/generated/runtime/session-cache/latest_tmux_pane_session_cache.md`: stable pointer to the latest full tmux pane session-history cache artifact
+- `docs/generated/remotion/runtime-proof-matrix-checkpoint-showcase.mp4`: latest Remotion showcase over the latest runtime checkpoint bundle
+- `docs/generated/remotion/runtime-proof-matrix-checkpoint-showcase.md`: companion note for the latest Remotion checkpoint showcase
+- `docs/generated/remotion/report-flow-showcase.mp4`: latest Remotion explainer for the report-first Alexandria flow
+- `docs/generated/remotion/report-flow-showcase.md`: companion note for the latest report-flow Remotion showcase
+- `docs/generated/runtime/live_corpus_report_packet.json`: historical report-first checkpoint artifact, not the active readable report lane
+- `docs/generated/runtime/live_corpus_report_draft.md`: historical readable draft from the report-first checkpoint wave, retained for lineage rather than current product truth
+- `docs/design-docs/vertical_runtime_slice_planning.md`: supporting doctrine for canon-preserving vertical runtime planning
+- `docs/design-docs/vertical_runtime_slice_doctrine_audit_2026_04_05.md`: findings-first doctrine audit for the cleanroom docs
+
+## Plans
+
+- `docs/exec-plans/active/`: living plans for current complex work
+- `docs/exec-plans/active/runtime_program_retrofit_and_proof_plan.md`: preserved runtime-program plan for the first proof-checkpoint wave
+- `docs/exec-plans/active/runtime_topology_closure_wave.md`: active plan for the bounded topology-closure wave, including the child-runtime gate and downstream ticket order
+- `docs/exec-plans/active/wave1_architecture_closure.md`: active plan for the post-audit Wave 1 closure lane, including steering contract repair, provenance durability split, working-memory substrate v1, comparison topology design lock, and the post-Wave-1 proof packet
+- `docs/exec-plans/active/post_wave1_real_corpus_and_multibranch_proof_wave.md`: current proof-first wave for the remaining post-Wave-1 obligations, sequenced as real-corpus provenance, no-compaction restore, multi-branch admissibility, and comparison-native eval pressure
+- `docs/exec-plans/active/report_semantic_closure_wave.md`: active plan for the report-semantic closure lane after runtime closure, including the richer report contract, InquiryBoard, ArgumentLedger, scrutiny gate, provider parity, evals, and the third-party demo pack
+- `docs/exec-plans/active/pre_live_runtime_synthesis_hardening.md`: active pre-live hardening plan for the remaining synthesis-substrate gap, focused on native answer-case persistence, stronger provider-off answer construction, and blocking thin packet promotion before go-live
+- `docs/exec-plans/active/program80_research_control_plane_rebuild.md`: proposed next-wave bead spine for preserving the runtime kernel while rebuilding Alexandria around a planner/task shared-state control plane, explicit research topologies, and staged proof from architecture closure to parity-exceeding enterprise research ability
+- `docs/exec-plans/completed/runtime_context_observability_and_cxdb_wave.md`: completed plan for first-class context observability, event/snapshot/trace proof, and the bounded downstream/read-only `cxdb` replay projection lane
+- `docs/exec-plans/completed/cxdb_execution_replay_matrix_wave.md`: completed plan for deterministic execution replay, one-variable ablation/eval, and the multi-run read-only `cxdb` proof lane
+- `docs/exec-plans/completed/live_corpus_demo_proof_wave.md`: preserved DAT-22 / DAT-23 plan for the completed live-corpus demo-proof lane
+- `docs/exec-plans/completed/runtime_program_strict_canon_closure_wave.md`: preserved top-level runtime-program plan for the completed strict canon-led closure wave
+- `docs/exec-plans/completed/`: preserved plan history
+- `docs/exec-plans/TEMPLATE.md`: required shape for new ExecPlans
+
+## References
+
+- `docs/references/openai_harness_engineering_notes.md`: extracted lessons from OpenAI's harness-engineering article
+- `docs/references/grep_building_grep_deep_research_2026_03_16.md`: repo-local Grep article snapshot with local inline figures for architecture and context-economy review
+- `docs/references/third_party_reimagining/`: raw landing zone for third-party Alexandria reimagining artifacts before they are reconciled, promoted, or superseded
+- `docs/references/third_party_reimagining/2026_04_20_alexandria_design_document_commissioning_brief_v1.md`: active commissioning brief governing the future Alexandria Design Document structure, review protocol, provenance labels, WBS quality bar, and ratification tests

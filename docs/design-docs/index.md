@@ -1,0 +1,65 @@
+# Design Docs Index
+
+- `alexandria_agent_architecture.md`: cited architecture document with audit questions and external baseline links
+- `alexandria_agent_architecture_audit_2026_04_05.md`: repo-local findings-first audit of the cited architecture document
+- `alexandria_runtime_grounding.md`: canonical teleological grounding, architecture translation, and initial vertical-plan stack
+- `alexandria_runtime_explained_2026_04_15.md`: third-party-readable explanation of the current runtime after Programs `80`-`82`, covering kernel authority, control plane, task programs, topologies, continuity, report closure, claim governance, and non-claims
+- `third_party_reimagining_artifact_registry_2026_04_20.md`: durable registry for third-party CHARTER, context-pack, and proposed-spec artifacts, including authority class, relevance triggers, and non-substitution rules
+- `alexandria_reimagining_context_pack_intake_2026_04_20.md`: ordered read ledger and teleological compression for the Linear Charter, Commissioning Brief, and Context Pack 00-06 intake; records Pack 07 as missing until obtained or waived
+- `reimagined_alexandria_authority_ledger_2026_04_21.md`: active authority ledger for the root charter candidate, root creation plan, legacy NLSpecs, context packs, donor artifacts, and proof receipts
+- `alexandria_frankenengine_plan_donor_analysis_2026_04_21.md`: structural donor analysis of the FrankenEngine plan and its translation into Alexandria's planning grammar
+- `runtime_authority_and_workbench_artifact_reconciliation_2026_04_16.md`: active reconciliation proposal arguing that Alexandria should preserve runtime-owned authority while adding a first-class workbench artifact plane for file-backed research products, selective re-entry, and better context economy
+- `alexandria_runtime_topology_audit_2026_04_09.md`: findings-first runtime topology audit of what is real, scaffolded, and absent today
+- `runtime_topology_closure_wave_2026_04_09.md`: active closure-wave grounding note translating the topology audit into hard backpressure rules and wave structure
+- `bounded_child_runtime_contract_2026_04_09.md`: design-lock contract for the closure wave's bounded child-runtime semantics
+- `postscript_eval_checkpoint_2026_04_09.md`: dated legibility checkpoint over the fresh postscript runtime-law bundle, live call-boundary smoke probe, and inherited bounded `cxdb` eval lane
+- `session_trajectory_skillization_2026_04_11.md`: extraction note turning a long legibility session into reusable lessons, drift modes, and repo-local skill candidates
+- `contradiction_reconciliation_edit_map_2026_04_09.md`: strict source-to-edit map showing which canon clauses landed in which runtime files, what exists now, and which alternatives were not chosen
+- `contradiction_reconciliation_mechanistic_legibility_2026_04_08.md`: verification-backed operational story of how contradiction reconciliation works inside the runtime today
+- `core-beliefs.md`: stable operating beliefs for agentic engineering in this repo
+- `knowledge_base_architecture.md`: how progressive disclosure works in this repo
+- `openai_call_boundary_smoke_probe_plan_2026_04_05.md`: bounded live-provider smoke-probe plan and non-claim guard for the OpenAI-first path
+- `live_corpus_demo_proof_grounding_2026_04_06.md`: active grounding for the DAT-23-driven live-corpus proof wave and its inherited-versus-new proof split
+- `live_corpus_metadata_audit_2026_04_06.md`: evidence-gated audit of Postgres chunk metadata, retrieval availability, evidence propagation, and corpus breadth for the live-corpus proof lane
+- `live_corpus_retrieval_bridge_2026_04_06.md`: implemented retrieval and Evidence mapping bridge for the live-corpus proof lane
+- `live_corpus_demo_proof_checkpoint_2026_04_06_live_corpus_demo_proof.md`: dated checkpoint brief for the latest live-corpus demo-proof bundle
+- `reporting_node_gap_audit_2026_04_06.md`: canon-backed statement of the gap between today's proven runtime and a first-class report-producing agent
+- `reporting_node_contract_2026_04_06.md`: explicit REPORTING node contract, prompt surface, and completion law for the report-first wave
+- `reporting_boundary_schema_contract_2026_04_06.md`: report-facing pydantic boundary models, prompt/output contract, and validation rules
+- `report_evolution_and_nlspec_implications_2026_04_07.md`: dated note capturing the report evolution from retrieval-log artifact to bounded readable memo and the numbered-spec implications exposed by that evolution
+- `contradiction_reconciliation_runtime_audit_2026_04_07.md`: runtime-backed audit of where contradiction reconciliation should live, what delegated work already supports, and the minimal parent-owned implementation slice
+- `report_first_ui_contract_2026_04_06.md`: report-first UI rendering contract, citation/evidence drilldown, and consumer non-behaviors
+- `report_first_runtime_checkpoint_2026_04_06.md`: dated checkpoint brief for the completed report-first runtime wave
+- `runtime_program_cross_examination_2026_04_05.md`: cross-examined next-wave runtime program, planning risks, and prove-first gates
+- `runtime_strict_canon_closure_grounding_2026_04_05.md`: strict canon-closure doctrine after the first runtime proof checkpoint
+- `runtime_strict_canon_gap_audit_2026_04_05.md`: bead-31 pre-mortem and canon-gap audit for the remaining runtime proof rows
+- `runtime_proof_matrix_checkpoint_2026_04_05.md`: dated checkpoint brief for the current runtime proof posture and row-level claim licenses
+- `runtime_proof_matrix_checkpoint_2026_04_05_strict_canon_closure.md`: superseding strict canon-closure checkpoint brief for the latest immutable runtime proof bundle
+- `runtime_context_observability_boundary_audit_2026_04_07.md`: front-door gate audit for the first-class context-observability wave, including truth ownership, observability-pack definition, proving-slice choice, dataset sufficiency, and the downstream `cxdb` block
+- `gpt54pro_program80_architecture_audit_update_2026_04_14.md`: architect-facing memo for the completed `80.0` anti-drift slice, including the emitted migration map, pre-mortem registry, primary-path inventory, validation results, and honest non-claims
+- `gpt54pro_program80_kernel_contract_update_2026_04_14.md`: architect-facing memo for the completed `80.1` kernel-authority slice, including the explicit kernel surfaces, checkpoint/restore rewiring, emitted proof bundle, and current claim boundary
+- `gpt54pro_program80_control_plane_update_2026_04_14.md`: architect-facing memo for the completed `80.2` control-plane slice, including the new plan/source-policy/task-board surfaces, continuity proof, policy-enforcement behavior, and honest non-claims
+- `gpt54pro_program80_taskprogram_layer_update_2026_04_14.md`: architect-facing memo for the completed `80.3` TaskProgram slice, including the typed task-program contracts, runtime/call-boundary integration, seven-program end-to-end proof, A/B transport comparison, and honest non-claims
+- `gpt54pro_program80_topology_closure_update_2026_04_14.md`: architect-facing memo for the completed `80.4`-`80.10` tranche, including central case-file topology, bounded scouts, comparison ledger, case-file-to-report closure, continuity/intervention, the two-case gate, and superseded-architecture quarantine
+- `gpt54pro_program81_post80_claim_boundary_update_2026_04_15.md`: architect-facing memo for the completed `81.0` claim-governance slice, including the post-80 active ceiling, blocked robustness/domain/parity claims, generated artifacts, and validation results
+- `gpt54pro_program81_topology_robustness_update_2026_04_15.md`: architect-facing memo for the completed `81.1` topology-robustness slice, including neighboring inquiry-shape pressure, negative controls, attributable failure behavior, generated artifacts, validation results, and the unchanged claim ceiling
+- `gpt54pro_program81_delegation_admissibility_update_2026_04_15.md`: architect-facing memo for the completed `81.2` delegation-admissibility slice, including helped/neutral/refused cases, refusal-first ordering, parent-owned truth, cap posture, generated artifacts, validation results, and honest non-claims
+- `gpt54pro_program81_resilience_matrix_update_2026_04_15.md`: architect-facing memo for the completed `81.3` resilience-matrix slice, including interruption, stale branch/lane, reconcile-pressure, and provider-failure cases across both topology families with concrete attribution layers
+- `gpt54pro_program81_inspectability_update_2026_04_15.md`: architect-facing memo for the completed `81.4` control-plane inspectability slice, including artifact-first operator/governor runbook paths, review dimensions, generated artifacts, validation results, and unchanged claim ceiling
+- `gpt54pro_program81_bounded_maturity_update_2026_04_15.md`: architect-facing memo for the completed `81.5` bounded-maturity slice, including the widened but bounded claim ceiling, supporting proof waves, updated registry/release/runbook surfaces, validation results, and Program `82` non-claims
+- `gpt54pro_program82_parity_rubric_update_2026_04_15.md`: architect-facing memo for the completed `82.0` parity-rubric slice, including the overclaim firewall, parity/exceeding standards, required artifacts, required controls, downstream ticket contract, validation results, and unchanged claim boundary
+- `gpt54pro_program82_finance_case_family_update_2026_04_15.md`: architect-facing memo for the completed `82.1` finance-family slice, including the bounded case-family contract, current finance acceptance and adjudication-pressure reruns, explicit failure packet, scorecard, validation, and finance parity non-claims
+- `gpt54pro_program82_pharma_case_family_update_2026_04_15.md`: architect-facing memo for the completed `82.2` pharma-family slice, including the bounded case-family contract, current pharma partial-progress and release-conflict reruns, explicit failure packet, scorecard, validation, and pharma parity non-claims
+- `gpt54pro_program82_evidence_admission_update_2026_04_15.md`: architect-facing memo for the completed `82.3` evidence-admission pressure slice, including source-policy violation controls, thin-evidence controls, multimodal fail-closed cases, synthesis blocking, validation, and non-claims
+- `gpt54pro_program82_long_horizon_gain_update_2026_04_15.md`: architect-facing memo for the completed `82.4` long-horizon epistemic-gain slice, including same-question gain and no-gain proofs, metric discipline, first-class failure-shape artifacts, validation, and non-claims
+- `gpt54pro_program82_final_verdict_update_2026_04_15.md`: architect-facing memo for the completed `82.5` final verdict slice, including the bounded parity-exceeding verdict pack, claim-ceiling delta, refreshed registry/review/release surfaces, validation, and non-claims
+- `program80_primary_reasoning_path_runbook_2026_04_14.md`: runbook for the Program `80` primary reasoning path after the two-case gate replaces the old executor-centric closure center
+- `program80_taskprogram_layer_plain_language_brief_2026_04_14.md`: plain-language explanation of the completed `80.3` slice for readers who do not know Alexandria internals and only need the practical outcome, proof shape, and non-claims
+- `runtime_continuity_probe_plan_2026_04_05.md`: bounded long-cycle and resume probe plan for continuity and convergence honesty
+- `runtime_spec_bead_proof_map_2026_04_05.md`: canon-to-bead traceability map for the current proof spine and runtime queue
+- `runtime_proof_artifact_contract_2026_04_05.md`: first consumer contract for runtime proof artifacts used by UI and Remotion
+- `validation_layers.md`: separates development, runtime, and ingestion checks
+- `backend_template_shape.md`: backend layers, allowed dependencies, and subsystem boundaries
+- `vertical_runtime_slice_skill_spec_2026_04_05.md`: candidate reusable skill spec for canon-preserving vertical runtime slice planning
+- `vertical_runtime_slice_planning.md`: how runtime work is decomposed into canon-preserving vertical slices
+- `vertical_runtime_slice_doctrine_audit_2026_04_05.md`: findings-first audit of cleanroom docs against the vertical-slice doctrine
