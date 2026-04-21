@@ -2,7 +2,7 @@
 
 Canonical name: Alexandria Deep Research Runtime
 Product layer: pharma competitive-intelligence researcher
-Status: root plan v0.2, pending Principal ratification
+Status: root plan v0.3, pending Principal ratification
 Date: 2026-04-21
 Reads after: `ALEXANDRIA_CHARTER.md`
 Reference donor: [PLAN_TO_CREATE_FRANKEN_ENGINE](https://github.com/Dicklesworthstone/franken_engine/blob/main/PLAN_TO_CREATE_FRANKEN_ENGINE.md)
@@ -53,10 +53,16 @@ harnesses, Program 80-90 execution history, generated receipts, and a strong
 runtime-authority instinct.
 
 The current reimagining began after studying Grep's public deep-research
-writeup and receiving third-party Charter, Commissioning Brief, and Context
+writeups and receiving third-party Charter, Commissioning Brief, and Context
 Pack materials. Those materials exposed a center-of-gravity risk: Alexandria
 could preserve runtime authority and file-backed context while missing the
 recursive research engine that makes Grep powerful.
+
+The later Claude-in-a-Box article sharpened the substrate question. Grep's
+current implementation evidence points to isolated Claude Agent SDK boxes with
+selective skill loading, scoped MCP tools, session fork/resume, queued worker
+execution, and a researcher-to-reporter handoff. Alexandria should learn from
+that substrate while keeping its own authority layer.
 
 The user then supplied the FrankenEngine plan as a donor artifact for plan
 craft. The lesson was structural. A serious plan binds ambition, names
@@ -120,6 +126,9 @@ Category-defining floor:
   provider memory.
 - Proof packs that show retrieval quality, claim coverage, contradiction
   handling, reviewer impact, and report improvement across loops.
+- Branch execution that can use Claude Agent SDK boxes when isolated
+  filesystem work, selected skills, MCP tool scopes, and fork/resume semantics
+  are the best route to Grep-parity behavior.
 
 If outcomes are parity-only, context-economy-only, or report-polish-only, the
 program is off-charter.
@@ -205,10 +214,16 @@ by default:
 
 ## 4. Non-Negotiable Constraints
 
-- Alexandria runs on the Anthropic Messages API with a custom orchestrator
-  loop.
-- Alexandria does not use the Claude Agent SDK agent loop.
-- Alexandria does not use LangGraph as its state-machine runtime.
+- Alexandria owns the orchestration, custody, event, artefact, decision,
+  reconciliation, review re-entry, and synthesis layers.
+- Claude Agent SDK box harnesses are allowed and preferred for Grep-parity
+  branch execution when they provide the needed filesystem, skill, MCP,
+  sub-agent, context-isolation, and fork/resume behavior.
+- Raw Anthropic Messages API calls remain available behind the provider-agnostic
+  model client for bounded roles that do not require a Claude Agent SDK box.
+- Alexandria does not use LangGraph as its core state-machine runtime.
+- Any external agent runner transcript is an input to Alexandria's event and
+  content-addressed custody layer. It is not the sole state of record.
 - The model client remains provider-agnostic so Claude and GPT can serve
   different cognitive roles.
 - The filesystem is working memory during research.
@@ -241,13 +256,18 @@ Decision contract:
   canon remains the operational source of truth for coding agents.
 - The Grep article is a donor reference for recursive research cognition, not a
   private implementation spec.
+- The Claude-in-a-Box article is donor evidence for Grep's current execution
+  substrate and is admissible when designing `agent.py`, branch runners,
+  skill-loading, MCP surfaces, and fork/resume semantics.
 - The FrankenEngine plan is a donor reference for plan structure, not a domain
   template for Alexandria.
 
 Initial deliverables, order-only:
 
-1. Ratify or amend `ALEXANDRIA_CHARTER.md`.
-2. Ratify or amend this root plan.
+1. Ratify or amend `ALEXANDRIA_CHARTER.md`, including the Agent SDK box-harness
+   substrate clause.
+2. Ratify or amend this root plan, including the boundary between SDK branch
+   execution and Alexandria-owned orchestration.
 3. Resolve the missing Context Pack 07 issue by import or explicit waiver.
 4. Update repo authority maps so future agents read the reimagined authority
    surface before legacy NLSpecs.
@@ -258,6 +278,46 @@ Initial deliverables, order-only:
 8. Produce a WBS whose beads require no architectural re-derivation.
 9. Promote implementation work only after interfaces, schemas, artefact formats,
    and control flow are specified.
+
+## 4.2 Execution Strategy Decision: Agent SDK Box Harness With Alexandria Custody
+
+The best current route to a functional Grep copy is an Alexandria-owned
+orchestrator that can launch isolated Claude Agent SDK boxes for branch work,
+then mirror their observable work into Alexandria's event log,
+content-addressed artefact store, claim ledger, contradiction objects, and
+review/re-entry loop.
+
+Decision contract:
+
+- `agent.py` becomes a thin entrypoint into an `AgentHarnessRunner`, not the
+  place where research architecture is improvised.
+- Each research box receives an explicit harness config: workspace path,
+  selected skills, allowed tools, disallowed tools, MCP servers, model, prompt,
+  session lineage, cleanup policy, and output contract.
+- The planner box performs context gathering before emitting the Plan File and
+  adequacy criteria.
+- The orchestrator owns task graph expansion, branch spawning, branch
+  termination, re-plan decisions, review re-entry, reconciliation, and final
+  ship decisions through mandatory decision tool calls.
+- Branch agents return pointer / analysis / evidence triplets into the
+  filesystem, and the orchestrator reads pointer files before selective
+  analysis loading.
+- SDK transcripts, JSONL sessions, and runner metadata are stored as immutable
+  artefacts and mirrored into Alexandria events so replay does not depend on
+  live provider state.
+- LangGraph may be used later for visualization or optional workflow
+  convenience only if it does not own the authoritative state machine.
+
+First implementation slice:
+
+1. Specify `AgentHarnessConfig`.
+2. Specify workspace lifecycle and skill-loader rules.
+3. Specify tool/MCP allowlist and denylist semantics.
+4. Specify session persistence, fork, and resume semantics.
+5. Specify transcript-to-event and transcript-to-CAS mirroring.
+6. Specify planner ratification, branch orchestration, reconciliation, writer,
+   reporter, reviewer, and re-entry contracts.
+7. Only then rewrite `agent.py` against the specification.
 
 ## 5. Method Stack
 

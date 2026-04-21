@@ -41,6 +41,8 @@ The ledger prevents authority by inertia.
 | Context Pack intake | `docs/design-docs/alexandria_reimagining_context_pack_intake_2026_04_20.md` | `LOCAL_TRANSLATION` | Active | Ordered read ledger and missing Pack 07 warning |
 | FrankenEngine plan | `https://github.com/Dicklesworthstone/franken_engine/blob/main/PLAN_TO_CREATE_FRANKEN_ENGINE.md` | `DONOR_ARTIFACT` | Studied for structure | Plan craft only |
 | FrankenEngine donor analysis | `docs/design-docs/alexandria_frankenengine_plan_donor_analysis_2026_04_21.md` | `LOCAL_TRANSLATION` | Active | Structural moves translated for Alexandria |
+| Grep Claude-in-a-Box article | `docs/references/claude_in_a_box_grep_agents_sdk_2025_12_11.md` | `DONOR_ARTIFACT` | Stored and public URL checked | Grep substrate evidence for isolated SDK boxes, selective skills, MCP scopes, fork/resume, and researcher-to-reporter handoff |
+| Claude-in-a-Box implications memo | `docs/design-docs/claude_in_a_box_implications_for_alexandria_agent_py_2026_04_21.md` | `LOCAL_TRANSLATION` | Active | Design pressure for `agent.py`, branch execution, SDK boxes, and custody boundaries |
 | Program 90 receipts | `docs/generated/runtime/latest_program90_parity_proof_suite.json` and siblings | `PROOF_RECEIPT` | Historical proof surface | Claim boundaries and implementation evidence |
 
 ## Conflict Rule
@@ -55,6 +57,11 @@ candidate charter's telos, stop and classify the conflict:
 - escalate to Principal
 
 Do not implement from a conflicted clause until the classification is repo-local.
+
+The Claude-in-a-Box article creates a substrate conflict with the older
+Messages-only / no-SDK clause. The candidate charter resolves that conflict by
+allowing SDK boxes for branch execution while keeping orchestration and custody
+inside Alexandria.
 
 ## Reimagining Work Rule
 

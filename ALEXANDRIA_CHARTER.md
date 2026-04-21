@@ -80,9 +80,15 @@ proprietary pharma data vendor.
 13. Session reconstructibility. The filesystem and event log, together and
     alone, are sufficient to reconstruct any completed session. Runtime state
     and model-provider state are not required.
-14. Runtime substrate. Alexandria runs on the Anthropic Messages API with a
-    custom orchestrator loop. It does not use the Claude Agent SDK agent loop.
-    It does not use LangGraph as its state-machine runtime.
+14. Runtime substrate. Alexandria owns orchestration, custody, decision
+    capture, event emission, content addressing, reconciliation, review
+    re-entry, and ship decisions. Research branches may run inside Claude
+    Agent SDK box harnesses when that is the shortest path to Grep-class
+    filesystem skills, MCP tools, isolated contexts, sub-agents, and
+    fork/resume behavior. Raw Anthropic Messages API and GPT calls remain
+    available behind the provider-agnostic model client for bounded drafting,
+    review, synthesis, adversarial pressure, and verification roles.
+    LangGraph does not own Alexandria's core state-machine runtime.
 15. Provider-agnostic model client. Claude and GPT may serve different roles
     for drafting, review, synthesis, adversarial pressure, and verification.
 
@@ -94,6 +100,12 @@ Alexandria must preserve the relevant Grep shape: planner-as-researcher,
 inner/outer loop separation, file-returning sub-agents, markdown working
 memory, single-voice writing, reviewer-driven iteration, and orchestration
 loops over adequacy.
+
+Grep's Claude-in-a-Box implementation evidence is relevant donor material for
+execution substrate: isolated agent workspaces, selective skill loading,
+MCP-scoped tool surfaces, fork/resume sessions, queued worker execution, and
+research-to-report handoff are admissible patterns for Alexandria to study and
+adopt where they preserve this Charter.
 
 Grep parity is a checkpoint. Alexandria must exceed it through custody, replay,
 content-addressed artefacts, decision capture, claim-to-source chain-of-custody,

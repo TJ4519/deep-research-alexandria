@@ -12,6 +12,8 @@ Constraining canon refs:
 - `docs/design-docs/alexandria_reimagining_context_pack_intake_2026_04_20.md`
 - `docs/design-docs/reimagined_alexandria_authority_ledger_2026_04_21.md`
 - `docs/design-docs/alexandria_frankenengine_plan_donor_analysis_2026_04_21.md`
+- `docs/references/claude_in_a_box_grep_agents_sdk_2025_12_11.md`
+- `docs/design-docs/claude_in_a_box_implications_for_alexandria_agent_py_2026_04_21.md`
 Last updated: 2026-04-21
 
 ## Why This Plan Exists
@@ -74,6 +76,10 @@ reconciliation, skills, orchestration loops, and reviewer-driven re-entry.
 
 Overreach risk: a future agent may begin the Design Document or implementation
 before the Commission Restatement is ratified.
+
+Substrate drift risk: a future agent may treat the old no-Agents-SDK clause as
+settled even after the Grep Claude-in-a-Box article showed that Grep's current
+implementation substrate uses isolated Claude Agent SDK boxes.
 
 ## Red/Green TDD Plan
 
@@ -156,6 +162,9 @@ Bead graph:
 - 2026-04-21: Added root reimagined charter candidate, expanded the root plan,
   added the authority ledger, and recorded the FrankenEngine plan donor
   analysis.
+- 2026-04-21: Stored the Grep Claude-in-a-Box article, amended the candidate
+  charter and root plan to allow SDK boxes for branch execution, and recorded
+  the `agent.py` substrate implications.
 
 ## Decision Log
 
@@ -164,6 +173,9 @@ Bead graph:
 - 2026-04-21: Old NLSpecs are not deleted. They enter audit status.
 - 2026-04-21: Root plan revision and scoped GitHub commits are part of
   `91.1`, not a separate perpetual chore.
+- 2026-04-21: Grep-functional-copy work should start from an Alexandria-owned
+  Agent SDK box harness with event/CAS custody, not from LangGraph as the core
+  runtime and not from a raw Messages-only recreation of Claude Code behavior.
 
 ## Validation
 
