@@ -1,0 +1,27 @@
+.venv/
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+.coverage
+.python-version.old
+build/
+dist/
+outputs/
+data/**/raw/
+*.pyc
+.env
+.env.*
+!.env.example
+
+# beads runtime state
+.beads/*.db
+.beads/*.db-*
+.beads/daemon.*
+.beads/*.lock
+
+# contained auxiliary Node workspace
+tools/remotion/node_modules/
+tools/remotion/out/
+
+# bv (beads viewer) local config and caches
+.bv/
