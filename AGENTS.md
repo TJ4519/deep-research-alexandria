@@ -20,6 +20,14 @@ using a cleanroom repo that is optimized for future coding-agent legibility.
 9. `docs/KNOWLEDGE_MAP.md`
 10. `docs/README.md`
 
+## Codex-DR Sandbox Architect
+
+For the Codex-based deep-research sandbox lane, launch future architect agents
+from `sandbox/codex-dr/` when possible. Read its local `AGENTS.md`, `README.md`,
+`docs/ARCHITECT_HANDOFF.md`, the matching design memo, and the active ExecPlan.
+This is the benchmark-facing Grep-parity proof lane for the research engine;
+product service runtime work needs a separate bridge.
+
 ## Working Invariants
 
 - Use `uv` for Python versioning, dependency management, and command execution.
@@ -35,6 +43,9 @@ using a cleanroom repo that is optimized for future coding-agent legibility.
 - Use beads for work tracking and dependencies.
 - Use an ExecPlan for any bead that is complex, risky, or likely to span sessions.
 - Prefer boring, inspectable machinery over clever hidden state.
+- Generated Codex-DR sandbox runs belong under ignored paths in
+  `sandbox/codex-dr/runs/`, `sandbox/codex-dr/tmp/`, or
+  `sandbox/codex-dr/.agent-workspaces/`.
 
 ## Commands
 
@@ -59,6 +70,8 @@ using a cleanroom repo that is optimized for future coding-agent legibility.
 - `docs/GOLDEN_RULES.md`: anti-drift rules and enforcement posture
 - `docs/design-docs/third_party_reimagining_artifact_registry_2026_04_20.md`: durable authority and relevance registry for third-party CHARTER, context-pack, and proposed-spec artifacts
 - `docs/design-docs/alexandria_reimagining_context_pack_intake_2026_04_20.md`: ordered Linear read ledger and teleological compression for the Charter, Commissioning Brief, and Context Pack 00-06; records Pack 07 as missing until obtained or waived
+- `docs/design-docs/codex_dr_sandbox_architect_handoff_2026_04_22.md`: first-party handoff memo defining the Codex-DR sandbox workspace, architect memory contract, benchmark-first spine, and service-runtime boundary
+- `sandbox/codex-dr/`: dedicated workspace for the Codex-based Grep-parity sandbox architect
 - `docs/exec-plans/active/`: living plans for complex beads
 - `app/README.md`: backend layer model and package layout
 
@@ -66,6 +79,7 @@ using a cleanroom repo that is optimized for future coding-agent legibility.
 
 - Active Program 90 owner:
   `docs/exec-plans/active/program90_harness_centered_deep_research_rebuild.md`
+- Codex-DR sandbox architect handoff: `sandbox/codex-dr/docs/ARCHITECT_HANDOFF.md`
 - Reimagined root charter:
   `ALEXANDRIA_CHARTER.md`
 - Reimagined root plan:

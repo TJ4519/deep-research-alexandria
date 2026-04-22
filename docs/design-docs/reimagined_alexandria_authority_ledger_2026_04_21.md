@@ -43,6 +43,7 @@ The ledger prevents authority by inertia.
 | FrankenEngine donor analysis | `docs/design-docs/alexandria_frankenengine_plan_donor_analysis_2026_04_21.md` | `LOCAL_TRANSLATION` | Active | Structural moves translated for Alexandria |
 | Grep Claude-in-a-Box article | `docs/references/claude_in_a_box_grep_agents_sdk_2025_12_11.md` | `DONOR_ARTIFACT` | Stored and public URL checked | Grep substrate evidence for isolated SDK boxes, selective skills, MCP scopes, fork/resume, and researcher-to-reporter handoff |
 | Claude-in-a-Box implications memo | `docs/design-docs/claude_in_a_box_implications_for_alexandria_agent_py_2026_04_21.md` | `LOCAL_TRANSLATION` | Active | Design pressure for `agent.py`, branch execution, SDK boxes, and custody boundaries |
+| Codex-DR sandbox architect handoff | `docs/design-docs/codex_dr_sandbox_architect_handoff_2026_04_22.md` and `sandbox/codex-dr/` | `LOCAL_TRANSLATION` | Active | First architect workspace, memory contract, benchmark-first spine, terminal-agent sandbox boundary, and service-runtime bridge |
 | Program 90 receipts | `docs/generated/runtime/latest_program90_parity_proof_suite.json` and siblings | `PROOF_RECEIPT` | Historical proof surface | Claim boundaries and implementation evidence |
 
 ## Conflict Rule
@@ -62,6 +63,10 @@ The Claude-in-a-Box article creates a substrate conflict with the older
 Messages-only / no-SDK clause. The candidate charter resolves that conflict by
 allowing SDK boxes for branch execution while keeping orchestration and custody
 inside Alexandria.
+
+The Codex-DR sandbox handoff creates a workspace-routing rule. Grep-parity
+sandbox architect work enters through `sandbox/codex-dr/` and treats Program 90
+receipts as historical evidence, not as the new target definition.
 
 ## Reimagining Work Rule
 

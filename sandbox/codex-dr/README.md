@@ -1,0 +1,89 @@
+# Codex-DR Sandbox
+
+This workspace is the launch pad for the Codex-based Alexandria deep-research
+sandbox.
+
+The sandbox exists to instantiate a full Grep-style recursive deep-research
+agent system using terminal-agent harnessing while preserving Alexandria's
+custody discipline: event logs, immutable artefacts, compaction receipts,
+claim ledgers, visible QA backpressure, and benchmark-facing proof.
+
+## Why It Lives Here
+
+The first workspace is inside the cleanroom repo because the architect needs
+direct access to the charter, root plan, authority ledger, Grep references,
+legacy proof receipts, and existing development commands.
+
+A separate repo or worktree becomes appropriate when the sandbox begins
+storing substantial generated runs, paid benchmark data, customer material,
+secret-bearing configs, or implementation churn that would confuse the root
+repo.
+
+## What This Workspace Must Prove
+
+The sandbox must attempt Grep-system-and-performance parity. That means:
+
+- planner ratification of user intent and adequacy criteria
+- planner context gathering before the plan is frozen
+- task graph decomposition into sequential and parallel research work
+- terminal-agent branch execution with scoped tools and skills
+- branch agents that return pointer, analysis, and evidence files
+- recursive evidence retrieval and branch deepening
+- synthesis and contradiction reconciliation
+- reviewer and fact-checker files that can push the run back into research
+- single-voice report writing from reconciled research state
+- benchmark scoring against Grep-cited benchmark families where obtainable
+- event and artefact custody for every material orchestration step
+
+## Current Directory Contract
+
+- `AGENTS.md`: local instructions for future architect and builder agents.
+- `docs/ARCHITECT_HANDOFF.md`: durable handoff memo and plan.
+- `benchmark-manifests/`: benchmark acquisition and case-selection manifests.
+- `cases/`: small non-private sandbox cases and benchmark wrappers.
+- `harness-specs/`: contracts for CLI, terminal-agent boxes, events, artefacts,
+  reviews, and run bundles.
+- `runs/`: ignored generated run bundles.
+- `tmp/`: ignored local scratch.
+
+## Expected CLI Shape
+
+The CLI control surface is expected to be named `alexandria-dr`.
+
+Initial commands should cover:
+
+- `alexandria-dr benchmark audit`
+- `alexandria-dr init-case <case_id>`
+- `alexandria-dr run-planner <case_id>`
+- `alexandria-dr run-branch <case_id> <branch_id>`
+- `alexandria-dr run-review <case_id>`
+- `alexandria-dr run-reentry <case_id> <review_id>`
+- `alexandria-dr validate <case_id>`
+- `alexandria-dr score <case_id>`
+
+The exact implementation may change after the contracts are written. The
+control surface must remain visible and scriptable.
+
+## Proof Run Contract
+
+Every proof run should emit a run bundle with:
+
+- `run_manifest.json`
+- `events.jsonl`
+- `artefact_manifest.json`
+- `plan.md`
+- `task_graph.json`
+- `adequacy_criteria.json`
+- `branches/`
+- `evidence/`
+- `synthesis.md`
+- `contradictions.json`
+- `reviews/`
+- `compactions/`
+- `claim_ledger.json`
+- `report.md`
+- `benchmark_score.json`
+- `allowed_claims.json`
+
+The bundle is the memory. A future agent should be able to inspect it without
+chat context.

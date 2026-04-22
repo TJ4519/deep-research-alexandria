@@ -16,6 +16,8 @@ It is optimized for coding agents first:
 - rebuilding the backend runtime from explicit repo-local authority
 - validating the charter and plan through specification, implementation, and proof
 - using local example corpora now while preserving a path to real deployment later
+- hosting the first Codex-DR sandbox workspace for Grep-parity research-engine
+  proof work under `sandbox/codex-dr/`
 
 It is not:
 - a wrapper around the historical repo
@@ -38,6 +40,21 @@ Auxiliary tooling that is not part of the backend runtime may live under
 8. `docs/SYSTEM_MAP.md`
 9. `docs/KNOWLEDGE_MAP.md`
 10. `docs/README.md`
+
+## Codex-DR Sandbox
+
+The Codex-DR sandbox lives at `sandbox/codex-dr/`.
+
+Use it for the architect lane that attempts full Grep-system-and-performance
+parity through terminal-agent harnessing, recursive research coordination,
+benchmark acquisition, adequacy backpressure, event/CAS custody, compaction
+receipts, and allowed-claims proof.
+
+Start there with:
+
+1. `sandbox/codex-dr/AGENTS.md`
+2. `sandbox/codex-dr/README.md`
+3. `sandbox/codex-dr/docs/ARCHITECT_HANDOFF.md`
 
 ## Local Setup
 

@@ -9,6 +9,7 @@
 - `reimagined_alexandria_authority_ledger_2026_04_21.md`: active authority ledger for the root charter candidate, root creation plan, legacy NLSpecs, context packs, donor artifacts, and proof receipts
 - `alexandria_frankenengine_plan_donor_analysis_2026_04_21.md`: structural donor analysis of the FrankenEngine plan and its translation into Alexandria's planning grammar
 - `claude_in_a_box_implications_for_alexandria_agent_py_2026_04_21.md`: substrate amendment memo translating Grep's Claude Agent SDK box architecture into Alexandria's `agent.py`, branch-execution, custody, and design-entry decisions
+- `codex_dr_sandbox_architect_handoff_2026_04_22.md`: first-party handoff memo defining the `sandbox/codex-dr/` workspace, architect memory contract, benchmark-first spine, root `AGENTS.md` interaction, and product-runtime boundary
 - `runtime_authority_and_workbench_artifact_reconciliation_2026_04_16.md`: active reconciliation proposal arguing that Alexandria should preserve runtime-owned authority while adding a first-class workbench artifact plane for file-backed research products, selective re-entry, and better context economy
 - `alexandria_runtime_topology_audit_2026_04_09.md`: findings-first runtime topology audit of what is real, scaffolded, and absent today
 - `runtime_topology_closure_wave_2026_04_09.md`: active closure-wave grounding note translating the topology audit into hard backpressure rules and wave structure

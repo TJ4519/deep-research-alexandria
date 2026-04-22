@@ -319,6 +319,46 @@ First implementation slice:
    reporter, reviewer, and re-entry contracts.
 7. Only then rewrite `agent.py` against the specification.
 
+## 4.3 Execution Strategy Decision: Codex-DR Sandbox Workspace
+
+The first Grep-parity build lane is the Codex-DR sandbox at
+`sandbox/codex-dr/`.
+
+The sandbox target is a full attempt at Grep-system-and-performance parity using
+terminal-agent harnessing, benchmark pressure, adequacy backpressure, recursive
+research, visible QA re-entry, event/CAS custody, compaction receipts, claim
+ledgers, and allowed-claims proof.
+
+Decision contract:
+
+- Future sandbox architect agents should be launched from `sandbox/codex-dr/`
+  when possible.
+- The sandbox has its own `AGENTS.md`, `README.md`, and architect handoff.
+- The root `AGENTS.md` remains the global map and points to the sandbox handoff.
+- Program 90 proof receipts are historical evidence for the sandbox architect;
+  they do not define the new finish line.
+- Benchmark acquisition audit is the first hardening move.
+- The CLI control surface is expected to be named `alexandria-dr`.
+- Generated runs, agent workspaces, and scratch files stay in ignored sandbox
+  paths.
+- A minimal slice may reduce risk during implementation. The acceptance target
+  remains a full proof run across planner, branches, recursive evidence work,
+  synthesis, review, re-entry, final report, scoring, and allowed claims.
+- The sandbox does not become the product runtime by assertion. A later
+  service-runtime bridge memo classifies what graduates, what hardens, what
+  remains sandbox-only, and what gets replaced.
+
+Initial deliverables, order-only:
+
+1. Benchmark acquisition audit for DRACO, DeepSearchQA, DeepResearch Bench, and
+   Parcha-published benchmark material.
+2. Grep-system-and-performance parity contract.
+3. Sandbox harness contracts for CLI, run bundle, event mirror, CAS manifest,
+   compaction receipt, terminal-agent box config, branch return, review,
+   re-entry, claim ledger, and benchmark score.
+4. First full proof run.
+5. Service-runtime bridge memo.
+
 ## 5. Method Stack
 
 This program is driven by four complementary methods.
@@ -725,6 +765,17 @@ Exit gate:
 - [ ] Create ExecPlans for complex or session-spanning beads.
 - [ ] Keep implementation beads blocked until relevant design interfaces exist.
 
+### 9.8 Codex-DR Sandbox
+
+- [x] Create `sandbox/codex-dr/` as the first architect workspace.
+- [x] Create local sandbox `AGENTS.md`, `README.md`, and architect handoff.
+- [x] Add root entrypoint pointers to the sandbox handoff.
+- [ ] Produce the benchmark acquisition audit.
+- [ ] Produce the Grep-system-and-performance parity contract.
+- [ ] Produce sandbox harness contracts.
+- [ ] Implement the first full proof run.
+- [ ] Produce the service-runtime bridge memo.
+
 ## 10. Evidence And Decision Contracts
 
 Every major subsystem proposal must include:
@@ -860,10 +911,11 @@ After ratification:
 The next substantive program moves are:
 
 1. Principal reviews and amends or ratifies the root charter and this plan.
-2. Context Pack 07 is imported or waived.
-3. Legacy NLSpecs are audited against the reimagined telos.
-4. The mandatory Commission Restatement Candidate is written.
-5. The Design Document set is opened only after the authority state is stable.
+2. The Codex-DR sandbox architect performs the benchmark acquisition audit.
+3. Context Pack 07 is imported or waived.
+4. Legacy NLSpecs are audited against the reimagined telos.
+5. The mandatory Commission Restatement Candidate is written.
+6. The Design Document set is opened after the authority state is stable.
 
 The first review question is whether this plan correctly states Alexandria's
 ambition:

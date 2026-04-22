@@ -23,5 +23,12 @@ data/**/raw/
 tools/remotion/node_modules/
 tools/remotion/out/
 
+# Codex-DR sandbox generated state
+sandbox/codex-dr/runs/*
+!sandbox/codex-dr/runs/.gitkeep
+sandbox/codex-dr/tmp/*
+!sandbox/codex-dr/tmp/.gitkeep
+sandbox/codex-dr/.agent-workspaces/
+
 # bv (beads viewer) local config and caches
 .bv/

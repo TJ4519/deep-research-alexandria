@@ -14,6 +14,8 @@ Constraining canon refs:
 - `docs/design-docs/alexandria_frankenengine_plan_donor_analysis_2026_04_21.md`
 - `docs/references/claude_in_a_box_grep_agents_sdk_2025_12_11.md`
 - `docs/design-docs/claude_in_a_box_implications_for_alexandria_agent_py_2026_04_21.md`
+- `docs/design-docs/codex_dr_sandbox_architect_handoff_2026_04_22.md`
+- `sandbox/codex-dr/docs/ARCHITECT_HANDOFF.md`
 Last updated: 2026-04-21
 
 ## Why This Plan Exists
@@ -165,6 +167,9 @@ Bead graph:
 - 2026-04-21: Stored the Grep Claude-in-a-Box article, amended the candidate
   charter and root plan to allow SDK boxes for branch execution, and recorded
   the `agent.py` substrate implications.
+- 2026-04-22: Added the `sandbox/codex-dr/` architect workspace and handoff
+  documents so the full Grep-system-and-performance parity sandbox lane can
+  start from repo-local memory instead of chat.
 
 ## Decision Log
 
@@ -176,6 +181,10 @@ Bead graph:
 - 2026-04-21: Grep-functional-copy work should start from an Alexandria-owned
   Agent SDK box harness with event/CAS custody, not from LangGraph as the core
   runtime and not from a raw Messages-only recreation of Claude Code behavior.
+- 2026-04-22: The Codex-DR sandbox architect should be launched from
+  `sandbox/codex-dr/` when possible. The root `AGENTS.md` remains global, and
+  the local sandbox `AGENTS.md` narrows the target to benchmark-facing
+  Grep-system-and-performance parity.
 
 ## Validation
 
