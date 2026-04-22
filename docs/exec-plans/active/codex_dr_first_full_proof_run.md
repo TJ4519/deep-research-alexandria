@@ -161,6 +161,18 @@ generated proof artifacts, env files, or raw/large data.
   `91.1.5.4` is blocked before provider spend because `codex exec --help`
   exposes no mechanical token/cost cap flag, while the token manifest makes
   budget cap enforcement a hard stop.
+- 2026-04-22: Principal explicitly authorized one smoke run. Ran
+  `draco_smoke_001` through `codex exec --full-auto` with transcript capture.
+  The run emitted the required smoke bundle under ignored
+  `sandbox/codex-dr/runs/draco_smoke_001/`, including three branch returns,
+  review-triggered re-entry, report, claim ledger, placeholder benchmark score,
+  allowed claims, event log, and artefact manifest. Coordinator validation
+  found no missing files, JSON/JSONL envelope failures, missing event outputs,
+  missing required event types, or hash mismatches after the transcript closed.
+- 2026-04-22: Recorded tracked receipts:
+  `sandbox/codex-dr/docs/draco_smoke_001_run_receipt_2026_04_22.md` and
+  `sandbox/codex-dr/docs/draco_smoke_001_scoring_bridge_2026_04_22.md`.
+  The scoring bridge closes the score question as blocked, not scored.
 
 ## Decision Log
 
@@ -173,6 +185,15 @@ generated proof artifacts, env files, or raw/large data.
 - 2026-04-22: Do not execute `draco_smoke_001` until either a Codex CLI
   budget/cost-cap mechanism is identified or the Principal/main coordinator
   explicitly waives mechanical budget-cap enforcement for this one smoke run.
+- 2026-04-22: Treat `draco_smoke_001` as a completed boxed smoke run with a
+  blocked score. The run may support only the claims in its
+  `allowed_claims.json`; it does not support Grep parity, DRACO scoring,
+  leaderboard rank, product readiness, systematic adoption rates, or
+  methodological dominance in the requested AER/QJE/JPE corpus.
+- 2026-04-22: Treat the observed `270,716` token use as a token-burn finding.
+  Prompt-level budget text did not enforce the token manifest target. Future
+  provider-backed benchmark runs need mechanical cap enforcement, external
+  metering, a much smaller context envelope, or a fresh explicit waiver.
 
 ## Validation
 
@@ -185,6 +206,23 @@ uv run python sandbox/codex-dr/tools/alexandria_dr.py bootstrap-run local_fixtur
 uv run python sandbox/codex-dr/tools/alexandria_dr.py validate local_fixture_001
 git diff --check
 make check
+```
+
+Observed boxed-smoke validation:
+
+```json
+{
+  "missing": [],
+  "json_bad": [],
+  "jsonl_bad": [],
+  "missing_event_outputs": [],
+  "missing_event_types": [],
+  "hash_bad": [],
+  "branch_count": 3,
+  "benchmark_score": null,
+  "benchmark_scored": false,
+  "tokens_used_observed": "270,716"
+}
 ```
 
 ## Open Questions
