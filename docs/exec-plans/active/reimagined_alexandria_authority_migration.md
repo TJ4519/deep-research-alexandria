@@ -170,6 +170,9 @@ Bead graph:
 - 2026-04-22: Added the `sandbox/codex-dr/` architect workspace and handoff
   documents so the full Grep-system-and-performance parity sandbox lane can
   start from repo-local memory instead of chat.
+- 2026-04-22: Added the Codex-DR bootstrap doctrine after retrospective review
+  found the sandbox handoff needed provider-off first boot, token-burn
+  firewall, root-gravity firewall, and skill gates before autonomy.
 
 ## Decision Log
 
@@ -185,6 +188,9 @@ Bead graph:
   `sandbox/codex-dr/` when possible. The root `AGENTS.md` remains global, and
   the local sandbox `AGENTS.md` narrows the target to benchmark-facing
   Grep-system-and-performance parity.
+- 2026-04-22: Benchmark acquisition calibrates the target, while provider-off
+  bootstrap is the first execution lane. Provider-backed runs need token
+  manifests and must wait for bootstrap validation.
 
 ## Validation
 

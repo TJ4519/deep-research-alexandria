@@ -38,6 +38,8 @@ The sandbox must attempt Grep-system-and-performance parity. That means:
 ## Current Directory Contract
 
 - `AGENTS.md`: local instructions for future architect and builder agents.
+- `docs/BOOTSTRAP_DOCTRINE.md`: autonomy, provider-off boot, token firewall,
+  root-gravity firewall, and required skill gates.
 - `docs/ARCHITECT_HANDOFF.md`: durable handoff memo and plan.
 - `benchmark-manifests/`: benchmark acquisition and case-selection manifests.
 - `cases/`: small non-private sandbox cases and benchmark wrappers.
@@ -46,12 +48,40 @@ The sandbox must attempt Grep-system-and-performance parity. That means:
 - `runs/`: ignored generated run bundles.
 - `tmp/`: ignored local scratch.
 
+## Bootstrap Before Tokens
+
+The first executable lane is provider-off.
+
+Before any model-backed terminal-agent run, the sandbox must prove that it can
+create and validate a run bundle using local fixtures:
+
+1. centre-lock receipt
+2. run-bundle skeleton
+3. fake Plan File and task graph
+4. fake branch pointer / analysis / evidence return
+5. fake reviewer finding
+6. re-entry task compiled from the finding
+7. synthesis, contradiction state, claim ledger, report, compaction receipt,
+   placeholder score, and allowed-claims file
+8. validator that fails when custody, review re-entry, compaction, or allowed
+   claims are missing
+
+Benchmark acquisition still comes early. It calibrates the target and blocked
+claims. Benchmark execution waits until the provider-off bootstrap validator
+passes and a token manifest exists.
+
 ## Expected CLI Shape
 
 The CLI control surface is expected to be named `alexandria-dr`.
 
 Initial commands should cover:
 
+- `alexandria-dr bootstrap init local_fixture_001`
+- `alexandria-dr bootstrap plan local_fixture_001`
+- `alexandria-dr bootstrap branch local_fixture_001 branch_a`
+- `alexandria-dr bootstrap review local_fixture_001`
+- `alexandria-dr bootstrap reentry local_fixture_001 review_001`
+- `alexandria-dr bootstrap report local_fixture_001`
 - `alexandria-dr benchmark audit`
 - `alexandria-dr init-case <case_id>`
 - `alexandria-dr run-planner <case_id>`
@@ -63,6 +93,11 @@ Initial commands should cover:
 
 The exact implementation may change after the contracts are written. The
 control surface must remain visible and scriptable.
+
+Provider-backed commands require a token manifest naming purpose, bead id,
+runner, expected artefacts, maximum budget, stop conditions, input sources,
+data policy, transcript capture path, compaction policy, allowed claims, and
+non-claims.
 
 ## Proof Run Contract
 

@@ -69,6 +69,8 @@ The footing is adequate when:
 - An ExecPlan states how the architect should proceed.
 - Beads expose the work as durable queue entries.
 - `make check` still passes after documentation changes.
+- `docs/BOOTSTRAP_DOCTRINE.md` blocks provider-backed runs until the
+  provider-off bootstrap lane and token manifest rules exist.
 
 ## Literal-Following Check
 
@@ -77,6 +79,10 @@ Program 90, it may look productive while missing the new target. The local
 handoff exists to prevent that failure. The architect should enter through this
 workspace, recover the target, perform benchmark acquisition audit, then design
 the full parity sandbox.
+
+The hindsight correction is that benchmark acquisition alone is not a safe
+first execution lane. It calibrates the target. The first execution lane is the
+provider-off bootstrap described in `docs/BOOTSTRAP_DOCTRINE.md`.
 
 ## What The Architect Must Remember
 
@@ -97,10 +103,17 @@ is already a client-deployable SaaS or VPS product.
 
 ## Plan
 
+0. Bootstrap autonomy gate.
+   Complete `docs/BOOTSTRAP_DOCTRINE.md`: centre-lock receipt, root-gravity
+   firewall, provider-off run-bundle spine, token-burn firewall, local fixture
+   validators, and required skill gates.
+
 1. Benchmark acquisition audit.
    Identify DRACO, DeepSearchQA, DeepResearch Bench, and any Parcha-published
    benchmark material. Record source URLs, license constraints, dataset access,
    case counts, evaluator shape, scoring gaps, and local reproduction burden.
+   Treat this as target calibration until the provider-off bootstrap validator
+   passes.
 
 2. Parity definition.
    Convert the benchmark audit and Grep articles into a named parity contract:
@@ -128,8 +141,12 @@ is already a client-deployable SaaS or VPS product.
 
 ## Pre-Mortem
 
+- Bootstrap gap: the architect may understand the target and still lack a
+  concrete first boot path from zero to a validated local run.
 - Benchmark drift: the cited benchmark papers and datasets may be public while
   the exact Grep/Parcha evaluation configuration is unavailable.
+- Token burn: the architect may spend model calls before the harness can record
+  events, artefacts, compaction, review re-entry, and allowed claims.
 - Terminal-agent opacity: provider or CLI transcripts may hide details needed
   for strong provenance unless wrapper capture is explicit.
 - Compaction provenance: model compaction may lose source lineage unless the
@@ -142,6 +159,9 @@ is already a client-deployable SaaS or VPS product.
 
 ## Red TDD
 
+- A provider-backed run starts before a provider-off bootstrap validator exists.
+- A model-backed run has no token manifest.
+- A benchmark execution is attempted before the bootstrap validator passes.
 - A launch from this folder cannot identify the full parity target.
 - A benchmark claim is made before acquisition and scoring conditions are
   known.
@@ -155,6 +175,9 @@ is already a client-deployable SaaS or VPS product.
 
 - The architect can name the target, boundary, first move, and proof artifacts
   after reading this folder.
+- The bootstrap doctrine names the provider-off first boot sequence, token
+  firewall, root-gravity firewall, and skill gates.
+- A local fixture run can be validated before model calls are introduced.
 - The benchmark acquisition audit blocks or permits claims explicitly.
 - A full proof run emits the required bundle files.
 - The event log and artefact manifest cover planner, branch, synthesis, review,

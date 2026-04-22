@@ -337,10 +337,15 @@ Decision contract:
 - The root `AGENTS.md` remains the global map and points to the sandbox handoff.
 - Program 90 proof receipts are historical evidence for the sandbox architect;
   they do not define the new finish line.
-- Benchmark acquisition audit is the first hardening move.
+- Bootstrap autonomy gating is the first execution hardening move.
+- Benchmark acquisition audit is the first target-calibration move.
 - The CLI control surface is expected to be named `alexandria-dr`.
 - Generated runs, agent workspaces, and scratch files stay in ignored sandbox
   paths.
+- Provider-backed terminal-agent runs require a token manifest and are blocked
+  until the provider-off bootstrap validator passes.
+- Benchmark execution is blocked until benchmark acquisition, provider-off
+  bootstrap validation, and token manifest rules are complete.
 - A minimal slice may reduce risk during implementation. The acceptance target
   remains a full proof run across planner, branches, recursive evidence work,
   synthesis, review, re-entry, final report, scoring, and allowed claims.
@@ -350,14 +355,16 @@ Decision contract:
 
 Initial deliverables, order-only:
 
-1. Benchmark acquisition audit for DRACO, DeepSearchQA, DeepResearch Bench, and
+1. Bootstrap doctrine and autonomy gate for centre-lock, root-gravity firewall,
+   provider-off first boot, token-burn firewall, skill gates, and stop rules.
+2. Benchmark acquisition audit for DRACO, DeepSearchQA, DeepResearch Bench, and
    Parcha-published benchmark material.
-2. Grep-system-and-performance parity contract.
-3. Sandbox harness contracts for CLI, run bundle, event mirror, CAS manifest,
+3. Grep-system-and-performance parity contract.
+4. Sandbox harness contracts for CLI, run bundle, event mirror, CAS manifest,
    compaction receipt, terminal-agent box config, branch return, review,
    re-entry, claim ledger, and benchmark score.
-4. First full proof run.
-5. Service-runtime bridge memo.
+5. First full proof run.
+6. Service-runtime bridge memo.
 
 ## 5. Method Stack
 
@@ -770,6 +777,8 @@ Exit gate:
 - [x] Create `sandbox/codex-dr/` as the first architect workspace.
 - [x] Create local sandbox `AGENTS.md`, `README.md`, and architect handoff.
 - [x] Add root entrypoint pointers to the sandbox handoff.
+- [x] Add bootstrap doctrine for provider-off first boot, root-gravity firewall,
+  token-burn firewall, and required skill gates.
 - [ ] Produce the benchmark acquisition audit.
 - [ ] Produce the Grep-system-and-performance parity contract.
 - [ ] Produce sandbox harness contracts.

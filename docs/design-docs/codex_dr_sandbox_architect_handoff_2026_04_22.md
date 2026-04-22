@@ -24,6 +24,11 @@ Grep references, legacy proof receipts, and root development commands. The
 workspace gets its own `AGENTS.md` and `README.md` so future agents can enter
 through the sandbox target without being steered by Program 90 or old NLSpecs.
 
+Hindsight correction: the workspace also needs an explicit bootstrap doctrine.
+Repo memory alone does not make the architect safe to run. The architect needs
+a provider-off first boot, token-burn firewall, root-gravity firewall, and
+skill gates before model-backed execution.
+
 A separate repository or worktree becomes appropriate after one of these
 conditions appears:
 
@@ -52,6 +57,7 @@ The architect must remember through repo-local artifacts:
 
 - `sandbox/codex-dr/AGENTS.md`
 - `sandbox/codex-dr/README.md`
+- `sandbox/codex-dr/docs/BOOTSTRAP_DOCTRINE.md`
 - `sandbox/codex-dr/docs/ARCHITECT_HANDOFF.md`
 - `docs/exec-plans/active/codex_dr_sandbox_architect_handoff.md`
 - this design memo
@@ -61,7 +67,20 @@ Chat is not an authority surface.
 
 ## Required First Move
 
-Perform a Benchmark Acquisition Audit.
+Complete the Bootstrap Autonomy Gate in
+`sandbox/codex-dr/docs/BOOTSTRAP_DOCTRINE.md`.
+
+The gate requires:
+
+- centre-lock receipt
+- root-gravity firewall
+- provider-off run-bundle skeleton
+- fake planner, branch, reviewer, re-entry, report, compaction, claim ledger,
+  benchmark-score placeholder, and allowed-claims flow
+- validators that fail on missing custody or missing re-entry
+- token manifest template for later provider-backed runs
+
+After that, perform a Benchmark Acquisition Audit.
 
 The audit must cover:
 
@@ -77,6 +96,9 @@ The audit must cover:
 - gaps between public benchmark material and any Grep/Parcha private setup
 - claims permitted after acquisition
 - claims blocked until external evidence exists
+
+The audit calibrates the target. It does not authorize benchmark execution by
+itself.
 
 ## Full Sandbox Target
 
@@ -100,6 +122,9 @@ The sandbox architect owns the full system attempt:
 
 Smaller slices may reduce risk during implementation. They do not redefine the
 finish line.
+
+The first slice must be local and provider-off. Paid or model-backed runs begin
+only after the bootstrap validator and token manifest rules exist.
 
 ## Service Runtime Bridge
 

@@ -24,7 +24,8 @@ using a cleanroom repo that is optimized for future coding-agent legibility.
 
 For the Codex-based deep-research sandbox lane, launch future architect agents
 from `sandbox/codex-dr/` when possible. Read its local `AGENTS.md`, `README.md`,
-`docs/ARCHITECT_HANDOFF.md`, the matching design memo, and the active ExecPlan.
+`docs/BOOTSTRAP_DOCTRINE.md`, `docs/ARCHITECT_HANDOFF.md`, the matching design
+memo, and the active ExecPlan.
 This is the benchmark-facing Grep-parity proof lane for the research engine;
 product service runtime work needs a separate bridge.
 

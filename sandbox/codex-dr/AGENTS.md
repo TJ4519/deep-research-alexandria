@@ -16,14 +16,15 @@ separate service-runtime design.
 ## Start Here
 
 1. `README.md`
-2. `docs/ARCHITECT_HANDOFF.md`
-3. `../../ALEXANDRIA_CHARTER.md`
-4. `../../PLAN_TO_CREATE_ALEXANDRIA.md`
-5. `../../docs/design-docs/codex_dr_sandbox_architect_handoff_2026_04_22.md`
-6. `../../docs/design-docs/reimagined_alexandria_authority_ledger_2026_04_21.md`
-7. `../../docs/references/grep_building_grep_deep_research_2026_03_16.md`
-8. `../../docs/references/claude_in_a_box_grep_agents_sdk_2025_12_11.md`
-9. `../../docs/exec-plans/active/codex_dr_sandbox_architect_handoff.md`
+2. `docs/BOOTSTRAP_DOCTRINE.md`
+3. `docs/ARCHITECT_HANDOFF.md`
+4. `../../ALEXANDRIA_CHARTER.md`
+5. `../../PLAN_TO_CREATE_ALEXANDRIA.md`
+6. `../../docs/design-docs/codex_dr_sandbox_architect_handoff_2026_04_22.md`
+7. `../../docs/design-docs/reimagined_alexandria_authority_ledger_2026_04_21.md`
+8. `../../docs/references/grep_building_grep_deep_research_2026_03_16.md`
+9. `../../docs/references/claude_in_a_box_grep_agents_sdk_2025_12_11.md`
+10. `../../docs/exec-plans/active/codex_dr_sandbox_architect_handoff.md`
 
 ## Working Invariants
 
@@ -40,6 +41,9 @@ separate service-runtime design.
 - Keep terminal-agent I/O observable through wrapper scripts, event mirrors, and
   content-addressed artefact manifests.
 - Design for a CLI control surface named `alexandria-dr`.
+- Complete the bootstrap autonomy gate before provider-backed runs.
+- Treat benchmark acquisition as target calibration until the provider-off
+  bootstrap validator passes.
 
 ## Non-Negotiable Target
 
@@ -51,9 +55,49 @@ research, scoped agents with subagent rights where the harness supports them,
 evidence return, synthesis, QA backpressure, reviewer-driven re-entry, report
 creation, benchmark scoring, event logs, and custody receipts.
 
-## Required First Move
+## Bootstrap Autonomy Gate
 
-Perform the Benchmark Acquisition Audit before implementation design hardens.
+Before implementation autonomy, complete the gate in
+`docs/BOOTSTRAP_DOCTRINE.md`.
+
+The first executable lane is provider-off:
+
+- centre-lock receipt
+- run-bundle skeleton
+- local fixture case
+- fake planner
+- fake branch return
+- fake reviewer finding
+- re-entry compiler fixture
+- claim ledger
+- compaction receipt fixture
+- allowed-claims output
+- validator that fails on missing custody or missing re-entry
+
+No paid model call, benchmark execution, or terminal-agent research run is
+valid until this lane is specified and the validator plan exists.
+
+## Required Skill Gates
+
+- Use `center-of-gravity-recovery` before reading broad root implementation or
+  Program 90 surfaces.
+- Use `teleological-pre-inference` before changing scope, delegation, or
+  autonomy.
+- Use `teleology-preserving-planning` before writing or revising parity,
+  harness, or bootstrap contracts.
+- Use `evidence-first-backpressure` before benchmark, provider, SDK, or parity
+  claims.
+- Use `spec-interface-auditor` before implementation begins from any contract.
+- Use `bead-compiler` only after the governing surface and proof gates are
+  stable.
+
+## Required First Moves
+
+1. Complete the Bootstrap Autonomy Gate before implementation design hardens.
+2. Perform the Benchmark Acquisition Audit before benchmark claims harden.
+
+The audit calibrates the target. It does not authorize benchmark execution by
+itself.
 
 The audit identifies which Grep-cited benchmark families can be acquired and
 run locally, what licenses or data restrictions apply, how cases are selected,
@@ -70,6 +114,8 @@ This workspace may own:
 - terminal-agent wrapper contracts
 - run-bundle schemas
 - local CLI design
+- provider-off fixture cases
+- bootstrap validators
 - proof-run plans
 
 This workspace may read root docs and app code. It must not change root
@@ -83,6 +129,8 @@ folder and know:
 
 - what the sandbox is for
 - what full parity means as an attempted target
+- what the provider-off bootstrap lane must prove first
+- what token-burn firewall blocks provider-backed runs
 - which benchmark work starts first
 - which files hold authority
 - how root `AGENTS.md` interacts with this local `AGENTS.md`
