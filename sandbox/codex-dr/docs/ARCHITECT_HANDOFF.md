@@ -35,6 +35,12 @@ planner research, task graphing, scoped branch agents, recursive evidence work,
 synthesis, reconciliation, reviewer-driven re-entry, report writing, and
 benchmark-facing evaluation.
 
+The Principal's noun for this engine is **DR mesh**. Bohr must treat
+`harness-specs/dr_mesh_parity_charter.md` as the compact parity charter for the
+build. That charter parses the three Principal-provided Grep topology figures
+into the loop, task graph, file-return economy, and invalid success conditions
+that the sandbox must implement.
+
 Filesystem working memory, event logs, compaction manifests, content-addressed
 artefacts, and claim ledgers serve that engine by making runs inspectable,
 replayable, and promotable into a later service runtime.

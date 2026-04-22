@@ -19,6 +19,7 @@ product service readiness.
 - `sandbox/codex-dr/AGENTS.md`
 - `sandbox/codex-dr/docs/BOOTSTRAP_DOCTRINE.md`
 - `sandbox/codex-dr/docs/ARCHITECT_HANDOFF.md`
+- `sandbox/codex-dr/harness-specs/dr_mesh_parity_charter.md`
 - `sandbox/codex-dr/benchmark-manifests/benchmark_acquisition_audit.md`
 - `../../PLAN_TO_CREATE_ALEXANDRIA.md`
 - `../../docs/exec-plans/active/codex_dr_sandbox_architect_handoff.md`
@@ -44,6 +45,10 @@ Settled basis:
   parity.
 
 ## Parity Definition
+
+The Principal's noun for the system under validation is **DR mesh**. The DR
+mesh is the Codex CLI instantiation of the Grep-style recursive deep-research
+topology described in `dr_mesh_parity_charter.md`.
 
 Codex-DR parity has two layers:
 

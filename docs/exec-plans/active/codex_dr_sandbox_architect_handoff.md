@@ -13,6 +13,7 @@ Constraining canon refs:
 - `sandbox/codex-dr/AGENTS.md`
 - `sandbox/codex-dr/docs/BOOTSTRAP_DOCTRINE.md`
 - `sandbox/codex-dr/docs/ARCHITECT_HANDOFF.md`
+- `sandbox/codex-dr/harness-specs/dr_mesh_parity_charter.md`
 - `docs/references/grep_building_grep_deep_research_2026_03_16.md`
 - `docs/references/claude_in_a_box_grep_agents_sdk_2025_12_11.md`
 Workspace: `sandbox/codex-dr/`
@@ -25,12 +26,20 @@ recursive deep-research system with benchmark pressure, QA backpressure, and
 Alexandria custody. That architect needs a durable footing before delegation or
 implementation begins.
 
+The Principal's noun for the target system is DR mesh. The DR mesh is the
+Codex CLI validation lane for the Grep topology: planner, task graph, scoped
+branch agents, pointer-first file returns, inner-loop adequacy pressure,
+synthesis, reviewer-driven outer loop, re-entry, writer, benchmark/scorer path,
+and custody.
+
 This ExecPlan defines the workspace, first empirical audit, architecture
 sequence, proof gates, and boundaries.
 
 ## Scope
 
 - Establish `sandbox/codex-dr/` as the first architect workspace.
+- Treat `sandbox/codex-dr/harness-specs/dr_mesh_parity_charter.md` as the
+  compact parity charter for Bohr.
 - Install the bootstrap autonomy gate before benchmark execution or unattended
   live runs.
 - Keep root repo authority visible while avoiding Program 90 gravity.
@@ -208,6 +217,8 @@ scope includes Program 90 integration.
 - 2026-04-22: Corrected token-manifest leakage. The Codex-DR sandbox now treats
   live run-control receipts as the launch gate for Codex CLI and terminal-agent
   runs. Fixed token ceilings are operational estimates, not architecture.
+- 2026-04-22: Added the DR Mesh Parity Charter so Bohr has a figure-backed
+  build target from the Principal's Grep topology images.
 
 ## Validation
 

@@ -5,6 +5,7 @@ Owner: Codex-DR sandbox architect-builder
 Bead: `alexandriacleanroom-91.1.5`
 Canon refs:
 - `PLAN_TO_CREATE_ALEXANDRIA.md`
+- `sandbox/codex-dr/harness-specs/dr_mesh_parity_charter.md`
 - `sandbox/codex-dr/harness-specs/grep_parity_contract.md`
 - `sandbox/codex-dr/harness-specs/harness_contracts.md`
 Constraining canon refs:
@@ -23,6 +24,12 @@ Last updated: 2026-04-22
 
 The first full proof run must exercise the Grep-parity research loop rather
 than only proving that provider-off fixtures can write files.
+
+The loop is the DR mesh named by the Principal: planner, task graph, scoped
+branch agents, pointer-first file returns, inner-loop adequacy pressure,
+synthesis, reviewer-driven outer loop, re-entry, writer, benchmark/scorer path,
+and custody. `sandbox/codex-dr/harness-specs/dr_mesh_parity_charter.md` is the
+compact parity charter for this proof run.
 
 The provider-off bootstrap is now implemented. It is containment and evidence
 infrastructure, not the system telos.
@@ -179,6 +186,8 @@ generated proof artifacts, env files, or raw/large data.
   uses run-control receipts, foreground supervision or monitoring, wall-clock
   bounds, kill paths, transcript capture, output boundaries, and claim
   boundaries. Fixed token ceilings are optional operational estimates.
+- 2026-04-22: Added DR mesh parity charter as the figure-backed target for the
+  first full proof run.
 
 ## Decision Log
 

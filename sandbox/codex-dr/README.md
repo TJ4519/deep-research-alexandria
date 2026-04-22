@@ -8,6 +8,8 @@ agent system using terminal-agent harnessing while preserving Alexandria's
 custody discipline: event logs, immutable artefacts, compaction receipts,
 claim ledgers, visible QA backpressure, and benchmark-facing proof.
 
+The Principal calls this Grep-style system the **DR mesh**.
+
 ## Why It Lives Here
 
 The first workspace is inside the cleanroom repo because the architect needs
@@ -34,6 +36,11 @@ The sandbox must attempt Grep-system-and-performance parity. That means:
 - single-voice report writing from reconciled research state
 - benchmark scoring against Grep-cited benchmark families where obtainable
 - event and artefact custody for every material orchestration step
+
+The compact authority file for this target is
+`harness-specs/dr_mesh_parity_charter.md`. That file parses the three
+Principal-provided Grep topology figures into build requirements for Bohr and
+future builder agents.
 
 ## Current Directory Contract
 

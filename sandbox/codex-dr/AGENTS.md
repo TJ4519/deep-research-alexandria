@@ -18,13 +18,15 @@ separate service-runtime design.
 1. `README.md`
 2. `docs/BOOTSTRAP_DOCTRINE.md`
 3. `docs/ARCHITECT_HANDOFF.md`
-4. `../../ALEXANDRIA_CHARTER.md`
-5. `../../PLAN_TO_CREATE_ALEXANDRIA.md`
-6. `../../docs/design-docs/codex_dr_sandbox_architect_handoff_2026_04_22.md`
-7. `../../docs/design-docs/reimagined_alexandria_authority_ledger_2026_04_21.md`
-8. `../../docs/references/grep_building_grep_deep_research_2026_03_16.md`
-9. `../../docs/references/claude_in_a_box_grep_agents_sdk_2025_12_11.md`
-10. `../../docs/exec-plans/active/codex_dr_sandbox_architect_handoff.md`
+4. `harness-specs/dr_mesh_parity_charter.md`
+5. `harness-specs/grep_parity_contract.md`
+6. `../../docs/references/grep_building_grep_deep_research_2026_03_16.md`
+7. `../../ALEXANDRIA_CHARTER.md`
+8. `../../PLAN_TO_CREATE_ALEXANDRIA.md`
+9. `../../docs/design-docs/codex_dr_sandbox_architect_handoff_2026_04_22.md`
+10. `../../docs/design-docs/reimagined_alexandria_authority_ledger_2026_04_21.md`
+11. `../../docs/references/claude_in_a_box_grep_agents_sdk_2025_12_11.md`
+12. `../../docs/exec-plans/active/codex_dr_sandbox_architect_handoff.md`
 
 ## Working Invariants
 
@@ -53,6 +55,11 @@ separate service-runtime design.
 ## Non-Negotiable Target
 
 The target is Grep-system-and-performance parity pressure, not a small demo.
+
+In this sandbox, the Principal's noun for the Grep-style system is **DR mesh**.
+The DR mesh is the recursive deep-research agent system shown in the
+Principal-provided Grep topology figures and specified in
+`harness-specs/dr_mesh_parity_charter.md`.
 
 A vertical slice may be used as a stepping stone. It is not the finish line.
 The first proof run must exercise planner ratification, recursive branch
