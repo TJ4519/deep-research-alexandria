@@ -28,6 +28,10 @@ separate service-runtime design.
 
 ## Working Invariants
 
+- Current halt: do not launch `codex exec`, `codex-exec`,
+  `/usr/bin/script ... codex exec`, or any terminal-agent provider-backed smoke
+  run from this sandbox until the Principal explicitly reopens a named run.
+  Read `docs/codex_exec_halt_2026_04_22.md` first.
 - Use `uv` and root repo commands when Python tooling is required.
 - Keep generated run outputs under `runs/`, `.agent-workspaces/`, or `tmp/`.
 - Do not store secrets, provider transcripts with private data, customer data,
