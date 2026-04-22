@@ -2,7 +2,8 @@
 
 Status: active
 Owner: Principal / sandbox architect
-Bead: `alexandriacleanroom-91.1.1` through `alexandriacleanroom-91.1.6`
+Bead: `alexandriacleanroom-91.1.1` through `alexandriacleanroom-91.1.6`,
+including bootstrap implementation bead `alexandriacleanroom-91.1.4.1`
 Canon refs:
 - `ALEXANDRIA_CHARTER.md`
 - `PLAN_TO_CREATE_ALEXANDRIA.md`
@@ -155,16 +156,21 @@ scope includes Program 90 integration.
    receipt, terminal-agent box config, branch return files, review files,
    re-entry compiler, claim ledger, and benchmark score format.
 
-6. Implementation Wave.
+6. Provider-Off Bootstrap Implementation.
+   Implement the local fixture run and validators required by
+   `docs/BOOTSTRAP_DOCTRINE.md`. This is the first build step and blocks any
+   provider-backed run.
+
+7. Implementation Wave.
    Build the CLI and harness in the narrowest code location that preserves root
    repo hygiene. Implementation may use internal stepping stones, while the
    acceptance target remains the full run.
 
-7. First Full Proof Run.
+8. First Full Proof Run.
    Execute one complete run with planner, branches, synthesis, review, re-entry,
    final report, benchmark scoring, and allowed-claims output.
 
-8. Service Runtime Bridge.
+9. Service Runtime Bridge.
    Classify contracts as promotable, hardening-required, sandbox-only, or
    service-runtime replacement.
 
@@ -174,6 +180,14 @@ scope includes Program 90 integration.
   design memo, this ExecPlan, and the bead chain for the sandbox lane.
 - 2026-04-22: Added bootstrap doctrine after retrospective review found the
   handoff was still too conceptual for autonomous build safety.
+- 2026-04-22: Added the Codex-DR benchmark acquisition audit for
+  `alexandriacleanroom-91.1.2`, plus a lightweight token manifest template.
+  The audit keeps DRACO, DeepSearchQA, DeepResearch Bench, and Parcha-published
+  benchmark material in target-calibration posture only; benchmark execution
+  remains blocked by provider-off bootstrap implementation
+  `alexandriacleanroom-91.1.4.1` and run-specific token manifests.
+- 2026-04-22: Added `alexandriacleanroom-91.1.4.1` so provider-off bootstrap
+  implementation blocks the first full proof-run bead.
 
 ## Decision Log
 

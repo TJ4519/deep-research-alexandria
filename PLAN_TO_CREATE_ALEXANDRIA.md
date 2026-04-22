@@ -363,8 +363,9 @@ Initial deliverables, order-only:
 4. Sandbox harness contracts for CLI, run bundle, event mirror, CAS manifest,
    compaction receipt, terminal-agent box config, branch return, review,
    re-entry, claim ledger, and benchmark score.
-5. First full proof run.
-6. Service-runtime bridge memo.
+5. Provider-off bootstrap implementation with local fixture run and validators.
+6. First full proof run.
+7. Service-runtime bridge memo.
 
 ## 5. Method Stack
 
@@ -782,6 +783,7 @@ Exit gate:
 - [ ] Produce the benchmark acquisition audit.
 - [ ] Produce the Grep-system-and-performance parity contract.
 - [ ] Produce sandbox harness contracts.
+- [ ] Implement provider-off bootstrap harness and validators.
 - [ ] Implement the first full proof run.
 - [ ] Produce the service-runtime bridge memo.
 
