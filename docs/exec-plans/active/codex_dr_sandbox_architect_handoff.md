@@ -188,6 +188,11 @@ scope includes Program 90 integration.
   `alexandriacleanroom-91.1.4.1` and run-specific token manifests.
 - 2026-04-22: Added `alexandriacleanroom-91.1.4.1` so provider-off bootstrap
   implementation blocks the first full proof-run bead.
+- 2026-04-22: Completed the parity contract and harness contracts, then
+  implemented the provider-off bootstrap harness for
+  `alexandriacleanroom-91.1.4.1` with deterministic local fixture generation,
+  semantic validators, and negative tests for missing custody, re-entry,
+  compaction, benchmark placeholder, and widened-claim failures.
 
 ## Decision Log
 
