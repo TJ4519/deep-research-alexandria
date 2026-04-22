@@ -11,7 +11,7 @@ The entity that must change is the Codex-DR first proof-run runway.
 The completed state is a runway that advances toward a real boxed Codex
 recursive deep-research loop against benchmark-facing cases. The next concrete
 target is a tiny DRACO smoke path with boxed runner capability, case manifest,
-run-specific token manifest, recursive research execution, transcript/custody
+run-control receipt, recursive research execution, transcript/custody
 capture, and benchmark scoring bridge.
 
 Provider-off files and validators are containment/evidence infrastructure only.
@@ -38,8 +38,9 @@ smoke run or a precise, repo-local proof of the external blocker preventing it.
 
 ## Kernel Invariants
 
-- No provider/model-backed run starts without a run-specific token manifest,
-  budget, stop rules, transcript policy, and allowed/non-claim boundaries.
+- No unattended provider/model-backed run starts without a run-control receipt,
+  operational bounds, stop rules, transcript policy, kill path, and
+  allowed/non-claim boundaries.
 - No benchmark execution starts before dataset access, case manifest, scorer
   policy, and custody path are explicit.
 - No raw private, paid, or large benchmark corpus is committed.
@@ -73,7 +74,7 @@ The next center should be:
 
 1. boxed Codex runner capability probe;
 2. DRACO tiny smoke case manifest;
-3. run-specific token manifest;
+3. run-control receipt;
 4. boxed recursive research smoke run;
 5. benchmark scoring bridge.
 
@@ -83,8 +84,8 @@ infrastructure rather than the thing being optimized.
 ## Binding Constraints
 
 - Do not silently degrade the smoke run into fake outputs.
-- Do not spend provider/model tokens without token manifest, budget, and stop
-  rules.
+- Do not launch unattended provider/model work without run-control receipt,
+  operational bounds, stop rules, and kill path.
 - Do not run benchmark scoring without scorer/judge path and claim policy.
 - Do not commit raw DRACO data; use pointers and tiny manifests.
 - If Codex terminal-agent spawning is unavailable, prove the unavailability
@@ -118,7 +119,7 @@ Provider-off work is allowed only when it directly enables that run.
 Correct the lane immediately:
 
 1. Patch the first-full-proof-run ExecPlan around boxed Codex runner probe,
-   DRACO tiny smoke case manifest, run-specific token manifest, boxed recursive
+   DRACO tiny smoke case manifest, run-control receipt, boxed recursive
    smoke run, and benchmark scoring bridge.
 2. Create standalone dependency-linked Beads for those work packets.
 3. Execute the boxed Codex runner capability probe using harmless local

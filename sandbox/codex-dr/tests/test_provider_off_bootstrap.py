@@ -46,23 +46,23 @@ def test_provider_off_bootstrap_run_validates(tmp_path: Path):
 @pytest.mark.parametrize(
     "args",
     [
-        ["run-planner", "local_fixture_001", "--token-manifest", "missing.yaml"],
+        ["run-planner", "local_fixture_001", "--run-control", "missing.yaml"],
         [
             "run-branch",
             "local_fixture_001",
             "branch_a",
-            "--token-manifest",
+            "--run-control",
             "missing.yaml",
         ],
-        ["run-review", "local_fixture_001", "--token-manifest", "missing.yaml"],
+        ["run-review", "local_fixture_001", "--run-control", "missing.yaml"],
         [
             "run-reentry",
             "local_fixture_001",
             "review_001",
-            "--token-manifest",
+            "--run-control",
             "missing.yaml",
         ],
-        ["score", "local_fixture_001", "--token-manifest", "missing.yaml"],
+        ["score", "local_fixture_001", "--run-control", "missing.yaml"],
     ],
 )
 def test_future_provider_backed_commands_fail_closed(tmp_path: Path, args: list[str]):

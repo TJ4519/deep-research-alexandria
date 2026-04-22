@@ -31,8 +31,8 @@ sequence, proof gates, and boundaries.
 ## Scope
 
 - Establish `sandbox/codex-dr/` as the first architect workspace.
-- Install the bootstrap autonomy gate before benchmark execution or
-  provider-backed runs.
+- Install the bootstrap autonomy gate before benchmark execution or unattended
+  live runs.
 - Keep root repo authority visible while avoiding Program 90 gravity.
 - Perform benchmark acquisition audit before parity claims harden.
 - Specify the full sandbox contracts before implementation expands.
@@ -46,8 +46,8 @@ sequence, proof gates, and boundaries.
 - Do not store secrets, private benchmark data, customer data, or raw paid
   corpora in git.
 - Do not mutate root runtime code without a bead that explicitly widens scope.
-- Do not run model-backed terminal agents before the provider-off bootstrap
-  validator and token manifest rules exist.
+- Do not run unattended model-backed terminal agents before the provider-off
+  bootstrap validator and run-control receipt rules exist.
 
 ## Preserved Invariants
 
@@ -61,7 +61,7 @@ sequence, proof gates, and boundaries.
   shape, and reproducible scores.
 - Product-runtime claims require a separate service-runtime design lane.
 - Benchmark acquisition calibrates the target. Benchmark execution waits for
-  bootstrap validation and token manifest rules.
+  bootstrap validation and run-control receipt rules.
 
 ## Pre-Mortem
 
@@ -85,7 +85,7 @@ Other failure modes:
 Red:
 
 - provider-backed execution starts before provider-off bootstrap passes
-- a model-backed run lacks a token manifest
+- a live run lacks a run-control receipt
 - benchmark execution starts before the bootstrap validator passes
 - a future architect cannot locate the sandbox workspace from root docs
 - a benchmark claim appears before acquisition audit
@@ -97,7 +97,7 @@ Red:
 Green:
 
 - `docs/BOOTSTRAP_DOCTRINE.md` defines the first provider-off boot sequence
-- token manifest rules block unbounded provider-backed runs
+- run-control receipt rules block hidden or unbounded live runs
 - root and sandbox docs route agents to `sandbox/codex-dr/`
 - benchmark acquisition audit exists and names permitted and blocked claims
 - contracts exist for CLI, run bundles, terminal-agent boxes, event mirroring,
@@ -138,8 +138,8 @@ scope includes Program 90 integration.
    ExecPlan.
 
 2. Bootstrap Autonomy Gate.
-   Keep the provider-off first boot sequence, root-gravity firewall, token-burn
-   firewall, skill gates, and stop rules explicit before implementation
+   Keep the provider-off first boot sequence, root-gravity firewall, live-run
+   control, skill gates, and stop rules explicit before implementation
    autonomy.
 
 3. Benchmark Acquisition Audit.
@@ -181,11 +181,12 @@ scope includes Program 90 integration.
 - 2026-04-22: Added bootstrap doctrine after retrospective review found the
   handoff was still too conceptual for autonomous build safety.
 - 2026-04-22: Added the Codex-DR benchmark acquisition audit for
-  `alexandriacleanroom-91.1.2`, plus a lightweight token manifest template.
+  `alexandriacleanroom-91.1.2`, plus a lightweight token manifest template that
+  has since been superseded by the live run-control receipt template.
   The audit keeps DRACO, DeepSearchQA, DeepResearch Bench, and Parcha-published
   benchmark material in target-calibration posture only; benchmark execution
   remains blocked by provider-off bootstrap implementation
-  `alexandriacleanroom-91.1.4.1` and run-specific token manifests.
+  `alexandriacleanroom-91.1.4.1` and run-control receipts.
 - 2026-04-22: Added `alexandriacleanroom-91.1.4.1` so provider-off bootstrap
   implementation blocks the first full proof-run bead.
 - 2026-04-22: Completed the parity contract and harness contracts, then
@@ -204,6 +205,9 @@ scope includes Program 90 integration.
   calibration move because parity claims depend on public benchmark reality.
 - 2026-04-22: Provider-off bootstrap is the first execution move because the
   sandbox must observe itself before it spends model tokens or runs benchmarks.
+- 2026-04-22: Corrected token-manifest leakage. The Codex-DR sandbox now treats
+  live run-control receipts as the launch gate for Codex CLI and terminal-agent
+  runs. Fixed token ceilings are operational estimates, not architecture.
 
 ## Validation
 

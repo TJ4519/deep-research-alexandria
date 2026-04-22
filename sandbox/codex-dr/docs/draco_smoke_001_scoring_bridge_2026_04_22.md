@@ -29,13 +29,13 @@ Missing scoring requirements:
 - event and artefact custody for scorer execution;
 - allowed-claims update after scoring.
 
-The token manifest also stated:
+The historical pre-correction token manifest also stated:
 
 ```yaml
 scorer_execution_allowed: false_until_scoring_bridge
 ```
 
-## Required Scorer Manifest Fields
+## Required Scorer And Run-Control Fields
 
 A future DRACO scoring run must provide at least:
 
@@ -52,6 +52,11 @@ judge_or_scorer:
   version: evidence-pending
   prompt_ref: evidence-pending
   parameters: {}
+run_control:
+  receipt_ref: sandbox/codex-dr/harness-specs/live_run_control_receipt_template.md
+  foreground_supervision_required: true
+  wall_clock_bound_required: true
+  kill_path_required: true
 retry_policy:
   max_attempts: 1
 variance_policy: record_unavailable_for_single_smoke

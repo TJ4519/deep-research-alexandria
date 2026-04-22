@@ -1,5 +1,7 @@
 manifest_id: token_manifest_draco_smoke_001
 schema_version: codex-dr.token_manifest.v1
+schema_status: superseded_lineage
+superseded_by: sandbox/codex-dr/harness-specs/live_run_control_receipt_template.md
 created_at: "2026-04-22T00:00:00Z"
 bead_id: alexandriacleanroom-91.1.5.4
 run_id: draco_smoke_001
@@ -12,13 +14,13 @@ approval:
   approval_basis: >
     Principal trajectory correction on 2026-04-22 authorized continuing toward
     a capped benchmark-facing smoke run unless a real external blocker appears.
-  approved_for_execution: true
+  approved_for_execution: false
   prepared_by: Codex-DR sandbox architect-builder
   reviewed_by: Principal/main coordinator pending review
   approval_note: >
-    This manifest authorizes only one tiny smoke run. It does not authorize full
-    benchmark execution, leaderboard submission, broad score claims, or repeated
-    provider-backed attempts.
+    Historical manifest for a completed smoke run. It is not valid for future
+    execution. Future live Codex CLI runs use a run-control receipt, not this
+    token manifest.
 
 runner:
   kind: codex_exec_box

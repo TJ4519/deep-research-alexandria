@@ -81,9 +81,9 @@ The run does not prove:
 - systematic AER/QJE/JPE labor-health adoption rates;
 - methodological dominance of any estimator in that requested corpus.
 
-## Token-Burn Finding
+## Live-Run Control Finding
 
-The run used more tokens than the prompt-level budget target.
+The run used more tokens than the historical prompt-level budget target.
 
 Observed terminal output reported:
 
@@ -92,18 +92,23 @@ tokens used
 270,716
 ```
 
-The token manifest target was `max_total_tokens: 42000`. The Principal waived
-mechanical budget-cap enforcement for this one smoke run, because the current
-Codex CLI did not expose a token or cost cap. This smoke therefore proves that
-prompt-level budget limits are not sufficient control for future provider-backed
-benchmark runs.
+The token manifest target was `max_total_tokens: 42000`. That target is now
+classified as runtime-control leakage from earlier Alexandria work, not as a
+Codex-DR sandbox architecture requirement.
 
-Future provider-backed benchmark runs require one of:
+This smoke proves a narrower operational point: live Codex CLI runs need launch
+discipline that prevents hidden background work, uncontrolled retries, unclear
+output boundaries, and unobserved transcripts.
 
-- a mechanical cap;
-- a smaller prompt and context envelope with external metering;
-- a harness runner that can terminate before runaway usage;
-- an explicit fresh Principal waiver for a specific run.
+Future provider-backed benchmark runs require:
+
+- Principal authorization for a named run or run class;
+- run-control receipt;
+- foreground supervision or external monitoring;
+- wall-clock bound and kill path;
+- transcript capture and output boundary;
+- no automatic retries unless separately approved;
+- data and claim boundaries.
 
 ## Completion Boundary
 

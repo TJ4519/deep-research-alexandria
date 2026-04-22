@@ -14,7 +14,7 @@ provider/model tokens.
 Benchmark acquisition does not authorize benchmark execution. Execution remains
 blocked until the provider-off bootstrap implementation bead
 `alexandriacleanroom-91.1.4.1` passes, the harness contracts exist, and a
-run-specific token manifest has been approved.
+run-control receipt has been approved.
 
 ## Governing Posture
 
@@ -79,7 +79,7 @@ Downstream obligations created:
   classes.
 - `alexandriacleanroom-91.1.4.1` provider-off bootstrap implementation remains
   the execution blocker.
-- Any future benchmark execution bead must produce a token manifest, case
+- Any future benchmark execution bead must produce a run-control receipt, case
   manifest, scorer manifest, run bundle, and allowed-claims output.
 
 No round-trip execution interface is introduced here. This is an acquisition
@@ -153,7 +153,7 @@ contract, not an implementation contract.
 | Access constraints | Public repo and HF dataset are reachable. Official submission requires email coordination and provider key material. Local FACT evaluation also requires web scraping/Jina-style access according to public repo prerequisites. |
 | Case count | 100 PhD-level tasks, 50 Chinese and 50 English, across 22 fields. |
 | Evaluator shape | RACE evaluates long-form reports with adaptive criteria and reference-based scoring across comprehensiveness, insight/depth, instruction following, and readability. FACT evaluates factual/citation support through statement-source extraction and verification. |
-| Scoring/rubric notes | RACE uses Gemini-2.5-Pro in the public repo's current setup. FACT uses scraping plus LLM judgment. Both are provider-backed and therefore blocked until token and provider-off gates pass. |
+| Scoring/rubric notes | RACE uses Gemini-2.5-Pro in the public repo's current setup. FACT uses scraping plus LLM judgment. Both are provider-backed and therefore blocked until provider-off and run-control gates pass. |
 | Local reproduction notes | Acquisition can cite repo/HF/paper. Execution would require generated articles in the expected raw-data format, official scripts, provider keys, web-scrape key/config where used, scorer manifest, repeated-run policy, and custody bundle. |
 | Public/private gap | Public leaderboard entries and Parcha/Grep published results can be cited as external claims only. Exact Grep report-generation setup, best-of-N policy, rewrite strategy, and verification run materials are not established as Alexandria proof. |
 | Claim class | Permitted: DeepResearch Bench has public Apache-2.0 code/data surfaces and a defined 100-task RACE/FACT evaluation shape. Blocked: any Alexandria RACE/FACT score or leaderboard claim. Evidence-pending: exact official leaderboard reproducibility for Parcha/Grep and judge variance under Alexandria's future runner. |
@@ -186,9 +186,9 @@ exist:
    permitted local storage mode, and exact selected case IDs.
 4. A scorer manifest records judge model, provider, prompt, parameters, retry
    rules, scorer code version, and expected output schema.
-5. A token manifest records budget, stop conditions, input sources, data
-   policy, transcript capture path, compaction policy, allowed claims, and
-   non-claims.
+5. A run-control receipt records operational bounds, stop conditions, input
+   sources, data policy, transcript capture path, compaction policy, allowed
+   claims, non-claims, supervision or monitoring, and kill path.
 6. Raw private, paid, or large public benchmark payloads remain outside git,
    with committed files holding pointers, checksums, and policy notes only.
 
@@ -218,7 +218,7 @@ exist:
 - The public Parcha/Grep scores are independently verified by this repo.
 - The sandbox is product-runtime ready.
 - Provider-backed execution is safe before `alexandriacleanroom-91.1.4.1` and
-  token-manifest gates pass.
+  run-control gates pass.
 
 ## Evidence-Pending Claims
 

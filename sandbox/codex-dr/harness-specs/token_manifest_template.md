@@ -1,16 +1,36 @@
 # Codex-DR Token Manifest Template
 
-Status: lightweight contract template
+Status: superseded lineage template
 Applies to: future provider-backed, model-backed, benchmark, SDK, or
 terminal-agent runs under `sandbox/codex-dr/`
 
-## Rule
+## Supersession Note
 
-Any provider-backed run without a completed token manifest is invalid.
+This template is retained as lineage from the pre-correction interpretation.
 
-This template does not authorize execution. It records the minimum fields that
-must exist before a future run can pass the token-burn firewall in
-`sandbox/codex-dr/docs/BOOTSTRAP_DOCTRINE.md`.
+For the Codex-DR sandbox, new live Codex CLI or terminal-agent runs use:
+
+```text
+sandbox/codex-dr/harness-specs/live_run_control_receipt_template.md
+```
+
+The corrected rule is recorded in:
+
+```text
+sandbox/codex-dr/docs/codex_mesh_launch_control_2026_04_22.md
+```
+
+The `42,000` token target used for `draco_smoke_001` is not an architectural
+invariant. Fixed token ceilings are optional operational estimates, not the
+center of the Codex-mesh build.
+
+## Historical Rule
+
+Under the superseded interpretation, any provider-backed run without a
+completed token manifest was invalid.
+
+This template does not authorize execution. New live runs should use a
+run-control receipt instead.
 
 ## Manifest
 

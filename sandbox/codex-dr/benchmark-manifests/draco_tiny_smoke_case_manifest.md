@@ -91,7 +91,7 @@ This manifest does not authorize:
 - Grep parity or leaderboard claims.
 
 It only authorizes future work to use the selected source pointer when a
-run-specific token manifest and boxed-run custody path exist.
+run-control receipt and boxed-run custody path exist.
 
 ## Red/Green Result
 

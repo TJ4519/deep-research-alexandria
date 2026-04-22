@@ -17,7 +17,7 @@ formats, command semantics, validation hooks, or failure behavior.
 - `sandbox/codex-dr/docs/BOOTSTRAP_DOCTRINE.md`
 - `sandbox/codex-dr/docs/ARCHITECT_HANDOFF.md`
 - `sandbox/codex-dr/harness-specs/grep_parity_contract.md`
-- `sandbox/codex-dr/harness-specs/token_manifest_template.md`
+- `sandbox/codex-dr/harness-specs/live_run_control_receipt_template.md`
 - `sandbox/codex-dr/benchmark-manifests/benchmark_acquisition_audit.md`
 - `../../docs/exec-plans/active/codex_dr_sandbox_architect_handoff.md`
 
@@ -59,14 +59,14 @@ match this contract.
 
 ### Future Provider-Backed Commands
 
-These are reserved and blocked until provider-off validation passes and a token
-manifest exists:
+These are reserved and blocked until provider-off validation passes and a
+run-control receipt exists:
 
-- `alexandria-dr run-planner <case_id> --token-manifest <path>`
-- `alexandria-dr run-branch <case_id> <branch_id> --token-manifest <path>`
-- `alexandria-dr run-review <case_id> --token-manifest <path>`
-- `alexandria-dr run-reentry <case_id> <review_id> --token-manifest <path>`
-- `alexandria-dr score <case_id> --token-manifest <path>`
+- `alexandria-dr run-planner <case_id> --run-control <path>`
+- `alexandria-dr run-branch <case_id> <branch_id> --run-control <path>`
+- `alexandria-dr run-review <case_id> --run-control <path>`
+- `alexandria-dr run-reentry <case_id> <review_id> --run-control <path>`
+- `alexandria-dr score <case_id> --run-control <path>`
 
 If invoked before gates pass, these commands must fail closed and emit no
 provider calls.
@@ -115,7 +115,7 @@ validation_report.json
 Provider-backed or benchmark runs add:
 
 ```text
-token_manifest.yaml
+run_control_receipt.yaml
 case_manifest.json
 scorer_manifest.json
 provider_metadata.json
@@ -302,7 +302,8 @@ File: `terminal_agent_boxes.json`
 Semantics:
 
 - Provider-off boxes are placeholders, not terminal-agent executions.
-- Provider-backed boxes require token manifest linkage and transcript capture.
+- Provider-backed boxes require run-control receipt linkage and transcript
+  capture.
 
 Failure modes:
 
@@ -678,7 +679,7 @@ Provider-off placeholder shape:
   "scorer_manifest": null,
   "score": null,
   "claims_enabled": false,
-  "reason": "Benchmark execution is blocked until provider-off bootstrap, case manifest, scorer manifest, and token manifest gates pass.",
+  "reason": "Benchmark execution is blocked until provider-off bootstrap, case manifest, scorer manifest, and run-control gates pass.",
   "produced_by_event": "evt_0013_benchmark_placeholder_written"
 }
 ```
@@ -781,7 +782,7 @@ Validator must check at least:
 - benchmark score is placeholder in provider-off mode
 - report claims are in claim ledger
 - allowed claims do not include blocked claims
-- generated provider-off bundle has no provider metadata, token manifest,
+- generated provider-off bundle has no provider metadata, run-control receipt,
   transcripts, or benchmark numeric score unless explicitly marked as blocked
 
 The validation report is an external report over the run bundle. It is the
@@ -810,14 +811,14 @@ Upstream interfaces satisfied:
 
 - Parity contract behaviors are mapped to concrete artifacts and validators.
 - Bootstrap doctrine command sequence is represented by scriptable commands.
-- Token manifest template remains the gate for provider-backed commands.
+- Live run-control receipt remains the gate for provider-backed commands.
 - Benchmark acquisition audit remains target calibration only.
 
 Downstream obligations created:
 
 - `alexandriacleanroom-91.1.4.1` must implement provider-off generation and
   validation against these file formats.
-- Future provider-backed beads must add token, case, scorer, provider
+- Future provider-backed beads must add run-control, case, scorer, provider
   metadata, and transcript validation without weakening provider-off rules.
 
 Round-trip contracts closed:
@@ -831,7 +832,7 @@ Round-trip contracts closed:
 Policy defaults:
 
 - All missing required artifacts fail closed.
-- Provider-backed commands are blocked before token manifest and bootstrap
+- Provider-backed commands are blocked before run-control receipt and bootstrap
   validation.
 - Benchmark scores are placeholders until explicit benchmark execution gates
   pass.
@@ -840,4 +841,4 @@ Remaining contradictions:
 
 - Exact future provider-backed terminal-agent runner remains undecided.
   Governing rule: runner choice may vary, but transcript-to-event,
-  transcript-to-CAS, token manifest, and claim-boundary semantics may not vary.
+  transcript-to-CAS, run-control, and claim-boundary semantics may not vary.

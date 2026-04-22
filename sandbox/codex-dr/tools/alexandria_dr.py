@@ -856,7 +856,7 @@ The run supports only provider-off fixture validation claims.
             "claims_enabled": False,
             "reason": (
                 "Benchmark execution is blocked until provider-off bootstrap, case "
-                "manifest, scorer manifest, and token manifest gates pass."
+                "manifest, scorer manifest, and run-control gates pass."
             ),
             "produced_by_event": "evt_0015_benchmark_placeholder_written",
         },
@@ -1169,7 +1169,7 @@ def check_allowed_claims(run_dir: Path) -> dict[str, str]:
 
 def check_provider_off_artifacts(run_dir: Path) -> dict[str, str]:
     forbidden = [
-        "token_manifest.yaml",
+        "run_control_receipt.yaml",
         "case_manifest.json",
         "scorer_manifest.json",
         "provider_metadata.json",
@@ -1227,25 +1227,25 @@ def build_parser() -> argparse.ArgumentParser:
 
     provider_backed = subparsers.add_parser("run-planner")
     provider_backed.add_argument("case_id")
-    provider_backed.add_argument("--token-manifest", required=True)
+    provider_backed.add_argument("--run-control", required=True)
 
     provider_branch = subparsers.add_parser("run-branch")
     provider_branch.add_argument("case_id")
     provider_branch.add_argument("branch_id")
-    provider_branch.add_argument("--token-manifest", required=True)
+    provider_branch.add_argument("--run-control", required=True)
 
     provider_review = subparsers.add_parser("run-review")
     provider_review.add_argument("case_id")
-    provider_review.add_argument("--token-manifest", required=True)
+    provider_review.add_argument("--run-control", required=True)
 
     provider_reentry = subparsers.add_parser("run-reentry")
     provider_reentry.add_argument("case_id")
     provider_reentry.add_argument("review_id")
-    provider_reentry.add_argument("--token-manifest", required=True)
+    provider_reentry.add_argument("--run-control", required=True)
 
     provider_score = subparsers.add_parser("score")
     provider_score.add_argument("case_id")
-    provider_score.add_argument("--token-manifest", required=True)
+    provider_score.add_argument("--run-control", required=True)
 
     return parser
 
@@ -1276,7 +1276,7 @@ def main(argv: list[str] | None = None) -> int:
             print(
                 "error: provider-backed and benchmark commands are blocked until "
                 "provider-off bootstrap validation, harness gates, and an approved "
-                "token manifest exist",
+                "run-control receipt exist",
                 file=sys.stderr,
             )
             return 2

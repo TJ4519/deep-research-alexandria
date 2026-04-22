@@ -1,14 +1,25 @@
 # Boxed Recursive Smoke Preflight
 
-Status: stopped before provider-backed execution
+Status: historical pre-correction preflight
 Date: 2026-04-22
 Bead: `alexandriacleanroom-91.1.5.4`
 Run id: `draco_smoke_001`
 
+## Corrected Interpretation
+
+This preflight records the state before the Principal's correction that the
+`42,000` token target and token-manifest gate were runtime-control leakage.
+
+The current governing rule is `docs/codex_mesh_launch_control_2026_04_22.md`.
+Future live Codex CLI runs require a run-control receipt, supervision or
+monitoring, wall-clock bound, kill path, transcript capture, output boundary,
+and claim boundary. They do not require a fixed token ceiling as an
+architectural invariant.
+
 ## Purpose
 
 Attempt the first safe preflight for the boxed Codex recursive DRACO smoke run
-after runner probe, DRACO case manifest, and run-specific token manifest were
+after runner probe, DRACO case manifest, and run-control receipt were
 created.
 
 This preflight did not start a provider/model-backed Codex run and did not
@@ -21,8 +32,8 @@ execute a benchmark.
 | Boxed runner command surface | available | `sandbox/codex-dr/docs/boxed_codex_runner_capability_probe_2026_04_22.md` records `codex exec` availability. |
 | Transcript wrapper | available | `/usr/bin/script` captured a harmless `codex --version` transcript under ignored `sandbox/codex-dr/tmp/`. |
 | DRACO tiny smoke case manifest | available | `sandbox/codex-dr/benchmark-manifests/draco_tiny_smoke_case_manifest.md`. |
-| Run-specific token manifest | available | `sandbox/codex-dr/harness-specs/draco_smoke_001_token_manifest.yaml`. |
-| Mechanical token/cost cap enforcement | blocked | `codex exec --help` exposes `--model`, `--sandbox`, `--json`, and `--output-last-message`, but no `max_tokens`, `max_cost`, or equivalent budget cap option. |
+| Historical token manifest | superseded | `sandbox/codex-dr/harness-specs/draco_smoke_001_token_manifest.yaml` is retained as lineage. |
+| Mechanical token/cost cap enforcement | no longer governing | `codex exec --help` exposes `--model`, `--sandbox`, `--json`, and `--output-last-message`, but no `max_tokens`, `max_cost`, or equivalent budget cap option. This is not a sandbox architecture blocker after correction. |
 
 ## Commands Used For This Preflight
 
@@ -42,9 +53,9 @@ Observed relevant options:
 
 No mechanical token or cost cap flag was observed.
 
-## Exact Blocker
+## Historical Blocker
 
-The token manifest has a hard stop:
+The historical token manifest had a hard stop:
 
 ```yaml
 hard_stop:
@@ -64,17 +75,13 @@ The available `codex exec` command surface does not expose a mechanical
 instruction would not be a reliable enforcement mechanism. Launching the
 boxed run now would violate the manifest's hard-stop rule.
 
-Therefore the boxed recursive smoke run is blocked before spend by budget-cap
-enforcement ambiguity.
+This blocker was superseded. The corrected blocker class is absence of
+run-control approval for a named live run.
 
 ## Next Command If Principal/Main Coordinator Waives This Blocker
 
-Only run after one of these is true:
-
-- a Codex CLI budget/cost cap mechanism is identified; or
-- the Principal/main coordinator explicitly waives mechanical budget-cap
-  enforcement for this one smoke run and accepts the manifest's prompt-level
-  stop rules plus one-attempt transcript capture.
+Only run after the Principal/main coordinator explicitly reopens a named run
+under `docs/codex_mesh_launch_control_2026_04_22.md`.
 
 Candidate command shape after waiver or cap mechanism:
 
@@ -88,16 +95,16 @@ script -q sandbox/codex-dr/runs/draco_smoke_001/transcripts/codex_exec_planner.t
   --sandbox workspace-write \
   --ask-for-approval never \
   --output-last-message sandbox/codex-dr/runs/draco_smoke_001/last_messages/planner.md \
-  "<bounded DRACO smoke prompt from draco_smoke_001_token_manifest.yaml>"
+  "<bounded DRACO smoke prompt from run-control receipt and case manifest>"
 ```
 
 ## Claims
 
 Permitted:
 
-- Runner, transcript, case manifest, and token manifest gates exist.
-- The boxed recursive smoke run was stopped before spend because the current
-  Codex CLI surface did not show mechanical token/cost cap enforcement.
+- Runner, transcript, and case manifest gates existed at this preflight.
+- The historical token-manifest blocker has been superseded by run-control
+  rules.
 
 Blocked:
 

@@ -38,7 +38,7 @@ The sandbox must attempt Grep-system-and-performance parity. That means:
 ## Current Directory Contract
 
 - `AGENTS.md`: local instructions for future architect and builder agents.
-- `docs/BOOTSTRAP_DOCTRINE.md`: autonomy, provider-off boot, token firewall,
+- `docs/BOOTSTRAP_DOCTRINE.md`: autonomy, provider-off boot, live-run control,
   root-gravity firewall, and required skill gates.
 - `docs/ARCHITECT_HANDOFF.md`: durable handoff memo and plan.
 - `benchmark-manifests/`: benchmark acquisition and case-selection manifests.
@@ -68,7 +68,7 @@ create and validate a run bundle using local fixtures:
 
 Benchmark acquisition still comes early. It calibrates the target and blocked
 claims. Benchmark execution waits until the provider-off bootstrap validator
-passes and a token manifest exists.
+passes and a live run-control receipt exists.
 
 ## Expected CLI Shape
 
@@ -94,10 +94,13 @@ Initial commands should cover:
 The exact implementation may change after the contracts are written. The
 control surface must remain visible and scriptable.
 
-Provider-backed commands require a token manifest naming purpose, bead id,
-runner, expected artefacts, maximum budget, stop conditions, input sources,
-data policy, transcript capture path, compaction policy, allowed claims, and
-non-claims.
+Live Codex CLI, terminal-agent, benchmark-generation, scorer, or SDK-backed
+commands require a run-control receipt naming purpose, bead id, runner, expected
+artefacts, operational bounds, stop conditions, input sources, data policy,
+transcript capture path, compaction policy, allowed claims, non-claims,
+foreground supervision or monitoring, wall-clock bound, and kill path.
+
+The old `42,000` token target is not a sandbox architecture requirement.
 
 ## Proof Run Contract
 

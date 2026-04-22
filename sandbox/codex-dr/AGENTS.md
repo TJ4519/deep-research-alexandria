@@ -31,7 +31,8 @@ separate service-runtime design.
 - Current halt: do not launch `codex exec`, `codex-exec`,
   `/usr/bin/script ... codex exec`, or any terminal-agent provider-backed smoke
   run from this sandbox until the Principal explicitly reopens a named run.
-  Read `docs/codex_exec_halt_2026_04_22.md` first.
+  Read `docs/codex_exec_halt_2026_04_22.md` and
+  `docs/codex_mesh_launch_control_2026_04_22.md` first.
 - Use `uv` and root repo commands when Python tooling is required.
 - Keep generated run outputs under `runs/`, `.agent-workspaces/`, or `tmp/`.
 - Do not store secrets, provider transcripts with private data, customer data,
@@ -45,7 +46,7 @@ separate service-runtime design.
 - Keep terminal-agent I/O observable through wrapper scripts, event mirrors, and
   content-addressed artefact manifests.
 - Design for a CLI control surface named `alexandria-dr`.
-- Complete the bootstrap autonomy gate before provider-backed runs.
+- Complete the bootstrap autonomy gate before unattended live runs.
 - Treat benchmark acquisition as target calibration until the provider-off
   bootstrap validator passes.
 
@@ -78,8 +79,27 @@ The first executable lane is provider-off:
 - allowed-claims output
 - validator that fails on missing custody or missing re-entry
 
-No paid model call, benchmark execution, or terminal-agent research run is
-valid until this lane is specified and the validator plan exists.
+No unattended model call, repeated benchmark execution, or background
+terminal-agent research run is valid until this lane is specified and the
+validator plan exists.
+
+## Live Run Control
+
+The Codex-DR sandbox uses run-control receipts for live Codex CLI and
+terminal-agent runs.
+
+Use `harness-specs/live_run_control_receipt_template.md`.
+
+Do not treat the old `42,000` token target or token-manifest vocabulary as an
+architectural gate. That was runtime-control leakage from earlier Alexandria
+work. For this sandbox, the live-run gate is named authorization, exact command
+or adapter, foreground supervision or external monitoring, wall-clock bound,
+kill path, transcript capture, output boundary, data policy, scorer status, and
+claim boundary.
+
+Launch control prevents hidden background burns and uncontrolled retries. It
+must not become a substitute for building the planner, orchestrator, branch
+adapters, reviewer backpressure, synthesis, benchmark lane, and scorer bridge.
 
 ## Required Skill Gates
 
@@ -134,7 +154,7 @@ folder and know:
 - what the sandbox is for
 - what full parity means as an attempted target
 - what the provider-off bootstrap lane must prove first
-- what token-burn firewall blocks provider-backed runs
+- what launch-control receipt blocks hidden or unbounded live runs
 - which benchmark work starts first
 - which files hold authority
 - how root `AGENTS.md` interacts with this local `AGENTS.md`

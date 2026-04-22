@@ -46,8 +46,8 @@ codex exec [OPTIONS] [PROMPT]
 ```
 
 The probe establishes that a future bead can attempt a boxed Codex execution
-through `codex exec` after a run-specific token manifest exists. This probe does
-not prove model credentials, provider budget, or research quality, because no
+through `codex exec` after a run-control receipt exists. This probe does
+not prove model credentials, run discipline, or research quality, because no
 provider-backed `codex exec` prompt was run.
 
 ## Transcript Capture Path
@@ -66,7 +66,7 @@ Recommended smoke-run transcript root:
 sandbox/codex-dr/runs/draco_smoke_001/transcripts/
 ```
 
-Recommended wrapper shape after token manifest approval:
+Recommended wrapper shape after run-control approval:
 
 ```text
 script -q sandbox/codex-dr/runs/draco_smoke_001/transcripts/codex_exec_planner.txt \
@@ -75,11 +75,12 @@ script -q sandbox/codex-dr/runs/draco_smoke_001/transcripts/codex_exec_planner.t
   --sandbox workspace-write \
   --ask-for-approval never \
   --output-last-message sandbox/codex-dr/runs/draco_smoke_001/planner_last_message.md \
-  "<bounded smoke prompt from token manifest>"
+  "<bounded smoke prompt from run-control receipt and case manifest>"
 ```
 
-The exact prompt, model, token budget, stop rules, and output contract must come
-from the run-specific token manifest. Do not use this command before that gate.
+The exact prompt, model/profile, stop rules, transcript path, output contract,
+wall-clock bound, kill path, and claim boundary must come from the run-control
+receipt. Do not use this command before that gate.
 
 ## Next Command If Available
 
@@ -90,7 +91,7 @@ DRACO smoke manifest bead:
 bd --no-daemon show alexandriacleanroom-91.1.5.2
 ```
 
-After the DRACO manifest and token manifest exist, the first candidate boxed run
+After the DRACO manifest and run-control receipt exist, the first candidate boxed run
 command should use the transcript wrapper above, with the manifest-owned prompt
 and caps.
 
@@ -99,9 +100,9 @@ and caps.
 No local CLI blocker was found for the command surface or transcript wrapper.
 
 The remaining blocker for actual boxed Codex research execution is governance
-and budget, not local CLI availability:
+and live-run control, not local CLI availability:
 
-- no run-specific token manifest exists yet;
+- no run-control receipt exists yet;
 - no DRACO tiny smoke case manifest exists yet;
 - no scorer bridge exists yet;
 - no provider/model-backed `codex exec` run was authorized or attempted by this

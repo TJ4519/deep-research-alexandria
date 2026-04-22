@@ -11,7 +11,8 @@ Constraining canon refs:
 - `sandbox/codex-dr/AGENTS.md`
 - `sandbox/codex-dr/docs/BOOTSTRAP_DOCTRINE.md`
 - `sandbox/codex-dr/docs/ARCHITECT_HANDOFF.md`
-- `sandbox/codex-dr/harness-specs/token_manifest_template.md`
+- `sandbox/codex-dr/harness-specs/live_run_control_receipt_template.md`
+- `sandbox/codex-dr/docs/codex_mesh_launch_control_2026_04_22.md`
 - `sandbox/codex-dr/benchmark-manifests/benchmark_acquisition_audit.md`
 - `docs/exec-plans/active/codex_dr_sandbox_architect_handoff.md`
 - `docs/exec-plans/active/codex_dr_provider_off_bootstrap_implementation.md`
@@ -29,7 +30,7 @@ infrastructure, not the system telos.
 The next executable lane is boxed Codex recursive DRACO smoke: prove whether
 this sandbox can launch a Codex/terminal-agent box with transcript capture,
 select a tiny DRACO benchmark-facing case without committing raw data, prepare
-a run-specific token manifest, run the smallest allowed recursive research
+a run-control receipt, run the smallest allowed recursive research
 loop, and bridge to scoring or record the exact scorer blocker.
 
 ## Scope
@@ -38,7 +39,7 @@ Corrected next lane:
 
 - boxed Codex runner capability probe;
 - DRACO tiny smoke case manifest;
-- run-specific token manifest;
+- run-control receipt;
 - boxed recursive research smoke run;
 - benchmark scoring bridge.
 
@@ -51,8 +52,8 @@ external blocker.
 ## Non-Goals
 
 - No fake benchmark execution.
-- No provider/model call before token manifest, budget, stop rules, and
-  transcript policy exist.
+- No unattended provider/model call before run-control receipt, operational
+  bounds, stop rules, transcript policy, and kill path exist.
 - No benchmark scoring before case manifest and scorer/judge policy exist.
 - No Grep parity, benchmark score, leaderboard, or product-readiness claim.
 - No root runtime or product service implementation.
@@ -62,9 +63,9 @@ external blocker.
 ## Preserved Invariants
 
 - Provider-off bootstrap is containment/evidence infrastructure only.
-- Provider-backed commands must fail closed without token-manifest approval.
+- Live commands must fail closed without run-control approval.
 - Benchmark scoring remains a placeholder unless the scoring bridge executes
-  under an approved token/scorer policy.
+  under an approved run-control/scorer policy.
 - Public Grep/Parcha score claims must be classified by the orchestrator as
   target calibration only until Alexandria emits its own approved run evidence.
 - Any generated scaffold output remains under ignored sandbox run/tmp paths.
@@ -80,7 +81,8 @@ external blocker.
 - A local CLI help/version probe is mistaken for a boxed recursive research
   run.
 - A DRACO case is copied into git instead of referenced through a tiny manifest.
-- The first full run starts without case, scorer, token, and custody manifests.
+- The first full run starts without case, scorer, run-control, and custody
+  manifests.
 - Allowed claims widen beyond the actual proof.
 
 ## Red/Green TDD Plan
@@ -89,7 +91,7 @@ Red:
 
 - boxed Codex runner capability is unknown;
 - DRACO smoke case manifest is absent;
-- no run-specific token manifest exists;
+- no run-control receipt exists;
 - no boxed recursive research smoke run bundle exists;
 - no benchmark scoring bridge exists;
 - proof-run bead remains open until a real allowed run executes.
@@ -100,8 +102,8 @@ Green:
   transcript capture are available from this sandbox;
 - DRACO tiny smoke case manifest records source pointer without committing raw
   or large data;
-- token manifest records budget, stop rules, transcript policy, provider/tool
-  policy, allowed claims, and non-claims;
+- run-control receipt records operational bounds, stop rules, transcript policy,
+  provider/tool policy, supervision, kill path, allowed claims, and non-claims;
 - smoke run emits planner, branch, synthesis, review/re-entry, report, event,
   artifact, claim, and allowed-claims custody;
 - scoring bridge records exact scorer/judge path or exact blocker;
@@ -112,7 +114,7 @@ Green:
 
 Provider-off scaffolding is complete enough to stop being the active center.
 The active proof posture is boxed Codex DRACO smoke, gated by runner
-capability, case manifest, token manifest, and scorer policy.
+capability, case manifest, run-control receipt, and scorer policy.
 
 The current proof ceiling remains deterministic provider-off fixture generation
 until a real boxed smoke run emits a custody bundle.
@@ -122,7 +124,7 @@ until a real boxed smoke run emits a custody bundle.
 - The script path remains `sandbox/codex-dr/tools/alexandria_dr.py` until a
   packaging bead promotes it to a console script.
 - `benchmark_score.json` remains a placeholder unless the scoring bridge
-  executes under approved token/scorer policy.
+  executes under approved run-control/scorer policy.
 - Real terminal-agent runner selection is still evidence-pending.
 
 ## Repo Orientation
@@ -136,7 +138,7 @@ generated proof artifacts, env files, or raw/large data.
 1. Create `alexandriacleanroom-91.1.5.1` for boxed Codex runner capability
    probe.
 2. Create `alexandriacleanroom-91.1.5.2` for DRACO tiny smoke case manifest.
-3. Create `alexandriacleanroom-91.1.5.3` for run-specific token manifest.
+3. Create `alexandriacleanroom-91.1.5.3` for run-control receipt.
 4. Create `alexandriacleanroom-91.1.5.4` for boxed recursive research smoke
    run.
 5. Create `alexandriacleanroom-91.1.5.5` for benchmark scoring bridge.
@@ -150,17 +152,16 @@ generated proof artifacts, env files, or raw/large data.
   scaffolding only.
 - 2026-04-22: Added provider-backed command stubs for `run-planner`,
   `run-branch`, `run-review`, `run-reentry`, and `score`; each fails closed
-  before token-manifest approval. Added tests proving these commands do not
+  before run-control approval. Added tests proving these commands do not
   create provider metadata or transcript artifacts.
 - 2026-04-22: Principal/main coordinator corrected trajectory. The active
   center is now boxed Codex recursive DRACO smoke. Provider-off runtime
   guardrails are not progress unless they directly enable that boxed run.
 - 2026-04-22: Created `91.1.5.1` through `91.1.5.5` for runner probe, DRACO
-  tiny smoke manifest, run-specific token manifest, boxed recursive smoke run,
+  tiny smoke manifest, run-control receipt, boxed recursive smoke run,
   and scoring bridge. Completed `91.1.5.1`, `91.1.5.2`, and `91.1.5.3`.
-  `91.1.5.4` is blocked before provider spend because `codex exec --help`
-  exposes no mechanical token/cost cap flag, while the token manifest makes
-  budget cap enforcement a hard stop.
+  `91.1.5.4` was initially blocked before provider spend because the lane
+  incorrectly treated a fixed token cap as a hard architectural gate.
 - 2026-04-22: Principal explicitly authorized one smoke run. Ran
   `draco_smoke_001` through `codex exec --full-auto` with transcript capture.
   The run emitted the required smoke bundle under ignored
@@ -173,6 +174,11 @@ generated proof artifacts, env files, or raw/large data.
   `sandbox/codex-dr/docs/draco_smoke_001_run_receipt_2026_04_22.md` and
   `sandbox/codex-dr/docs/draco_smoke_001_scoring_bridge_2026_04_22.md`.
   The scoring bridge closes the score question as blocked, not scored.
+- 2026-04-22: Principal correction accepted. The `42,000` token target and
+  token-manifest gate were runtime-control leakage. Future live Codex-mesh work
+  uses run-control receipts, foreground supervision or monitoring, wall-clock
+  bounds, kill paths, transcript capture, output boundaries, and claim
+  boundaries. Fixed token ceilings are optional operational estimates.
 
 ## Decision Log
 
@@ -180,20 +186,21 @@ generated proof artifacts, env files, or raw/large data.
   scaffolding alone. The bead's acceptance requires a complete proof run, and
   real provider-backed/benchmark execution is still gated.
 - 2026-04-22: Standalone child beads under `91.1.5.*` own the corrected runway.
-  Do not hide runner probe, DRACO manifest, token manifest, smoke run, or
+  Do not hide runner probe, DRACO manifest, run-control receipt, smoke run, or
   scoring bridge work inside generic notes.
-- 2026-04-22: Do not execute `draco_smoke_001` until either a Codex CLI
-  budget/cost-cap mechanism is identified or the Principal/main coordinator
-  explicitly waives mechanical budget-cap enforcement for this one smoke run.
+- 2026-04-22: Superseded. The earlier decision to block `draco_smoke_001` until
+  a Codex CLI budget/cost-cap mechanism existed is no longer the governing
+  interpretation for Codex-DR. Reopened live runs require run-control approval,
+  supervision or monitoring, timeout and kill path, and claim discipline.
 - 2026-04-22: Treat `draco_smoke_001` as a completed boxed smoke run with a
   blocked score. The run may support only the claims in its
   `allowed_claims.json`; it does not support Grep parity, DRACO scoring,
   leaderboard rank, product readiness, systematic adoption rates, or
   methodological dominance in the requested AER/QJE/JPE corpus.
-- 2026-04-22: Treat the observed `270,716` token use as a token-burn finding.
-  Prompt-level budget text did not enforce the token manifest target. Future
-  provider-backed benchmark runs need mechanical cap enforcement, external
-  metering, a much smaller context envelope, or a fresh explicit waiver.
+- 2026-04-22: Treat the observed `270,716` token use as a live-run control
+  finding. Future provider-backed benchmark runs need named authorization,
+  run-control receipt, foreground supervision or monitoring, wall-clock bound,
+  kill path, and no automatic retries.
 
 ## Validation
 
@@ -228,10 +235,10 @@ Observed boxed-smoke validation:
 ## Open Questions
 
 - Which terminal-agent runner will be approved for the first real proof run?
-- Which benchmark family, if any, will be selected first after token-manifest
+- Which benchmark family, if any, will be selected first after run-control
   approval?
-- What provider budget, stop rules, and transcript policy will the Principal
-  approve?
+- What run-control, stop rules, transcript policy, and scorer bridge will the
+  Principal approve?
 
 ## Completion Criteria
 

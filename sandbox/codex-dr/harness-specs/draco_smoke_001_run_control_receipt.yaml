@@ -1,0 +1,117 @@
+receipt_id: run_control_draco_smoke_001
+schema_version: codex-dr.run_control_receipt.v1
+schema_status: historical_post_run_reconstruction
+created_at: "2026-04-22T00:00:00Z"
+bead_id: alexandriacleanroom-91.1.5.4
+run_id: draco_smoke_001
+run_purpose: >
+  Reconstructed run-control receipt for the completed boxed Codex recursive
+  deep-research smoke against the DRACO row-0 pointer.
+
+approval:
+  approved_for_execution: false
+  approval_note: >
+    This is a post-run reconstruction created after the Principal corrected the
+    token-manifest leakage. It documents the completed run and the corrected
+    launch-control shape. It does not authorize another run.
+
+runner:
+  kind: codex_exec_box
+  command_surface: codex exec
+  cli_or_sdk_version: codex-cli 0.120.0
+  cwd: sandbox/codex-dr/
+  sandbox_mode: workspace-write
+  approval_policy: never
+  transcript_wrapper: /usr/bin/script
+  transcript_root: sandbox/codex-dr/runs/draco_smoke_001/transcripts/
+  output_last_message: sandbox/codex-dr/runs/draco_smoke_001/last_messages/planner.md
+
+authority:
+  governing_docs:
+    - sandbox/codex-dr/AGENTS.md
+    - sandbox/codex-dr/docs/codex_exec_halt_2026_04_22.md
+    - sandbox/codex-dr/docs/codex_mesh_launch_control_2026_04_22.md
+  case_manifest: sandbox/codex-dr/benchmark-manifests/draco_tiny_smoke_case_manifest.md
+  scorer_manifest: blocked_for_this_run
+
+inputs:
+  allowed_sources:
+    - DRACO row pointer from sandbox/codex-dr/benchmark-manifests/draco_tiny_smoke_case_manifest.md
+    - public web sources discovered by the boxed Codex run
+    - local sandbox docs and run manifests
+  forbidden_sources:
+    - secrets
+    - customer data
+    - root env files
+    - raw private benchmark corpora
+    - paid benchmark corpora
+  data_policy: >
+    Raw DRACO payload may be fetched only into ignored tmp/run paths. Do not
+    commit raw/full benchmark data. Do not paste secrets or private data into
+    prompts or transcripts.
+
+operational_bounds:
+  max_cases: 1
+  max_live_attempts: 1
+  max_reentry_rounds: 1
+  max_wall_clock_minutes: 20
+  foreground_supervision_required: true
+  automatic_retry_allowed: false
+  external_monitoring: main_coordinator_terminal_watch
+  kill_path: manual_process_termination_by_main_coordinator
+  notes: >
+    Observed token use was 270,716. This is treated as a live-run control
+    finding, not as proof that a fixed token cap is required for the sandbox
+    architecture.
+
+stop_conditions:
+  hard_stop:
+    - run leaves approved cwd or output roots
+    - unexpected secret or private data exposure
+    - automatic retry requested without explicit approval
+    - required transcript or run-bundle path unavailable
+  soft_stop:
+    - branch evidence is too thin for score claims
+    - reviewer requests more re-entry rounds than this smoke allows
+    - scorer bridge is unavailable
+
+expected_artifacts:
+  run_bundle: sandbox/codex-dr/runs/draco_smoke_001/
+  transcript_capture: sandbox/codex-dr/runs/draco_smoke_001/transcripts/
+  event_log: events.jsonl
+  artefact_manifest: artefact_manifest.json
+  case_payload_cache: sandbox/codex-dr/tmp/draco_tiny_smoke_001/
+  plan: plan.md
+  task_graph: task_graph.json
+  branch_returns: branches/
+  synthesis: synthesis.md
+  review: reviews/
+  reentry: reentry_decisions.jsonl
+  report: report.md
+  claim_ledger: claim_ledger.json
+  allowed_claims: allowed_claims.json
+  benchmark_score: benchmark_score.json
+
+scoring:
+  benchmark_family: DRACO
+  scorer_status: blocked
+  judge_or_scorer: evidence-pending
+  prompt_or_code_version: evidence-pending
+  retry_policy: no retries in smoke
+  variance_policy: unavailable_until_scorer_bridge
+
+allowed_claims_if_success:
+  - >
+    Codex-DR executed one boxed Codex recursive smoke run against a DRACO case
+    pointer under transcript and artifact custody.
+  - >
+    The run emitted bounded planner, branch, synthesis, review/re-entry, report,
+    claim-ledger, and allowed-claims artifacts for one smoke case.
+
+non_claims_even_if_success:
+  - Grep parity
+  - DRACO benchmark score unless the scoring bridge executes with custody
+  - leaderboard rank
+  - product-runtime readiness
+  - full benchmark execution
+  - reproducibility against Parcha/Grep private setup

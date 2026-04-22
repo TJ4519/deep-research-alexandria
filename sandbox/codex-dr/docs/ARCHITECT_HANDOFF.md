@@ -69,8 +69,8 @@ The footing is adequate when:
 - An ExecPlan states how the architect should proceed.
 - Beads expose the work as durable queue entries.
 - `make check` still passes after documentation changes.
-- `docs/BOOTSTRAP_DOCTRINE.md` blocks provider-backed runs until the
-  provider-off bootstrap lane and token manifest rules exist.
+- `docs/BOOTSTRAP_DOCTRINE.md` blocks unattended live runs until the
+  provider-off bootstrap lane and run-control receipt rules exist.
 
 ## Literal-Following Check
 
@@ -105,7 +105,7 @@ is already a client-deployable SaaS or VPS product.
 
 0. Bootstrap autonomy gate.
    Complete `docs/BOOTSTRAP_DOCTRINE.md`: centre-lock receipt, root-gravity
-   firewall, provider-off run-bundle spine, token-burn firewall, local fixture
+   firewall, provider-off run-bundle spine, live-run control, local fixture
    validators, and required skill gates.
 
 1. Benchmark acquisition audit.
@@ -145,8 +145,9 @@ is already a client-deployable SaaS or VPS product.
   concrete first boot path from zero to a validated local run.
 - Benchmark drift: the cited benchmark papers and datasets may be public while
   the exact Grep/Parcha evaluation configuration is unavailable.
-- Token burn: the architect may spend model calls before the harness can record
-  events, artefacts, compaction, review re-entry, and allowed claims.
+- Live-run burn: the architect may launch foreground or background model calls
+  before the harness can record events, artefacts, compaction, review re-entry,
+  and allowed claims.
 - Terminal-agent opacity: provider or CLI transcripts may hide details needed
   for strong provenance unless wrapper capture is explicit.
 - Compaction provenance: model compaction may lose source lineage unless the
@@ -160,7 +161,7 @@ is already a client-deployable SaaS or VPS product.
 ## Red TDD
 
 - A provider-backed run starts before a provider-off bootstrap validator exists.
-- A model-backed run has no token manifest.
+- A live run has no run-control receipt.
 - A benchmark execution is attempted before the bootstrap validator passes.
 - A launch from this folder cannot identify the full parity target.
 - A benchmark claim is made before acquisition and scoring conditions are
@@ -175,8 +176,8 @@ is already a client-deployable SaaS or VPS product.
 
 - The architect can name the target, boundary, first move, and proof artifacts
   after reading this folder.
-- The bootstrap doctrine names the provider-off first boot sequence, token
-  firewall, root-gravity firewall, and skill gates.
+- The bootstrap doctrine names the provider-off first boot sequence, live-run
+  control, root-gravity firewall, and skill gates.
 - A local fixture run can be validated before model calls are introduced.
 - The benchmark acquisition audit blocks or permits claims explicitly.
 - A full proof run emits the required bundle files.

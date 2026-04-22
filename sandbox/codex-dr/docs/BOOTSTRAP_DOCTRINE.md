@@ -10,8 +10,8 @@ The first sandbox handoff was directionally right and too conceptual for an
 autonomous build. It preserved the target, workspace, and benchmark spine, while
 leaving the first executable path under-specified.
 
-This doctrine prevents the architect from burning tokens, drifting into root
-repo gravity, or converting Grep parity into more planning prose.
+This doctrine prevents the architect from drifting into root repo gravity,
+running hidden live agents, or converting Grep parity into more planning prose.
 
 ## Completion Object
 
@@ -45,10 +45,11 @@ are true:
 - It has named which root surfaces are authority, donor material, historical
   proof, or out of scope for the current bead.
 - It has a provider-off run-bundle validator plan.
-- It has a token manifest template for any later model-backed run.
+- It has a live run-control receipt template for any later Codex CLI,
+  terminal-agent, model-backed, benchmark-facing, or scorer run.
 
 If any item is missing, the architect may write docs or tests for the missing
-gate. It may not start provider-backed research runs.
+  gate. It may not start unattended or repeated live research runs.
 
 ## Root-Gravity Firewall
 
@@ -96,17 +97,18 @@ Build this sequence before any model-backed terminal-agent run:
 Command names may be revised by the harness contract, but the sequence is
 binding.
 
-## Token-Burn Firewall
+## Live Run Control
 
-Every provider-backed run requires a token manifest before it starts.
+Every live Codex CLI, terminal-agent, benchmark-generation, scorer, or SDK-backed
+run requires a run-control receipt before it starts.
 
-The manifest must name:
+The receipt must name:
 
 - run purpose
 - bead id
-- model or terminal-agent runner
+- command surface or terminal-agent runner
 - expected artefacts
-- maximum budget
+- operational bounds
 - stop conditions
 - input sources
 - data policy
@@ -114,9 +116,15 @@ The manifest must name:
 - compaction policy
 - allowed claims if the run succeeds
 - non-claims even if the run succeeds
+- foreground supervision or external monitoring
+- wall-clock bound
+- kill path
 
-Any provider-backed run without this manifest is invalid. Benchmark execution is
-also invalid until the provider-off bootstrap validator passes.
+The receipt may record token or cost estimates when useful. A fixed token
+ceiling is not an architectural invariant for the Codex-mesh sandbox.
+
+Any live run without this receipt is invalid. Benchmark execution is also
+invalid until the provider-off bootstrap validator passes.
 
 ## Benchmark Role
 
@@ -130,7 +138,7 @@ Benchmark cases may enter the harness only after:
 
 - provider-off bootstrap passes
 - harness contracts exist
-- token manifest template exists
+- live run-control receipt template exists
 - benchmark acquisition audit classifies the dataset as usable
 
 ## Required Skills
@@ -156,7 +164,7 @@ Stop and repair the governing surface if:
 
 - the architect cannot state the sandbox telos without referring to Program 90
 - a benchmark run is proposed before provider-off bootstrap passes
-- a model-backed run lacks a token manifest
+- a live run lacks a run-control receipt
 - a report can be produced without a claim ledger
 - a reviewer finding cannot cause re-entry
 - compaction has no receipt

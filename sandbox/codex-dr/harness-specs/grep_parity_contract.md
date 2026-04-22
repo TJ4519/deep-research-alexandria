@@ -95,9 +95,9 @@ The acquisition audit is binding for benchmark scope.
 
 | Benchmark family | Acquisition status | Execution gate | Claim boundary |
 | --- | --- | --- | --- |
-| DRACO | Public HF dataset metadata, MIT, 100 rows, rubric axes known. | Requires provider-off bootstrap pass, case manifest, scorer manifest, token manifest, judge configuration, and run bundle. | No Alexandria DRACO score until executed and validated. |
-| DeepSearchQA | Public HF metadata, Apache-2.0, 900 rows; 896-case Grep/Parcha subset evidence-pending. | Requires scorer prompt/code provenance, `gemini-2.5-flash` or declared replacement, case/subset rule, token manifest, and run bundle. | No pass@1, FC, F1, or Grep comparison until executed and validated. |
-| DeepResearch Bench | Public repo/HF surfaces, Apache-2.0, 100 tasks, RACE/FACT shape. | Requires official scripts, provider keys, raw generated report handling policy, scorer manifest, repeated-run policy, token manifest, and run bundle. | No RACE/FACT or leaderboard claim until executed and validated; current rank must be checked at claim time. |
+| DRACO | Public HF dataset metadata, MIT, 100 rows, rubric axes known. | Requires provider-off bootstrap pass, case manifest, scorer manifest, run-control receipt, judge configuration, and run bundle. | No Alexandria DRACO score until executed and validated. |
+| DeepSearchQA | Public HF metadata, Apache-2.0, 900 rows; 896-case Grep/Parcha subset evidence-pending. | Requires scorer prompt/code provenance, `gemini-2.5-flash` or declared replacement, case/subset rule, run-control receipt, and run bundle. | No pass@1, FC, F1, or Grep comparison until executed and validated. |
+| DeepResearch Bench | Public repo/HF surfaces, Apache-2.0, 100 tasks, RACE/FACT shape. | Requires official scripts, provider keys, raw generated report handling policy, scorer manifest, repeated-run policy, run-control receipt, and run bundle. | No RACE/FACT or leaderboard claim until executed and validated; current rank must be checked at claim time. |
 | Parcha-published material | Public external score/result repo, no explicit license observed. | Requires license/permission decision before reuse of artifacts; may be cited as external target pressure only. | Public Grep/Parcha claims are donor evidence, not Alexandria proof. |
 
 Benchmark execution is blocked until:
@@ -106,7 +106,7 @@ Benchmark execution is blocked until:
 2. Harness contracts are implemented enough to emit required custody artifacts.
 3. A case manifest exists for selected benchmark cases.
 4. A scorer manifest exists for the benchmark family.
-5. A token manifest exists and is approved for the specific run.
+5. A run-control receipt exists and is approved for the specific run.
 6. Raw private, paid, or large benchmark data remains outside git.
 
 ## Required Proof Artifacts
@@ -140,7 +140,7 @@ validation_report.json
 Provider-backed runs additionally require:
 
 ```text
-token_manifest.yaml
+run_control_receipt.yaml
 transcripts/
 scorer_manifest.json
 case_manifest.json
@@ -165,7 +165,7 @@ After provider-off bootstrap passes:
   provider-off fixtures.
 - The sandbox still has no provider-backed or benchmark score claim.
 
-After a provider-backed non-benchmark proof run passes with token manifest:
+After a provider-backed non-benchmark proof run passes with run-control receipt:
 
 - The sandbox may claim the specific behaviors demonstrated by that run bundle.
 - Benchmark and Grep-performance claims remain blocked.
@@ -188,7 +188,7 @@ unblocks them:
 - Codex-DR has a stable leaderboard rank.
 - Codex-DR benchmark execution is authorized without provider-off bootstrap.
 - A tidy report proves recursive research cognition.
-- A token manifest alone authorizes benchmark execution.
+- A run-control receipt alone authorizes benchmark execution.
 - Terminal-agent transcript capture alone is sufficient custody.
 - Sandbox success proves product service readiness.
 - Public Grep/Parcha benchmark artifacts may be reused in git despite missing
@@ -203,7 +203,7 @@ parity target:
 - branch outputs that are prose without pointer/analysis/evidence separation
 - reviewer comments that do not compile into re-entry decisions
 - a report that contains claims not present in `claim_ledger.json`
-- a benchmark score without case/scorer/token manifests
+- a benchmark score without case, scorer, and run-control manifests
 - a run that cannot be reconstructed from bundle artifacts
 - a claim boundary that widens because the result sounds impressive
 - a sandbox run presented as product runtime readiness
@@ -258,7 +258,7 @@ unclear, the harness contract must be amended before code relies on it.
 
 Upstream interfaces satisfied:
 
-- Bootstrap doctrine: preserves provider-off first boot and token firewall.
+- Bootstrap doctrine: preserves provider-off first boot and live-run control.
 - Benchmark acquisition audit: imports benchmark access/licensing/evaluator
   boundaries without widening claims.
 - Root plan: keeps recursive research cognition as the telos and custody as
@@ -271,7 +271,7 @@ Downstream obligations created:
   for every proof artifact named here.
 - `alexandriacleanroom-91.1.4.1` must implement provider-off bootstrap against
   those schemas before any provider-backed or benchmark run.
-- Future benchmark beads must carry case, scorer, token, custody, score, and
+- Future benchmark beads must carry case, scorer, run-control, custody, score, and
   allowed-claim manifests.
 
 Round-trip contracts:
