@@ -23,44 +23,50 @@ Last updated: 2026-04-22
 The first full proof run must exercise the Grep-parity research loop rather
 than only proving that provider-off fixtures can write files.
 
-The provider-off bootstrap is now implemented, so the next work can prepare the
-full-run surface. Actual provider-backed research, terminal-agent execution,
-and benchmark scoring remain blocked until a run-specific token manifest and
-explicit approval gate exist.
+The provider-off bootstrap is now implemented. It is containment and evidence
+infrastructure, not the system telos.
+
+The next executable lane is boxed Codex recursive DRACO smoke: prove whether
+this sandbox can launch a Codex/terminal-agent box with transcript capture,
+select a tiny DRACO benchmark-facing case without committing raw data, prepare
+a run-specific token manifest, run the smallest allowed recursive research
+loop, and bridge to scoring or record the exact scorer blocker.
 
 ## Scope
 
-Provider-off scaffolding allowed now:
+Corrected next lane:
 
-- keep the `alexandria-dr` control surface visible
-- make future provider-backed commands fail closed before approval
-- preserve the full run bundle formats already implemented
-- add tests that prove blocked commands do not start execution
-- record the exact remaining gate for the real proof run
+- boxed Codex runner capability probe;
+- DRACO tiny smoke case manifest;
+- run-specific token manifest;
+- boxed recursive research smoke run;
+- benchmark scoring bridge.
 
-Future full-run scope after approval:
-
-- planner execution
-- branch research
-- recursive deepening
-- synthesis
-- review and re-entry
-- report creation
-- benchmark scoring or placeholder replacement
-- allowed-claims output from actual evidence
+The smoke run must exercise planner context gathering, branch work,
+pointer/analysis/evidence returns, synthesis, reviewer or fact-checker
+pressure, re-entry, report creation, and benchmark-facing evaluation. A score
+placeholder is acceptable only when the scoring bridge records the exact
+external blocker.
 
 ## Non-Goals
 
-- No provider/model calls in this provider-off scaffolding pass.
-- No terminal-agent research execution.
-- No benchmark execution.
+- No fake benchmark execution.
+- No provider/model call before token manifest, budget, stop rules, and
+  transcript policy exist.
+- No benchmark scoring before case manifest and scorer/judge policy exist.
 - No Grep parity, benchmark score, leaderboard, or product-readiness claim.
 - No root runtime or product service implementation.
+- No additional provider-off guardrail work unless it directly enables the
+  boxed smoke run.
 
 ## Preserved Invariants
 
+- Provider-off bootstrap is containment/evidence infrastructure only.
 - Provider-backed commands must fail closed without token-manifest approval.
-- Benchmark scoring must remain a placeholder until benchmark gates pass.
+- Benchmark scoring remains a placeholder unless the scoring bridge executes
+  under an approved token/scorer policy.
+- Public Grep/Parcha score claims must be classified by the orchestrator as
+  target calibration only until Alexandria emits its own approved run evidence.
 - Any generated scaffold output remains under ignored sandbox run/tmp paths.
 - The provider-off bootstrap allowed claims remain the current ceiling.
 
@@ -69,6 +75,11 @@ Future full-run scope after approval:
 - A future command stub silently becomes a provider call.
 - The proof-run bead closes from provider-off scaffolding alone.
 - A benchmark placeholder is treated as a real score.
+- A public Grep/Parcha score is treated as Alexandria evidence instead of
+  target calibration.
+- A local CLI help/version probe is mistaken for a boxed recursive research
+  run.
+- A DRACO case is copied into git instead of referenced through a tiny manifest.
 - The first full run starts without case, scorer, token, and custody manifests.
 - Allowed claims widen beyond the actual proof.
 
@@ -76,31 +87,42 @@ Future full-run scope after approval:
 
 Red:
 
-- invoking future provider-backed commands without approval must fail
-- no provider metadata, transcript, token manifest, or benchmark score appears
-  as a side effect of a blocked command
-- the proof-run bead remains open after provider-off scaffolding
+- boxed Codex runner capability is unknown;
+- DRACO smoke case manifest is absent;
+- no run-specific token manifest exists;
+- no boxed recursive research smoke run bundle exists;
+- no benchmark scoring bridge exists;
+- proof-run bead remains open until a real allowed run executes.
 
 Green:
 
-- provider-backed command stubs fail closed with a clear error
-- provider-off bootstrap validation still passes
+- capability probe records whether Codex/terminal-agent box launch and
+  transcript capture are available from this sandbox;
+- DRACO tiny smoke case manifest records source pointer without committing raw
+  or large data;
+- token manifest records budget, stop rules, transcript policy, provider/tool
+  policy, allowed claims, and non-claims;
+- smoke run emits planner, branch, synthesis, review/re-entry, report, event,
+  artifact, claim, and allowed-claims custody;
+- scoring bridge records exact scorer/judge path or exact blocker;
 - `uv run pytest sandbox/codex-dr/tests`, `git diff --check`, and `make check`
   pass
 
 ## Proof Posture
 
-Provider-off scaffolding only until Principal approval and a run-specific token
-manifest exist.
+Provider-off scaffolding is complete enough to stop being the active center.
+The active proof posture is boxed Codex DRACO smoke, gated by runner
+capability, case manifest, token manifest, and scorer policy.
 
-The current proof ceiling remains: deterministic local fixture generation and
-validation.
+The current proof ceiling remains deterministic provider-off fixture generation
+until a real boxed smoke run emits a custody bundle.
 
 ## Temporary Seams
 
 - The script path remains `sandbox/codex-dr/tools/alexandria_dr.py` until a
   packaging bead promotes it to a console script.
-- `benchmark_score.json` remains a placeholder in provider-off runs.
+- `benchmark_score.json` remains a placeholder unless the scoring bridge
+  executes under approved token/scorer policy.
 - Real terminal-agent runner selection is still evidence-pending.
 
 ## Repo Orientation
@@ -111,11 +133,15 @@ generated proof artifacts, env files, or raw/large data.
 
 ## Plan Of Attack
 
-1. Add tests that future provider-backed commands fail closed.
-2. Add explicit fail-closed command stubs to the local CLI script.
-3. Re-run provider-off bootstrap validation and root checks.
-4. Leave `alexandriacleanroom-91.1.5` open unless a real full proof run can be
-   executed under an approved token manifest without violating gates.
+1. Create `alexandriacleanroom-91.1.5.1` for boxed Codex runner capability
+   probe.
+2. Create `alexandriacleanroom-91.1.5.2` for DRACO tiny smoke case manifest.
+3. Create `alexandriacleanroom-91.1.5.3` for run-specific token manifest.
+4. Create `alexandriacleanroom-91.1.5.4` for boxed recursive research smoke
+   run.
+5. Create `alexandriacleanroom-91.1.5.5` for benchmark scoring bridge.
+6. Execute the next unblocked safe bead immediately: the capability probe.
+7. Continue to DRACO case manifest only after the probe result is repo-local.
 
 ## Progress Log
 
@@ -126,18 +152,34 @@ generated proof artifacts, env files, or raw/large data.
   `run-branch`, `run-review`, `run-reentry`, and `score`; each fails closed
   before token-manifest approval. Added tests proving these commands do not
   create provider metadata or transcript artifacts.
+- 2026-04-22: Principal/main coordinator corrected trajectory. The active
+  center is now boxed Codex recursive DRACO smoke. Provider-off runtime
+  guardrails are not progress unless they directly enable that boxed run.
+- 2026-04-22: Created `91.1.5.1` through `91.1.5.5` for runner probe, DRACO
+  tiny smoke manifest, run-specific token manifest, boxed recursive smoke run,
+  and scoring bridge. Completed `91.1.5.1`, `91.1.5.2`, and `91.1.5.3`.
+  `91.1.5.4` is blocked before provider spend because `codex exec --help`
+  exposes no mechanical token/cost cap flag, while the token manifest makes
+  budget cap enforcement a hard stop.
 
 ## Decision Log
 
 - 2026-04-22: Do not close `alexandriacleanroom-91.1.5` from provider-off
   scaffolding alone. The bead's acceptance requires a complete proof run, and
   real provider-backed/benchmark execution is still gated.
+- 2026-04-22: Standalone child beads under `91.1.5.*` own the corrected runway.
+  Do not hide runner probe, DRACO manifest, token manifest, smoke run, or
+  scoring bridge work inside generic notes.
+- 2026-04-22: Do not execute `draco_smoke_001` until either a Codex CLI
+  budget/cost-cap mechanism is identified or the Principal/main coordinator
+  explicitly waives mechanical budget-cap enforcement for this one smoke run.
 
 ## Validation
 
 Expected provider-off commands:
 
 ```text
+bd --no-daemon show alexandriacleanroom-91.1.5.1
 uv run pytest sandbox/codex-dr/tests
 uv run python sandbox/codex-dr/tools/alexandria_dr.py bootstrap-run local_fixture_001
 uv run python sandbox/codex-dr/tools/alexandria_dr.py validate local_fixture_001

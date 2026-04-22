@@ -1,0 +1,152 @@
+manifest_id: token_manifest_draco_smoke_001
+schema_version: codex-dr.token_manifest.v1
+created_at: "2026-04-22T00:00:00Z"
+bead_id: alexandriacleanroom-91.1.5.4
+run_id: draco_smoke_001
+run_purpose: >
+  Run the smallest boxed Codex recursive deep-research smoke against the DRACO
+  row-0 pointer, exercising planner, branch work, synthesis, review/re-entry,
+  report, transcript capture, and claim custody.
+
+approval:
+  approval_basis: >
+    Principal trajectory correction on 2026-04-22 authorized continuing toward
+    a capped benchmark-facing smoke run unless a real external blocker appears.
+  approved_for_execution: true
+  prepared_by: Codex-DR sandbox architect-builder
+  reviewed_by: Principal/main coordinator pending review
+  approval_note: >
+    This manifest authorizes only one tiny smoke run. It does not authorize full
+    benchmark execution, leaderboard submission, broad score claims, or repeated
+    provider-backed attempts.
+
+runner:
+  kind: codex_exec_box
+  command_surface: codex exec
+  cli_version_observed: codex-cli 0.120.0
+  cwd: sandbox/codex-dr/
+  sandbox_mode: workspace-write
+  approval_policy: never
+  transcript_wrapper: /usr/bin/script
+  transcript_root: sandbox/codex-dr/runs/draco_smoke_001/transcripts/
+  output_last_message: sandbox/codex-dr/runs/draco_smoke_001/last_messages/planner.md
+  model_or_agent: codex default profile unless overridden by runner config
+  provider_sdk_or_cli_version: codex-cli 0.120.0
+
+authority:
+  governing_docs:
+    - sandbox/codex-dr/AGENTS.md
+    - sandbox/codex-dr/docs/BOOTSTRAP_DOCTRINE.md
+    - sandbox/codex-dr/docs/center_of_gravity_recovery_2026_04_22.md
+    - docs/exec-plans/active/codex_dr_first_full_proof_run.md
+  benchmark_audit: sandbox/codex-dr/benchmark-manifests/benchmark_acquisition_audit.md
+  case_manifest: sandbox/codex-dr/benchmark-manifests/draco_tiny_smoke_case_manifest.md
+  runner_probe: sandbox/codex-dr/docs/boxed_codex_runner_capability_probe_2026_04_22.md
+
+inputs:
+  allowed_sources:
+    - DRACO row pointer from sandbox/codex-dr/benchmark-manifests/draco_tiny_smoke_case_manifest.md
+    - public web sources discovered by the boxed Codex run if web access is available
+    - local sandbox docs and run manifests
+  forbidden_sources:
+    - secrets
+    - customer data
+    - raw private benchmark corpora
+    - paid benchmark corpora
+    - root env files
+    - Program 80/90 generated proof receipts as target authority
+  benchmark_case_manifest: sandbox/codex-dr/benchmark-manifests/draco_tiny_smoke_case_manifest.md
+  data_policy: >
+    Raw DRACO payload may be fetched only into ignored tmp/run paths. Do not
+    commit raw/full benchmark data. Do not paste secrets or private data into
+    prompts or transcripts.
+
+budget:
+  max_cases: 1
+  max_boxed_runs: 1
+  max_reentry_rounds: 1
+  max_input_tokens: 30000
+  max_output_tokens: 12000
+  max_total_tokens: 42000
+  max_wall_clock_minutes: 20
+  max_provider_cost_usd: 1.00
+  max_attempts: 1
+  enforcement_note: >
+    If the selected Codex CLI/profile cannot enforce these caps mechanically,
+    the runner must stop before provider-backed execution and record a budget
+    enforcement blocker.
+
+stop_conditions:
+  hard_stop:
+    - budget cap cannot be enforced or monitored
+    - missing transcript capture path
+    - missing DRACO case payload
+    - unexpected request for secrets or private data
+    - benchmark/license/access condition not satisfied
+    - run writes generated output outside ignored sandbox paths
+    - provider/model execution would exceed one boxed run
+  soft_stop:
+    - branch evidence is too thin for score claims
+    - reviewer requests more than one re-entry round
+    - scorer bridge is unavailable
+
+expected_artifacts:
+  run_bundle: sandbox/codex-dr/runs/draco_smoke_001/
+  transcript_capture: sandbox/codex-dr/runs/draco_smoke_001/transcripts/
+  event_log: events.jsonl
+  artefact_manifest: artefact_manifest.json
+  case_payload_cache: sandbox/codex-dr/tmp/draco_tiny_smoke_001/
+  plan: plan.md
+  task_graph: task_graph.json
+  branch_returns: branches/
+  synthesis: synthesis.md
+  review: reviews/
+  reentry: reentry_decisions.jsonl
+  report: report.md
+  claim_ledger: claim_ledger.json
+  allowed_claims: allowed_claims.json
+  benchmark_score: benchmark_score.json
+
+provider_tool_policy:
+  provider_calls_allowed: true
+  benchmark_execution_allowed: smoke_generation_only
+  scorer_execution_allowed: false_until_scoring_bridge
+  network_allowed: true_if_codex_runner_allows_public_research
+  shell_allowed: true_within_sandbox
+  disallowed:
+    - reading env files
+    - printing environment variables
+    - uploading raw benchmark data outside run bundle
+    - repeated model-backed attempts
+
+scoring:
+  benchmark_family: DRACO
+  scorer_status: blocked_until_alexandriacleanroom-91.1.5.5
+  score_output_policy: placeholder_until_scoring_bridge
+  judge_model: evidence-pending
+  judge_prompt_version: evidence-pending
+  parameters: {}
+  retry_policy: no retries in smoke
+  variance_policy: not applicable until scorer bridge exists
+
+compaction:
+  policy: receipt_required_if_context_is_summarized
+  receipt_required: true
+  input_manifest_required: true
+  output_manifest_required: true
+
+allowed_claims_if_success:
+  - >
+    Codex-DR executed one boxed Codex recursive smoke run against a DRACO case
+    pointer under transcript and artifact custody.
+  - >
+    The run emitted bounded planner, branch, synthesis, review/re-entry, report,
+    claim-ledger, and allowed-claims artifacts for one smoke case.
+
+non_claims_even_if_success:
+  - Grep parity
+  - DRACO benchmark score unless the scoring bridge executes with custody
+  - leaderboard rank
+  - product-runtime readiness
+  - full benchmark execution
+  - reproducibility against Parcha/Grep private setup
