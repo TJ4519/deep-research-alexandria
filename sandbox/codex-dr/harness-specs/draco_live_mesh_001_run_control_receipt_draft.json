@@ -1,0 +1,118 @@
+{
+  "receipt_id": "run_control_draco_live_mesh_001_draft",
+  "schema_version": "codex-dr.run_control_receipt.v1",
+  "schema_status": "draft_no_launch",
+  "created_at": "2026-04-22T00:00:00Z",
+  "bead_id": "alexandriacleanroom-91.1.5.10",
+  "run_id": "draco_live_mesh_001",
+  "run_purpose": "Prepare a future live Codex CLI DR mesh smoke run against the DRACO row-0 pointer without authorizing launch.",
+  "approval": {
+    "prepared_by": "Codex-DR sandbox architect-builder",
+    "reviewed_by": "pending Principal or main coordinator review",
+    "approved_for_dry_run_planning": true,
+    "approved_for_execution": false,
+    "approval_note": "Execution is closed. This draft may be used only by mesh-live-plan to render dry-run launch plans and prompt files."
+  },
+  "runner": {
+    "kind": "codex_exec_box",
+    "command_surface": "alexandria-dr mesh-live-plan dry run; future live execution adapter pending Principal reopening",
+    "cli_or_sdk_version": "evidence-pending",
+    "cwd": "sandbox/codex-dr/",
+    "sandbox_mode": "evidence-pending",
+    "approval_policy": "never until named live receipt is approved",
+    "transcript_wrapper": "evidence-pending",
+    "transcript_root": "sandbox/codex-dr/runs/draco_live_mesh_001/transcripts/",
+    "output_last_message": "sandbox/codex-dr/runs/draco_live_mesh_001/last_messages/"
+  },
+  "authority": {
+    "governing_docs": [
+      "sandbox/codex-dr/AGENTS.md",
+      "sandbox/codex-dr/harness-specs/dr_mesh_parity_charter.md",
+      "sandbox/codex-dr/harness-specs/live_codex_cli_mesh_adapter_contract.md",
+      "sandbox/codex-dr/docs/codex_mesh_launch_control_2026_04_22.md"
+    ],
+    "benchmark_audit": "sandbox/codex-dr/benchmark-manifests/benchmark_acquisition_audit.md",
+    "case_manifest": "sandbox/codex-dr/benchmark-manifests/draco_tiny_smoke_case_manifest.md",
+    "scorer_manifest": "blocked until a scorer bridge is approved"
+  },
+  "inputs": {
+    "allowed_sources": [
+      "DRACO row pointer from sandbox/codex-dr/benchmark-manifests/draco_tiny_smoke_case_manifest.md",
+      "public web sources discovered by a future approved run",
+      "sandbox/codex-dr docs, harness specs, and run manifests"
+    ],
+    "forbidden_sources": [
+      "secrets",
+      "customer data",
+      "root env files",
+      "raw private benchmark corpora",
+      "paid benchmark corpora unless separately authorized",
+      "large raw benchmark files in git"
+    ],
+    "data_policy": "Raw DRACO payload may be fetched only into ignored tmp/run paths after a live receipt permits it. Do not commit raw/full benchmark data."
+  },
+  "operational_bounds": {
+    "max_cases": 1,
+    "max_live_attempts": 1,
+    "max_reentry_rounds": 1,
+    "max_wall_clock_minutes": 30,
+    "foreground_supervision_required": true,
+    "automatic_retry_allowed": false,
+    "external_monitoring": "foreground coordinator supervision required for any future live run",
+    "kill_path": "manual foreground process termination by supervising coordinator",
+    "notes": "This draft does not authorize live execution. Token estimates are optional operational notes, not an architecture gate."
+  },
+  "stop_conditions": {
+    "hard_stop": [
+      "run leaves approved cwd or output roots",
+      "unexpected secret or private data exposure",
+      "benchmark/license/access condition not satisfied",
+      "automatic retry requested without explicit approval",
+      "required transcript or run-bundle path unavailable",
+      "root env file access attempted"
+    ],
+    "soft_stop": [
+      "branch evidence is too thin for score claims",
+      "reviewer requests more re-entry rounds than this receipt allows",
+      "scorer bridge is unavailable"
+    ]
+  },
+  "expected_artifacts": {
+    "run_bundle": "sandbox/codex-dr/runs/draco_live_mesh_001/",
+    "transcript_capture": "sandbox/codex-dr/runs/draco_live_mesh_001/transcripts/",
+    "event_log": "events.jsonl",
+    "artefact_manifest": "artefact_manifest.json",
+    "case_payload_cache": "sandbox/codex-dr/tmp/draco_tiny_smoke_001/",
+    "plan": "plan.md",
+    "task_graph": "task_graph.json",
+    "branch_returns": "branches/",
+    "synthesis": "synthesis.md",
+    "review": "reviews/",
+    "reentry": "reentry_decisions.jsonl",
+    "report": "report.md",
+    "claim_ledger": "claim_ledger.json",
+    "allowed_claims": "allowed_claims.json",
+    "benchmark_score": "benchmark_score.json"
+  },
+  "scoring": {
+    "benchmark_family": "DRACO",
+    "scorer_status": "blocked",
+    "judge_or_scorer": "evidence-pending",
+    "prompt_or_code_version": "evidence-pending",
+    "retry_policy": "no retries in smoke unless separately approved",
+    "variance_policy": "unavailable until scorer bridge is approved"
+  },
+  "allowed_claims_if_success": [
+    "A dry-run live adapter launch plan was rendered from a provider-off DR mesh bundle and execution-closed receipt.",
+    "Future execution remains routed through the Codex-DR live adapter path, not ad hoc codex exec."
+  ],
+  "non_claims_even_if_success": [
+    "live Codex CLI run happened",
+    "Grep parity",
+    "DRACO benchmark score",
+    "leaderboard rank",
+    "product-runtime readiness",
+    "full benchmark execution",
+    "reproducibility against Parcha/Grep private setup"
+  ]
+}

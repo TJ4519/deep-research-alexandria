@@ -34,21 +34,23 @@ compact parity charter for this proof run.
 The provider-off bootstrap is now implemented. It is containment and evidence
 infrastructure, not the system telos.
 
-The next executable lane is boxed Codex recursive DRACO smoke: prove whether
-this sandbox can launch a Codex/terminal-agent box with transcript capture,
-select a tiny DRACO benchmark-facing case without committing raw data, prepare
-a run-control receipt, run the smallest allowed recursive research
-loop, and bridge to scoring or record the exact scorer blocker.
+The next executable lane is the DR mesh harness itself. Live `codex exec`
+launches are currently halted, so safe progress means building the reusable
+provider-off role-adapter topology that a reopened Codex CLI run will use:
+planner, task graph, scoped branch roles, pointer-first returns,
+evaluate/synthesize, review, re-entry, writer, scorer bridge, and custody.
 
 ## Scope
 
-Corrected next lane:
+Corrected lane:
 
-- boxed Codex runner capability probe;
-- DRACO tiny smoke case manifest;
-- run-control receipt;
-- boxed recursive research smoke run;
-- benchmark scoring bridge.
+- provider-off DR mesh state model;
+- visible `alexandria-dr` command surface for a mesh-shaped run;
+- fake role adapters for deep search, data analysis, verification, review,
+  re-entry, writer, and scorer bridge;
+- pointer-first branch returns and selective read receipts;
+- validators for dependency, custody, re-entry, scoring, and claim boundaries;
+- live Codex CLI adapter remains behind run-control receipts.
 
 The smoke run must exercise planner context gathering, branch work,
 pointer/analysis/evidence returns, synthesis, reviewer or fact-checker
@@ -65,7 +67,7 @@ external blocker.
 - No Grep parity, benchmark score, leaderboard, or product-readiness claim.
 - No root runtime or product service implementation.
 - No additional provider-off guardrail work unless it directly enables the
-  boxed smoke run.
+  DR mesh execution topology.
 
 ## Preserved Invariants
 
@@ -119,12 +121,14 @@ Green:
 
 ## Proof Posture
 
-Provider-off scaffolding is complete enough to stop being the active center.
-The active proof posture is boxed Codex DRACO smoke, gated by runner
-capability, case manifest, run-control receipt, and scorer policy.
+Generic provider-off scaffolding is complete enough to stop being the active
+center. The active proof posture is DR mesh topology: provider-off fake role
+adapters must preserve the same task graph, branch returns, pointer-first
+context economy, review re-entry, writer, scorer bridge, events, artifacts,
+and claims that future Codex CLI boxes will use.
 
-The current proof ceiling remains deterministic provider-off fixture generation
-until a real boxed smoke run emits a custody bundle.
+The current proof ceiling remains deterministic provider-off mesh topology
+unless a live run is reopened by a named run-control receipt.
 
 ## Temporary Seams
 
@@ -132,7 +136,8 @@ until a real boxed smoke run emits a custody bundle.
   packaging bead promotes it to a console script.
 - `benchmark_score.json` remains a placeholder unless the scoring bridge
   executes under approved run-control/scorer policy.
-- Real terminal-agent runner selection is still evidence-pending.
+- Real terminal-agent launches are halted until the Principal reopens a named
+  run under run-control receipt rules.
 
 ## Repo Orientation
 
@@ -149,8 +154,11 @@ generated proof artifacts, env files, or raw/large data.
 4. Create `alexandriacleanroom-91.1.5.4` for boxed recursive research smoke
    run.
 5. Create `alexandriacleanroom-91.1.5.5` for benchmark scoring bridge.
-6. Execute the next unblocked safe bead immediately: the capability probe.
-7. Continue to DRACO case manifest only after the probe result is repo-local.
+6. Create `alexandriacleanroom-91.1.5.6` for provider-off DR mesh topology
+   harness work during the live-run halt.
+7. Execute the next unblocked safe bead immediately: provider-off mesh command
+   surface, fake role adapters, pointer-first receipts, re-entry, writer,
+   scorer bridge, and validators.
 
 ## Progress Log
 
@@ -188,6 +196,35 @@ generated proof artifacts, env files, or raw/large data.
   boundaries. Fixed token ceilings are optional operational estimates.
 - 2026-04-22: Added DR mesh parity charter as the figure-backed target for the
   first full proof run.
+- 2026-04-22: Principal/main coordinator corrected the noun to DR mesh and
+  halted live `codex exec` launches. Created `alexandriacleanroom-91.1.5.6`
+  for the safe provider-off DR mesh topology harness: fake role adapters,
+  multi-branch task graph, pointer-first receipts, review-triggered re-entry,
+  writer, scorer bridge placeholder, and validators. This is topology
+  enablement for Codex CLI boxes, not a generic runtime or docs-only closure.
+- 2026-04-22: Created `alexandriacleanroom-91.1.5.7` to expose the same
+  provider-off mesh as staged CLI commands: `mesh-init-case`, `mesh-plan`,
+  `mesh-branch`, `mesh-evaluate`, `mesh-review`, `mesh-reentry`,
+  `mesh-report`, and `mesh-score`, with `mesh-bootstrap-run` retained as the
+  one-shot deterministic fixture path.
+- 2026-04-22: Completed the provider-off DR mesh proof gate for
+  `alexandriacleanroom-91.1.5.8`. Clean one-shot and staged mesh runs were
+  generated under ignored `sandbox/codex-dr/tmp/` paths and validated. Added
+  `sandbox/codex-dr/docs/provider_off_dr_mesh_proof_gate_2026_04_22.md` as the
+  receipt and extended negative tests for missing event/artifact custody and
+  artifact hash mismatch.
+- 2026-04-22: Added dry-run live Codex CLI mesh adapter planning for
+  `alexandriacleanroom-91.1.5.9`. The `mesh-live-plan` command reads a
+  provider-off mesh bundle plus a dry-run-approved run-control receipt, renders
+  per-task launch plans and prompt files, and refuses missing, invalid, or
+  live-execution-approved receipts before writing provider artifacts. Contract:
+  `sandbox/codex-dr/harness-specs/live_codex_cli_mesh_adapter_contract.md`.
+- 2026-04-22: Prepared the no-launch live DR mesh proof-run packet for
+  `alexandriacleanroom-91.1.5.10`. The packet names future run
+  `draco_live_mesh_001`, points to the DRACO tiny smoke case, records scorer
+  and benchmark blockers, supplies an execution-closed run-control draft, and
+  routes the next no-launch step through `mesh-live-plan` rather than ad hoc
+  `codex exec`.
 
 ## Decision Log
 
