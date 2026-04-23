@@ -1,0 +1,112 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "codex-dr.draco_evaluation_output.schema.json",
+  "title": "Codex-DR DRACO Evaluation Output",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "run_id",
+    "benchmark_family",
+    "case_id",
+    "scorer_manifest",
+    "criterion_verdicts",
+    "raw_score",
+    "normalized_score",
+    "citations",
+    "judge_transcript_refs",
+    "claim_boundary"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "codex-dr.draco_evaluation_output.v1"
+    },
+    "run_id": {
+      "type": "string"
+    },
+    "benchmark_family": {
+      "const": "DRACO"
+    },
+    "case_id": {
+      "type": "string"
+    },
+    "scorer_manifest": {
+      "type": "string"
+    },
+    "criterion_verdicts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "criterion_id",
+          "criterion_group",
+          "weight",
+          "verdict",
+          "rationale",
+          "evidence_refs"
+        ],
+        "properties": {
+          "criterion_id": {
+            "type": "string"
+          },
+          "criterion_group": {
+            "type": "string"
+          },
+          "weight": {
+            "type": "number"
+          },
+          "verdict": {
+            "type": "number"
+          },
+          "rationale": {
+            "type": "string"
+          },
+          "evidence_refs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "raw_score": {
+      "type": "number"
+    },
+    "normalized_score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "citations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["source_ref", "supports"],
+        "properties": {
+          "source_ref": {
+            "type": "string"
+          },
+          "supports": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "judge_transcript_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "claim_boundary": {
+      "type": "object",
+      "required": ["allowed_claims_after_scoring", "blocked_claims_after_scoring"]
+    }
+  },
+  "additionalProperties": true
+}

@@ -1,0 +1,158 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "codex-dr.draco_scorer_manifest.schema.json",
+  "title": "Codex-DR DRACO Scorer Manifest",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "run_id",
+    "benchmark_family",
+    "scorer_status",
+    "execution_allowed",
+    "judge_policy",
+    "rubric_mapping",
+    "scoring_formula",
+    "sealed_reference_policy",
+    "retry_policy",
+    "variance_policy",
+    "output_paths",
+    "claim_boundary"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "codex-dr.draco_scorer_manifest.v1"
+    },
+    "run_id": {
+      "type": "string"
+    },
+    "benchmark_family": {
+      "const": "DRACO"
+    },
+    "scorer_status": {
+      "enum": ["blocked", "approved", "executed"]
+    },
+    "scorer_available": {
+      "type": "boolean"
+    },
+    "execution_allowed": {
+      "type": "boolean"
+    },
+    "manifest_schema": {
+      "type": "string"
+    },
+    "evaluation_output_schema": {
+      "type": "string"
+    },
+    "case_manifest": {
+      "type": "string"
+    },
+    "judge_policy": {
+      "type": "object",
+      "required": ["kind", "provider", "model", "prompt_version", "parameters"],
+      "properties": {
+        "kind": {
+          "enum": ["model_judge", "local_script", "benchmark_owner_api"]
+        },
+        "provider": {
+          "type": "string"
+        },
+        "model": {
+          "type": "string"
+        },
+        "prompt_version": {
+          "type": "string"
+        },
+        "parameters": {
+          "type": "object"
+        },
+        "execution_status": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "rubric_mapping": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["criterion_group", "draco_axis", "output_field"],
+        "properties": {
+          "criterion_group": {
+            "type": "string"
+          },
+          "draco_axis": {
+            "type": "string"
+          },
+          "output_field": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "scoring_formula": {
+      "type": "object",
+      "required": ["raw_score", "normalized_score", "score_range"],
+      "properties": {
+        "raw_score": {
+          "type": "string"
+        },
+        "normalized_score": {
+          "type": "string"
+        },
+        "score_range": {
+          "type": "array",
+          "prefixItems": [{"type": "number"}, {"type": "number"}],
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "blocked_until": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "sealed_reference_policy": {
+      "type": "object",
+      "required": [
+        "status",
+        "reference_answers_visible_to_generator",
+        "rubric_payload_visible_to_generator",
+        "allowed_reader"
+      ],
+      "properties": {
+        "status": {
+          "enum": ["sealed_until_scoring", "opened_for_approved_scorer"]
+        },
+        "reference_answers_visible_to_generator": {
+          "type": "boolean"
+        },
+        "rubric_payload_visible_to_generator": {
+          "type": "boolean"
+        },
+        "allowed_reader": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "retry_policy": {
+      "type": "object",
+      "required": ["max_attempts", "automatic_retry_allowed"]
+    },
+    "variance_policy": {
+      "type": "object",
+      "required": ["status"]
+    },
+    "output_paths": {
+      "type": "object",
+      "required": ["evaluation_output", "benchmark_score", "judge_transcript_root"]
+    },
+    "claim_boundary": {
+      "type": "object",
+      "required": ["numeric_score_allowed", "blocked_claims"]
+    }
+  },
+  "additionalProperties": true
+}

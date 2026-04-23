@@ -83,6 +83,29 @@ def test_provider_off_dr_mesh_run_validates(tmp_path: Path):
         "verification",
         "reentry_followup",
     }
+    replay = json.loads(
+        (run_dir / "self_improvement" / "replay_corpus.json").read_text(encoding="utf-8")
+    )
+    assert {fixture["kind"] for fixture in replay["fixtures"]} == {
+        "failed_evaluation",
+        "corrected_fixture",
+    }
+    taxonomy = json.loads(
+        (run_dir / "self_improvement" / "failure_taxonomy.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    assert {
+        "prompt",
+        "source",
+        "citation",
+        "evidence",
+        "synthesis",
+        "task_graph",
+        "reviewer",
+        "writer",
+        "claim_boundary",
+    } <= {item["class_id"] for item in taxonomy["failure_classes"]}
 
 
 def test_provider_off_dr_mesh_cli_stages_validate(tmp_path: Path):
@@ -101,6 +124,7 @@ def test_provider_off_dr_mesh_cli_stages_validate(tmp_path: Path):
         ["mesh-reentry", case_id, "review_001"],
         ["mesh-report", case_id],
         ["mesh-score", case_id],
+        ["mesh-self-improve", case_id],
     ]
 
     for command in commands:
@@ -175,6 +199,172 @@ def test_mesh_live_plan_renders_dry_run_launch_plan(tmp_path: Path):
         "product readiness",
     ]
     assert (run_dir / deep_search["prompt_file"]).exists()
+    assert not (run_dir / "provider_metadata.json").exists()
+    assert not (run_dir / "transcripts").exists()
+
+
+def test_live_role_prompts_include_hardened_sections(tmp_path: Path):
+    _harness, run_dir, _runs_dir, _receipt_path = fresh_live_planned_mesh(tmp_path)
+    prompt_root = run_dir / "live_adapter" / "prompts"
+    required_sections = [
+        "## DR Mesh Charter",
+        "## Role-Specific Instructions",
+        "## Output File Contract",
+        "## Pointer-First Law",
+        "## Source Policy",
+        "## Citation Discipline",
+        "## Adequacy Criteria",
+        "## Claim Boundary",
+    ]
+
+    for prompt_path in prompt_root.glob("*.md"):
+        prompt = prompt_path.read_text(encoding="utf-8")
+        for section in required_sections:
+            assert section in prompt
+        assert "sandbox/codex-dr/harness-specs/live_role_prompt_pack.md" in prompt
+        assert "sandbox/codex-dr/harness-specs/dr_mesh_parity_charter.md" in prompt
+        assert "Do not claim Grep parity" in prompt
+
+    assert "Plan File" in (prompt_root / "task_plan.md").read_text(encoding="utf-8")
+    assert "public-source orientation" in (
+        prompt_root / "task_deep_search.md"
+    ).read_text(encoding="utf-8")
+    assert "Read pointer files before analysis files" in (
+        prompt_root / "task_pointer_first_synthesis.md"
+    ).read_text(encoding="utf-8")
+    assert "Fact-check synthesis" in (
+        prompt_root / "task_review.md"
+    ).read_text(encoding="utf-8")
+    assert "Answer only the cited reviewer finding" in (
+        prompt_root / "task_reentry_followup.md"
+    ).read_text(encoding="utf-8")
+    assert "one coherent report" in (
+        prompt_root / "task_final_writer.md"
+    ).read_text(encoding="utf-8")
+
+
+def test_live_prompt_builder_requires_output_contract_and_non_claims(tmp_path: Path):
+    harness = load_harness()
+    receipt_path = tmp_path / "receipt.json"
+    write_dry_run_control_receipt(receipt_path, "draco_mesh_fixture_001")
+    receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+    task = {
+        "task_id": "task_bad",
+        "kind": "branch_research",
+        "objective": "Bad task lacks output contract.",
+        "inputs": ["plan.md"],
+        "expected_outputs": [],
+        "adequacy_checks": [],
+    }
+    role = {"role": "deep_search", "return_contract": []}
+
+    with pytest.raises(harness.HarnessError, match="lacks output contract"):
+        harness.live_adapter_prompt("draco_mesh_fixture_001", task, role, receipt)
+
+    task["expected_outputs"] = ["branches/deep_search/pointer.md"]
+    receipt["non_claims_even_if_success"] = []
+    with pytest.raises(harness.HarnessError, match="lacks non-claims"):
+        harness.live_adapter_prompt("draco_mesh_fixture_001", task, role, receipt)
+
+
+def test_mesh_executor_preflight_prepares_no_launch_metadata(tmp_path: Path):
+    harness, run_dir, runs_dir, receipt_path = fresh_live_planned_mesh(tmp_path)
+
+    result = harness.main(
+        [
+            "--runs-dir",
+            str(runs_dir),
+            "mesh-executor-preflight",
+            "draco_mesh_fixture_001",
+            "--run-control",
+            str(receipt_path),
+        ]
+    )
+
+    assert result == 0
+    preflight_path = run_dir / "live_executor" / "execution_preflight.json"
+    preflight = json.loads(preflight_path.read_text(encoding="utf-8"))
+    assert preflight["execution_status"] == "not_launched_current_halt"
+    assert preflight["will_execute"] is False
+    assert preflight["run_control_receipt"] == str(receipt_path)
+    assert preflight["transcript_root"].endswith(
+        "sandbox/codex-dr/runs/draco_mesh_fixture_001/transcripts/"
+    )
+    deep_search = next(
+        role for role in preflight["role_preflights"] if role["task_id"] == "task_deep_search"
+    )
+    assert deep_search["workspace_path"].endswith(
+        "sandbox/codex-dr/.agent-workspaces/draco_mesh_fixture_001/deep_search"
+    )
+    assert deep_search["transcript_path"] == "transcripts/task_deep_search.jsonl"
+    assert deep_search["output_paths"] == [
+        "branches/deep_search/pointer.md",
+        "branches/deep_search/analysis.md",
+        "branches/deep_search/evidence.jsonl",
+    ]
+    assert deep_search["supervision"]["will_execute"] is False
+    assert not (run_dir / "provider_metadata.json").exists()
+    assert not (run_dir / "transcripts").exists()
+    assert not (run_dir / "live_executor" / "outputs").exists()
+
+
+def test_mesh_executor_preflight_fails_closed_without_launch_plan(tmp_path: Path):
+    harness, run_dir, runs_dir = fresh_mesh_run(tmp_path)
+    receipt_path = runs_dir / "dry_run_control.json"
+    write_dry_run_control_receipt(receipt_path, "draco_mesh_fixture_001")
+
+    result = harness.main(
+        [
+            "--runs-dir",
+            str(runs_dir),
+            "mesh-executor-preflight",
+            "draco_mesh_fixture_001",
+            "--run-control",
+            str(receipt_path),
+        ]
+    )
+
+    assert result == 2
+    assert not (run_dir / "live_executor").exists()
+    assert not (run_dir / "provider_metadata.json").exists()
+    assert not (run_dir / "transcripts").exists()
+
+
+@pytest.mark.parametrize(
+    "mutation",
+    [
+        lambda receipt_path, _run_dir: set_receipt_execution_approved(receipt_path),
+        lambda _receipt_path, run_dir: set_launch_plan_run_id(
+            run_dir / "live_adapter" / "launch_plan.json", "other_run"
+        ),
+        lambda _receipt_path, run_dir: remove_launch_plan_field(
+            run_dir / "live_adapter" / "launch_plan.json", "cwd"
+        ),
+        lambda receipt_path, _run_dir: remove_receipt_transcript_root(receipt_path),
+        lambda _receipt_path, run_dir: remove_launch_plan_field(
+            run_dir / "live_adapter" / "launch_plan.json", "output_paths"
+        ),
+    ],
+)
+def test_mesh_executor_preflight_fails_closed_on_invalid_preconditions(
+    tmp_path: Path, mutation
+):
+    harness, run_dir, runs_dir, receipt_path = fresh_live_planned_mesh(tmp_path)
+    mutation(receipt_path, run_dir)
+
+    result = harness.main(
+        [
+            "--runs-dir",
+            str(runs_dir),
+            "mesh-executor-preflight",
+            "draco_mesh_fixture_001",
+            "--run-control",
+            str(receipt_path),
+        ]
+    )
+
+    assert result == 2
+    assert not (run_dir / "live_executor").exists()
     assert not (run_dir / "provider_metadata.json").exists()
     assert not (run_dir / "transcripts").exists()
 
@@ -281,6 +471,70 @@ def test_validator_fails_expected_provider_off_mutations(
         (
             lambda run_dir: set_benchmark_score(run_dir / "benchmark_score.json"),
             "benchmark_placeholder_not_score",
+        ),
+        (
+            lambda run_dir: (run_dir / "scorer_manifest.json").unlink(),
+            "draco_scorer_manifest_valid",
+        ),
+        (
+            lambda run_dir: remove_scorer_manifest_field(
+                run_dir / "scorer_manifest.json", "rubric_mapping"
+            ),
+            "draco_scorer_manifest_valid",
+        ),
+        (
+            lambda run_dir: remove_scorer_manifest_field(
+                run_dir / "scorer_manifest.json", "judge_policy"
+            ),
+            "draco_scorer_manifest_valid",
+        ),
+        (
+            lambda run_dir: remove_scorer_manifest_field(
+                run_dir / "scorer_manifest.json", "sealed_reference_policy"
+            ),
+            "draco_scorer_manifest_valid",
+        ),
+        (
+            lambda run_dir: set_benchmark_score(run_dir / "benchmark_score.json"),
+            "draco_scorer_manifest_valid",
+        ),
+        (
+            lambda run_dir: (run_dir / "evaluation_ledger.json").unlink(),
+            "benchmark_evaluation_claim_gate_enforced",
+        ),
+        (
+            lambda run_dir: remove_evaluation_ledger_field(
+                run_dir / "evaluation_ledger.json", "failure_taxonomy"
+            ),
+            "benchmark_evaluation_claim_gate_enforced",
+        ),
+        (
+            lambda run_dir: set_evaluation_ledger_allows_claim_widening(
+                run_dir / "evaluation_ledger.json"
+            ),
+            "benchmark_evaluation_claim_gate_enforced",
+        ),
+        (
+            lambda run_dir: add_draco_score_allowed_claim(run_dir / "allowed_claims.json"),
+            "benchmark_evaluation_claim_gate_enforced",
+        ),
+        (
+            lambda run_dir: remove_failure_taxonomy_class(
+                run_dir / "self_improvement" / "failure_taxonomy.json", "prompt"
+            ),
+            "self_improvement_replay_gate_enforced",
+        ),
+        (
+            lambda run_dir: promote_improvement_proposal(
+                run_dir / "self_improvement" / "improvement_proposal.json"
+            ),
+            "self_improvement_replay_gate_enforced",
+        ),
+        (
+            lambda run_dir: allow_failed_replay_claim_widening(
+                run_dir / "self_improvement" / "regression_gate.json"
+            ),
+            "self_improvement_replay_gate_enforced",
         ),
         (
             lambda run_dir: add_widened_allowed_claim(run_dir / "allowed_claims.json"),
@@ -399,6 +653,122 @@ def write_dry_run_control_receipt(path: Path, run_id: str) -> None:
         },
     }
     path.write_text(json.dumps(receipt, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+
+def fresh_live_planned_mesh(tmp_path: Path):
+    harness, run_dir, runs_dir = fresh_mesh_run(tmp_path)
+    receipt_path = runs_dir / "dry_run_control.json"
+    write_dry_run_control_receipt(receipt_path, "draco_mesh_fixture_001")
+    result = harness.main(
+        [
+            "--runs-dir",
+            str(runs_dir),
+            "mesh-live-plan",
+            "draco_mesh_fixture_001",
+            "--run-control",
+            str(receipt_path),
+        ]
+    )
+    assert result == 0
+    return harness, run_dir, runs_dir, receipt_path
+
+
+def set_receipt_execution_approved(receipt_path: Path) -> None:
+    receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+    receipt["approval"]["approved_for_execution"] = True
+    receipt_path.write_text(json.dumps(receipt, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+
+def remove_receipt_transcript_root(receipt_path: Path) -> None:
+    receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+    receipt["runner"].pop("transcript_root")
+    receipt_path.write_text(json.dumps(receipt, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+
+def set_launch_plan_run_id(launch_plan_path: Path, run_id: str) -> None:
+    launch_plan = json.loads(launch_plan_path.read_text(encoding="utf-8"))
+    launch_plan["run_id"] = run_id
+    launch_plan_path.write_text(
+        json.dumps(launch_plan, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
+
+
+def remove_launch_plan_field(launch_plan_path: Path, field: str) -> None:
+    launch_plan = json.loads(launch_plan_path.read_text(encoding="utf-8"))
+    launch_plan["role_launch_plans"][0].pop(field, None)
+    launch_plan_path.write_text(
+        json.dumps(launch_plan, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
+
+
+def remove_scorer_manifest_field(manifest_path: Path, field: str) -> None:
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    manifest.pop(field, None)
+    manifest_path.write_text(
+        json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
+
+
+def remove_evaluation_ledger_field(ledger_path: Path, field: str) -> None:
+    ledger = json.loads(ledger_path.read_text(encoding="utf-8"))
+    ledger.pop(field, None)
+    ledger_path.write_text(
+        json.dumps(ledger, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
+
+
+def set_evaluation_ledger_allows_claim_widening(ledger_path: Path) -> None:
+    ledger = json.loads(ledger_path.read_text(encoding="utf-8"))
+    ledger["allowed_claim_impact"]["may_widen_claims"] = True
+    ledger["allowed_claim_impact"]["claim_gate_status"] = "open"
+    ledger_path.write_text(
+        json.dumps(ledger, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
+
+
+def add_draco_score_allowed_claim(allowed_claims_path: Path) -> None:
+    allowed = json.loads(allowed_claims_path.read_text(encoding="utf-8"))
+    allowed["allowed_claims"].append(
+        {
+            "claim": "Codex-DR has a DRACO score.",
+            "scope": "invalid",
+            "supporting_artifacts": ["benchmark_score.json"],
+        }
+    )
+    allowed_claims_path.write_text(
+        json.dumps(allowed, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+
+
+def remove_failure_taxonomy_class(taxonomy_path: Path, class_id: str) -> None:
+    taxonomy = json.loads(taxonomy_path.read_text(encoding="utf-8"))
+    taxonomy["failure_classes"] = [
+        item for item in taxonomy["failure_classes"] if item.get("class_id") != class_id
+    ]
+    taxonomy_path.write_text(
+        json.dumps(taxonomy, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+
+
+def promote_improvement_proposal(proposal_path: Path) -> None:
+    proposal = json.loads(proposal_path.read_text(encoding="utf-8"))
+    proposal["promotion_status"] = "promoted"
+    proposal["auto_promotion_allowed"] = True
+    proposal_path.write_text(
+        json.dumps(proposal, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+
+
+def allow_failed_replay_claim_widening(regression_path: Path) -> None:
+    regression = json.loads(regression_path.read_text(encoding="utf-8"))
+    regression["failed_cases_cannot_widen_claims"] = False
+    regression_path.write_text(
+        json.dumps(regression, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
 
 
 def set_benchmark_score(score_path: Path) -> None:

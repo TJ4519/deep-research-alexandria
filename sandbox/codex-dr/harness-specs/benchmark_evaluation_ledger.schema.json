@@ -1,0 +1,125 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "codex-dr.benchmark_evaluation_ledger.schema.json",
+  "title": "Codex-DR Benchmark Evaluation Ledger",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "run_id",
+    "benchmark_family",
+    "case_id",
+    "scorer_manifest",
+    "benchmark_score",
+    "result_status",
+    "score_status",
+    "failure_taxonomy",
+    "improvement_recommendations",
+    "allowed_claim_impact"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "codex-dr.benchmark_evaluation_ledger.v1"
+    },
+    "run_id": {
+      "type": "string"
+    },
+    "benchmark_family": {
+      "type": "string"
+    },
+    "case_id": {
+      "type": "string"
+    },
+    "scorer_manifest": {
+      "type": "string"
+    },
+    "benchmark_score": {
+      "type": "string"
+    },
+    "result_status": {
+      "enum": [
+        "blocked_no_score",
+        "failed",
+        "null",
+        "scored_pending_claim_review",
+        "scored_claims_blocked"
+      ]
+    },
+    "score_status": {
+      "type": "object",
+      "required": [
+        "score",
+        "raw_score",
+        "normalized_score",
+        "claims_enabled",
+        "scorer_custody_present"
+      ]
+    },
+    "failure_taxonomy": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["failure_class", "severity", "root_cause", "blocks"],
+        "properties": {
+          "failure_class": {
+            "type": "string"
+          },
+          "severity": {
+            "enum": ["info", "minor", "major", "blocking"]
+          },
+          "root_cause": {
+            "type": "string"
+          },
+          "blocks": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "improvement_recommendations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["recommendation_id", "target_surface", "action"],
+        "properties": {
+          "recommendation_id": {
+            "type": "string"
+          },
+          "target_surface": {
+            "type": "string"
+          },
+          "action": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "allowed_claim_impact": {
+      "type": "object",
+      "required": ["may_widen_claims", "claim_gate_status", "reason", "blocked_claims"],
+      "properties": {
+        "may_widen_claims": {
+          "type": "boolean"
+        },
+        "claim_gate_status": {
+          "enum": ["blocked", "review_required", "open"]
+        },
+        "reason": {
+          "type": "string"
+        },
+        "blocked_claims": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

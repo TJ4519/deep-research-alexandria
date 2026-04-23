@@ -12,6 +12,12 @@ from typing import Any
 
 SANDBOX_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_RUNS_DIR = SANDBOX_ROOT / "runs"
+SELF_IMPROVEMENT_TAXONOMY_PATH = (
+    SANDBOX_ROOT / "harness-specs" / "self_improvement_failure_taxonomy.json"
+)
+SELF_IMPROVEMENT_CORPUS_PATH = (
+    SANDBOX_ROOT / "harness-specs" / "provider_off_self_improvement_replay_corpus.json"
+)
 FIXTURE_TIMESTAMP = "2026-04-22T00:00:00Z"
 ID_RE = re.compile(r"^[a-z0-9][a-z0-9_-]*$")
 
@@ -95,6 +101,82 @@ MESH_BRANCH_ROLES = {
 
 MESH_INITIAL_BRANCH_IDS = ["deep_search", "data_analysis", "verification"]
 MESH_ALL_BRANCH_IDS = [*MESH_INITIAL_BRANCH_IDS, "reentry_followup"]
+LIVE_ROLE_PROMPT_PACK_REF = "sandbox/codex-dr/harness-specs/live_role_prompt_pack.md"
+
+ROLE_PROMPT_PROFILES = {
+    "planner": {
+        "title": "Planner",
+        "instructions": [
+            "Recover the user question, available files/docs, and allowed external context.",
+            "Emit a Plan File, skills/tools selection, adequacy criteria, and task graph.",
+            "Make dependencies, branch roles, output contracts, and review checklist explicit.",
+        ],
+    },
+    "deep_search": {
+        "title": "Deep Search Branch",
+        "instructions": [
+            "Collect public-source orientation only within the run-control data policy.",
+            "Return source-backed findings through pointer, analysis, and evidence files.",
+            "Mark uncertainty and access gaps instead of stretching source claims.",
+        ],
+    },
+    "data_analysis": {
+        "title": "Data Analysis Branch",
+        "instructions": [
+            "Inspect case fields, benchmark-relevant structure, and scoring implications.",
+            "Separate observed data from inference and blocked reference-answer material.",
+            "Return analysis spans named by the pointer for selective orchestration.",
+        ],
+    },
+    "verification": {
+        "title": "Verification Branch",
+        "instructions": [
+            "Check claim boundaries, source admission, citation support, and non-claims.",
+            "Identify unsupported or overbroad claims before synthesis or report writing.",
+            "Return verification evidence without enabling benchmark or parity claims.",
+        ],
+    },
+    "orchestrator": {
+        "title": "Evaluate And Synthesize Orchestrator",
+        "instructions": [
+            "Read pointer files before analysis files and admit only named analysis spans.",
+            "Assess adequacy criteria, contradictions, unresolved gaps, and re-entry needs.",
+            "Write synthesis from admitted evidence and preserve blocked claims.",
+        ],
+    },
+    "reviewer": {
+        "title": "Reviewer And Fact-Checker",
+        "instructions": [
+            "Fact-check synthesis/report state against the planning-time checklist.",
+            "Classify findings by severity and whether more research is required.",
+            "Write review output that can compile into specific re-entry tasks.",
+        ],
+    },
+    "reentry": {
+        "title": "Reviewer-Driven Re-Entry Branch",
+        "instructions": [
+            "Answer only the cited reviewer finding and keep the scope narrow.",
+            "Return pointer, analysis, and evidence files linked to the review finding.",
+            "Do not widen claims beyond the source-supported follow-up result.",
+        ],
+    },
+    "writer": {
+        "title": "One Writer Report",
+        "instructions": [
+            "Write one coherent report from synthesis, review state, and claim ledger.",
+            "Preserve unresolveds, non-claims, and benchmark/scorer blockers.",
+            "Do not introduce new facts that lack evidence custody.",
+        ],
+    },
+    "scorer_bridge": {
+        "title": "Scorer Bridge",
+        "instructions": [
+            "Prepare scoring inputs and schema only after scorer policy is approved.",
+            "Keep sealed references, judge prompts, variance policy, and transcripts explicit.",
+            "Never convert a placeholder score into a numeric benchmark claim.",
+        ],
+    },
+}
 
 MESH_REQUIRED_FILES = [
     "run_manifest.json",
@@ -119,6 +201,11 @@ MESH_REQUIRED_FILES = [
     "report.md",
     "scorer_manifest.json",
     "benchmark_score.json",
+    "evaluation_ledger.json",
+    "self_improvement/replay_corpus.json",
+    "self_improvement/failure_taxonomy.json",
+    "self_improvement/improvement_proposal.json",
+    "self_improvement/regression_gate.json",
     "allowed_claims.json",
 ]
 
@@ -137,6 +224,10 @@ MESH_REQUIRED_EVENT_TYPES = [
     "role_configs.written",
     "pointer_reads.recorded",
     "scorer_bridge.written",
+    "evaluation_ledger.written",
+    "self_improvement.replay_written",
+    "self_improvement.proposal_written",
+    "self_improvement.regression_gate_written",
 ]
 
 VALIDATOR_NAMES = {
@@ -2053,11 +2144,89 @@ def mesh_bootstrap_score(case_id: str, *, runs_dir: Path | str | None = None) ->
     write_json(
         run_dir / "scorer_manifest.json",
         {
-            "schema_version": "codex-dr.scorer_manifest.v1",
+            "schema_version": "codex-dr.draco_scorer_manifest.v1",
             "run_id": case_id,
             "benchmark_family": "DRACO",
+            "scorer_status": "blocked",
             "scorer_available": False,
-            "mode": "provider_off_placeholder",
+            "execution_allowed": False,
+            "manifest_schema": "sandbox/codex-dr/harness-specs/draco_scorer_manifest.schema.json",
+            "evaluation_output_schema": (
+                "sandbox/codex-dr/harness-specs/draco_evaluation_output.schema.json"
+            ),
+            "case_manifest": "case_manifest.json",
+            "judge_policy": {
+                "kind": "model_judge",
+                "provider": "evidence-pending",
+                "model": "evidence-pending",
+                "prompt_version": "evidence-pending",
+                "parameters": {
+                    "temperature": "evidence-pending",
+                    "reasoning_effort": "evidence-pending",
+                },
+                "execution_status": "blocked_until_run_control_and_scorer_approval",
+            },
+            "rubric_mapping": [
+                {
+                    "criterion_group": "factual_accuracy",
+                    "draco_axis": "factual accuracy",
+                    "output_field": "criterion_verdicts[].factual_accuracy",
+                },
+                {
+                    "criterion_group": "breadth_depth",
+                    "draco_axis": "breadth and depth",
+                    "output_field": "criterion_verdicts[].breadth_depth",
+                },
+                {
+                    "criterion_group": "presentation_quality",
+                    "draco_axis": "presentation quality",
+                    "output_field": "criterion_verdicts[].presentation_quality",
+                },
+                {
+                    "criterion_group": "citation_quality",
+                    "draco_axis": "citation quality",
+                    "output_field": "criterion_verdicts[].citation_quality",
+                },
+                {
+                    "criterion_group": "negative_penalties",
+                    "draco_axis": "weighted negative criteria and safety penalties",
+                    "output_field": "penalties[]",
+                },
+            ],
+            "scoring_formula": {
+                "raw_score": "sum(weight * criterion_verdict) over DRACO criteria",
+                "normalized_score": "raw score normalized by DRACO task rubric bounds",
+                "score_range": [0, 1],
+                "blocked_until": "approved scorer implementation and sealed reference policy",
+            },
+            "sealed_reference_policy": {
+                "status": "sealed_until_scoring",
+                "reference_answers_visible_to_generator": False,
+                "rubric_payload_visible_to_generator": False,
+                "allowed_reader": "approved scorer only",
+            },
+            "retry_policy": {
+                "max_attempts": 1,
+                "automatic_retry_allowed": False,
+            },
+            "variance_policy": {
+                "status": "not_estimated_for_single_smoke",
+                "requires": "approved repeated-run or judge-variance protocol",
+            },
+            "output_paths": {
+                "evaluation_output": "draco_evaluation_output.json",
+                "benchmark_score": "benchmark_score.json",
+                "judge_transcript_root": "transcripts/scorer/",
+            },
+            "claim_boundary": {
+                "numeric_score_allowed": False,
+                "blocked_claims": [
+                    "DRACO score",
+                    "Grep parity",
+                    "leaderboard rank",
+                    "product readiness",
+                ],
+            },
             "blocked_reason": (
                 "No benchmark execution or scorer call is allowed in provider-off mode."
             ),
@@ -2080,7 +2249,10 @@ def mesh_bootstrap_score(case_id: str, *, runs_dir: Path | str | None = None) ->
             "benchmark_family": "DRACO",
             "case_manifest": "case_manifest.json",
             "scorer_manifest": "scorer_manifest.json",
+            "evaluation_output": None,
             "score": None,
+            "raw_score": None,
+            "normalized_score": None,
             "claims_enabled": False,
             "reason": "Scoring remains blocked until a live run and scorer path are approved.",
             "produced_by_event": "evt_0027_benchmark_placeholder_written",
@@ -2093,7 +2265,209 @@ def mesh_bootstrap_score(case_id: str, *, runs_dir: Path | str | None = None) ->
         outputs=["benchmark_score.json"],
         summary="Wrote provider-off DR mesh benchmark placeholder.",
     )
+    write_json(
+        run_dir / "evaluation_ledger.json",
+        {
+            "schema_version": "codex-dr.benchmark_evaluation_ledger.v1",
+            "run_id": case_id,
+            "benchmark_family": "DRACO",
+            "case_id": "draco_provider_off_mesh_fixture",
+            "scorer_manifest": "scorer_manifest.json",
+            "benchmark_score": "benchmark_score.json",
+            "result_status": "blocked_no_score",
+            "score_status": {
+                "score": None,
+                "raw_score": None,
+                "normalized_score": None,
+                "claims_enabled": False,
+                "scorer_custody_present": False,
+            },
+            "failure_taxonomy": [
+                {
+                    "failure_class": "scorer_missing",
+                    "severity": "blocking",
+                    "root_cause": "No approved judge/scorer execution path exists.",
+                    "blocks": ["DRACO score", "Grep parity", "leaderboard rank"],
+                },
+                {
+                    "failure_class": "provider_off_placeholder",
+                    "severity": "blocking",
+                    "root_cause": "Provider-off fixture cannot evaluate answer quality.",
+                    "blocks": ["benchmark execution success"],
+                },
+            ],
+            "improvement_recommendations": [
+                {
+                    "recommendation_id": "rec_draco_scorer_manifest_001",
+                    "target_surface": "scorer_manifest.json",
+                    "action": (
+                        "Approve scorer policy, judge prompt, sealed-reference rule, "
+                        "and custody before scoring."
+                    ),
+                },
+                {
+                    "recommendation_id": "rec_claim_gate_001",
+                    "target_surface": "allowed_claims.json",
+                    "action": (
+                        "Keep benchmark and parity claims blocked until scorer custody "
+                        "validates a non-placeholder score."
+                    ),
+                },
+            ],
+            "allowed_claim_impact": {
+                "may_widen_claims": False,
+                "claim_gate_status": "blocked",
+                "reason": "Evaluation is blocked and benchmark_score.json is a placeholder.",
+                "blocked_claims": [
+                    "DRACO score",
+                    "Grep parity",
+                    "leaderboard rank",
+                    "product readiness",
+                ],
+            },
+            "produced_by_event": "evt_0027_eval_ledger_written",
+        },
+    )
+    append_event(
+        run_dir,
+        event_id="evt_0027_eval_ledger_written",
+        event_type="evaluation_ledger.written",
+        inputs=["scorer_manifest.json", "benchmark_score.json"],
+        outputs=["evaluation_ledger.json"],
+        summary="Wrote benchmark evaluation ledger with claim widening blocked.",
+    )
     update_manifest_status(run_dir, "scoring_blocked")
+    refresh_artifact_manifest(run_dir)
+    return run_dir
+
+
+def mesh_bootstrap_self_improve(
+    case_id: str, *, runs_dir: Path | str | None = None
+) -> Path:
+    run_dir = run_path(case_id, runs_dir)
+    taxonomy = read_json(SELF_IMPROVEMENT_TAXONOMY_PATH)
+    corpus = read_json(SELF_IMPROVEMENT_CORPUS_PATH)
+    write_json(
+        run_dir / "self_improvement" / "replay_corpus.json",
+        {
+            **corpus,
+            "run_id": case_id,
+            "source_ref": rel(SELF_IMPROVEMENT_CORPUS_PATH, SANDBOX_ROOT),
+            "produced_by_event": "evt_0030_self_improvement_replay_written",
+        },
+    )
+    write_json(
+        run_dir / "self_improvement" / "failure_taxonomy.json",
+        {
+            **taxonomy,
+            "run_id": case_id,
+            "source_ref": rel(SELF_IMPROVEMENT_TAXONOMY_PATH, SANDBOX_ROOT),
+            "produced_by_event": "evt_0030_self_improvement_replay_written",
+        },
+    )
+    append_event(
+        run_dir,
+        event_id="evt_0030_self_improvement_replay_written",
+        event_type="self_improvement.replay_written",
+        inputs=["evaluation_ledger.json", "allowed_claims.json"],
+        outputs=[
+            "self_improvement/replay_corpus.json",
+            "self_improvement/failure_taxonomy.json",
+        ],
+        summary="Wrote provider-off self-improvement replay corpus and taxonomy.",
+    )
+    write_json(
+        run_dir / "self_improvement" / "improvement_proposal.json",
+        {
+            "schema_version": "codex-dr.improvement_proposal.v1",
+            "run_id": case_id,
+            "proposal_id": "proposal_prompt_claim_boundary_001",
+            "source_fixture_id": "failed_eval_claim_widening_001",
+            "failure_classes": ["claim_boundary", "evidence", "prompt"],
+            "target_surfaces": [
+                "sandbox/codex-dr/harness-specs/live_role_prompt_pack.md",
+                "role_configs.json",
+            ],
+            "suggested_patch": {
+                "prompt_patch": (
+                    "Strengthen scorer and writer prompts to state that placeholder "
+                    "benchmark outputs can never widen DRACO or parity claims."
+                ),
+                "role_config_patch": {
+                    "role": "writer",
+                    "additional_blocked_claim": (
+                        "DRACO score until scorer custody validates "
+                        "benchmark_score.json"
+                    ),
+                },
+            },
+            "promotion_status": "proposed_not_promoted",
+            "auto_promotion_allowed": False,
+            "automatic_skill_mutation_allowed": False,
+            "claim_impact": "no claim widening",
+            "produced_by_event": "evt_0031_self_improvement_proposal_written",
+        },
+    )
+    append_event(
+        run_dir,
+        event_id="evt_0031_self_improvement_proposal_written",
+        event_type="self_improvement.proposal_written",
+        inputs=[
+            "self_improvement/replay_corpus.json",
+            "self_improvement/failure_taxonomy.json",
+        ],
+        outputs=["self_improvement/improvement_proposal.json"],
+        summary="Wrote no-auto-promotion improvement proposal.",
+    )
+    write_json(
+        run_dir / "self_improvement" / "regression_gate.json",
+        {
+            "schema_version": "codex-dr.self_improvement_regression_gate.v1",
+            "run_id": case_id,
+            "gate_id": "self_improvement_provider_off_gate_001",
+            "prior_passing_cases_remain_passing": True,
+            "failed_cases_cannot_widen_claims": True,
+            "automatic_skill_mutation_allowed": False,
+            "proposal_promotion_allowed": False,
+            "checks": [
+                {
+                    "check_id": "provider_off_mesh_validation_stays_green",
+                    "status": "passed",
+                    "evidence": "validate_run required checks remain passing before mutation.",
+                },
+                {
+                    "check_id": "failed_eval_claim_widening_blocked",
+                    "status": "passed",
+                    "evidence": "benchmark_evaluation_claim_gate_enforced blocks widening.",
+                },
+                {
+                    "check_id": "proposal_not_auto_promoted",
+                    "status": "passed",
+                    "evidence": "improvement_proposal.auto_promotion_allowed is false.",
+                },
+            ],
+            "blocked_claims": [
+                "live benchmark improvement",
+                "DRACO score improvement",
+                "Grep parity",
+                "automatic skill mutation",
+            ],
+            "produced_by_event": "evt_0032_self_improvement_regression_gate_written",
+        },
+    )
+    append_event(
+        run_dir,
+        event_id="evt_0032_self_improvement_regression_gate_written",
+        event_type="self_improvement.regression_gate_written",
+        inputs=[
+            "self_improvement/improvement_proposal.json",
+            "evaluation_ledger.json",
+            "allowed_claims.json",
+        ],
+        outputs=["self_improvement/regression_gate.json"],
+        summary="Wrote provider-off self-improvement regression gate.",
+    )
+    update_manifest_status(run_dir, "self_improvement_blocked_from_promotion")
     refresh_artifact_manifest(run_dir)
     return run_dir
 
@@ -2250,26 +2624,233 @@ def mesh_live_plan(
     return run_dir
 
 
+def mesh_executor_preflight(
+    case_id: str,
+    *,
+    run_control: Path,
+    runs_dir: Path | str | None = None,
+) -> Path:
+    run_dir = run_path(case_id, runs_dir)
+    if not run_dir.exists():
+        raise HarnessError(f"run does not exist: {run_dir}")
+    if not is_mesh_run(run_dir):
+        raise HarnessError("mesh-executor-preflight requires a provider-off DR mesh run bundle")
+    receipt = require_dry_run_control_receipt(run_control, run_id=case_id)
+    launch_plan_path = run_dir / "live_adapter" / "launch_plan.json"
+    if not launch_plan_path.exists():
+        raise HarnessError("live_adapter/launch_plan.json is missing")
+    launch_plan = read_json(launch_plan_path)
+    role_preflights = validate_no_launch_executor_plan(
+        case_id=case_id,
+        run_control=run_control,
+        receipt=receipt,
+        launch_plan=launch_plan,
+    )
+    preflight = {
+        "schema_version": "codex-dr.live_executor_preflight.v1",
+        "run_id": case_id,
+        "run_control_receipt": str(run_control),
+        "launch_plan": "live_adapter/launch_plan.json",
+        "execution_status": "not_launched_current_halt",
+        "will_execute": False,
+        "non_execution_guarantee": (
+            "mesh-executor-preflight validates launch-plan custody and prepares "
+            "execution metadata only; it never invokes codex exec."
+        ),
+        "workspace_root": (SANDBOX_ROOT / ".agent-workspaces" / case_id).as_posix(),
+        "transcript_root": receipt["runner"]["transcript_root"],
+        "supervision": {
+            "foreground_supervision_required": True,
+            "automatic_retry_allowed": False,
+            "wall_clock_bound_minutes": receipt["operational_bounds"][
+                "max_wall_clock_minutes"
+            ],
+            "kill_path": receipt["operational_bounds"]["kill_path"],
+        },
+        "role_preflights": role_preflights,
+        "blocked_side_effects": [
+            "codex exec launch",
+            "provider metadata creation",
+            "transcript creation",
+            "branch live output creation",
+            "benchmark execution",
+            "benchmark scoring",
+        ],
+        "produced_by_event": "evt_0029_live_executor_preflight_written",
+    }
+    write_json(run_dir / "live_executor" / "execution_preflight.json", preflight)
+    append_event(
+        run_dir,
+        event_id="evt_0029_live_executor_preflight_written",
+        event_type="live_executor.preflight_written",
+        inputs=[
+            "live_adapter/launch_plan.json",
+            str(run_control),
+        ],
+        outputs=["live_executor/execution_preflight.json"],
+        summary="Prepared no-launch live mesh executor preflight metadata.",
+    )
+    update_manifest_status(run_dir, "executor_preflighted")
+    refresh_artifact_manifest(run_dir)
+    return run_dir
+
+
+def validate_no_launch_executor_plan(
+    *,
+    case_id: str,
+    run_control: Path,
+    receipt: dict[str, Any],
+    launch_plan: dict[str, Any],
+) -> list[dict[str, Any]]:
+    errors = []
+    if launch_plan.get("schema_version") != "codex-dr.live_adapter_launch_plan.v1":
+        errors.append("launch plan schema_version is invalid")
+    if launch_plan.get("run_id") != case_id:
+        errors.append(f"launch plan run_id mismatch: {launch_plan.get('run_id')!r}")
+    if launch_plan.get("launch_mode") != "dry_run_only":
+        errors.append("launch plan must be dry_run_only for preflight")
+    recorded_receipt = launch_plan.get("run_control_receipt")
+    if not recorded_receipt:
+        errors.append("launch plan missing run_control_receipt")
+    elif Path(recorded_receipt).resolve() != run_control.resolve():
+        errors.append("launch plan run_control_receipt does not match supplied receipt")
+    role_plans = launch_plan.get("role_launch_plans", [])
+    if not role_plans:
+        errors.append("launch plan has no role_launch_plans")
+    workspace_root = (SANDBOX_ROOT / ".agent-workspaces" / case_id).resolve()
+    role_preflights = []
+    for index, role_plan in enumerate(role_plans):
+        task_id = role_plan.get("task_id") or f"<role_plan_{index}>"
+        cwd = role_plan.get("cwd")
+        if not cwd:
+            errors.append(f"{task_id}: missing workspace root")
+            continue
+        workspace_path = Path(cwd).resolve()
+        if workspace_path != workspace_root and workspace_root not in workspace_path.parents:
+            errors.append(f"{task_id}: workspace root is outside sandbox agent workspaces")
+        transcript_path = role_plan.get("transcript_path")
+        if not transcript_path:
+            errors.append(f"{task_id}: missing transcript path")
+        output_paths = role_plan.get("output_paths", [])
+        if not output_paths:
+            errors.append(f"{task_id}: missing output contracts")
+        if any(Path(path).is_absolute() for path in output_paths):
+            errors.append(f"{task_id}: output contracts must be relative")
+        prompt_file = role_plan.get("prompt_file")
+        if not prompt_file:
+            errors.append(f"{task_id}: missing prompt file")
+        if role_plan.get("will_execute") is not False:
+            errors.append(f"{task_id}: role plan must have will_execute false")
+        role_preflights.append(
+            {
+                "task_id": task_id,
+                "role": role_plan.get("role"),
+                "box_id": role_plan.get("box_id"),
+                "workspace_path": cwd,
+                "prompt_file": prompt_file,
+                "transcript_path": transcript_path,
+                "output_paths": output_paths,
+                "command_plan": role_plan.get("command_plan", []),
+                "execution_status": "prepared_not_launched",
+                "supervision": {
+                    "will_execute": False,
+                    "foreground_supervision_required": True,
+                    "wall_clock_bound_minutes": role_plan.get(
+                        "wall_clock_bound_minutes"
+                    ),
+                    "kill_path": role_plan.get("kill_path"),
+                    "automatic_retry_allowed": False,
+                },
+                "claim_boundary": role_plan.get("claim_boundary", {}),
+                "scorer_policy": role_plan.get("scorer_policy", {}),
+            }
+        )
+    if not receipt["runner"].get("transcript_root"):
+        errors.append("receipt missing transcript root")
+    if errors:
+        raise HarnessError(f"executor preflight failed: {'; '.join(errors)}")
+    return role_preflights
+
+
 def live_adapter_prompt(
     case_id: str,
     task: dict[str, Any],
     role: dict[str, Any],
     receipt: dict[str, Any],
 ) -> str:
+    expected_outputs = task.get("expected_outputs", role.get("return_contract", []))
+    if not expected_outputs:
+        raise HarnessError(f"task {task['task_id']} lacks output contract")
+    non_claims = receipt.get("non_claims_even_if_success")
+    if not non_claims:
+        raise HarnessError("run-control receipt lacks non-claims for prompt generation")
+    profile = role_prompt_profile(task, role)
+    adequacy_checks = task.get("adequacy_checks", [])
+    allowed_inputs = task.get("inputs", role.get("input_contract", []))
+    role_instructions = "\n".join(
+        f"- {instruction}" for instruction in profile["instructions"]
+    )
     return f"""# Codex-DR Live Adapter Prompt
 
 Run id: `{case_id}`
 Task id: `{task["task_id"]}`
 Role: `{role["role"]}`
+Prompt pack: `{LIVE_ROLE_PROMPT_PACK_REF}`
+
+## DR Mesh Charter
+- Governing charter: `sandbox/codex-dr/harness-specs/dr_mesh_parity_charter.md`.
+- Preserve the Grep-shaped loop: planner, task graph, scoped branches,
+  pointer-first orchestration, adequacy pressure, synthesis, review, re-entry,
+  one-writer report, scorer bridge, and claim custody.
+- This prompt is a no-launch artifact until a named live run-control receipt
+  explicitly authorizes execution.
 
 ## Objective
 {task["objective"]}
 
-## Allowed Inputs
-{json.dumps(task.get("inputs", role.get("input_contract", [])), indent=2)}
+## Role-Specific Instructions
+Role family: {profile["title"]}
 
-## Expected Outputs
-{json.dumps(task.get("expected_outputs", role.get("return_contract", [])), indent=2)}
+{role_instructions}
+
+## Allowed Inputs
+{json.dumps(allowed_inputs, indent=2)}
+
+## Output File Contract
+{json.dumps(expected_outputs, indent=2)}
+
+If this is a branch or re-entry role, return the file triplet:
+
+- `pointer.md` with objective, key findings, evidence map, and `Read Next`;
+- `analysis.md` with section headings named by the pointer;
+- `evidence.jsonl` with source refs, admission status, and produced-by event
+  custody.
+
+## Pointer-First Law
+- Branch agents write files; they do not return long chat payloads as the
+  authoritative artifact.
+- The orchestrator reads `pointer.md` first, then only selected analysis spans
+  named by the pointer.
+- Synthesis may cite only admitted evidence and recorded pointer-read receipts.
+
+## Source Policy
+- Use only allowed input files and sources permitted by the run-control receipt.
+- Do not read env files, secrets, customer data, root runtime data, private
+  benchmark corpora, or raw paid benchmark payloads.
+- If public web access is unavailable or evidence is thin, record the gap
+  explicitly instead of filling it by assumption.
+
+## Citation Discipline
+- Every material factual claim must map to `evidence.jsonl`, a cited source URL,
+  or a local artifact path.
+- Quote or summarize only what the source supports.
+- Mark unresolveds and contradictions separately from admitted claims.
+
+## Adequacy Criteria
+{json.dumps(adequacy_checks, indent=2)}
+
+If adequacy is not satisfied, emit the gap and the specific follow-up task the
+orchestrator or reviewer should consider.
 
 ## Run-Control Boundary
 - Dry-run planning receipt: `{receipt["receipt_id"]}`
@@ -2277,11 +2858,32 @@ Role: `{role["role"]}`
 - Kill path: {receipt["operational_bounds"]["kill_path"]}
 - Automatic retry allowed: false
 
-## Non-Claims
-{json.dumps(receipt["non_claims_even_if_success"], indent=2)}
+## Claim Boundary
+Allowed claims if this future role succeeds:
+{json.dumps(receipt["allowed_claims_if_success"], indent=2)}
+
+Non-claims even if this future role succeeds:
+{json.dumps(non_claims, indent=2)}
+
+Do not claim Grep parity, a DRACO score, leaderboard rank, product readiness,
+or benchmark execution unless a later validated run and scorer bundle proves it.
 
 This prompt file is a dry-run artifact. It does not authorize live execution.
 """
+
+
+def role_prompt_profile(task: dict[str, Any], role: dict[str, Any]) -> dict[str, Any]:
+    task_kind = task.get("kind")
+    role_name = role.get("role")
+    if task_kind == "reentry_research":
+        return ROLE_PROMPT_PROFILES["reentry"]
+    if task_kind == "evaluate_synthesize":
+        return ROLE_PROMPT_PROFILES["orchestrator"]
+    if task_kind == "review":
+        return ROLE_PROMPT_PROFILES["reviewer"]
+    if task_kind == "report_writer":
+        return ROLE_PROMPT_PROFILES["writer"]
+    return ROLE_PROMPT_PROFILES.get(role_name, ROLE_PROMPT_PROFILES["verification"])
 
 
 def mesh_bootstrap_run(case_id: str, *, runs_dir: Path | str | None = None) -> Path:
@@ -2313,6 +2915,7 @@ def mesh_bootstrap_run(case_id: str, *, runs_dir: Path | str | None = None) -> P
     mesh_bootstrap_reentry(case_id, "review_001", runs_dir=runs_dir)
     mesh_bootstrap_report(case_id, runs_dir=runs_dir)
     mesh_bootstrap_score(case_id, runs_dir=runs_dir)
+    mesh_bootstrap_self_improve(case_id, runs_dir=runs_dir)
     return run_dir
 
 
@@ -2329,7 +2932,10 @@ def validate_run(case_id: str, *, runs_dir: Path | str | None = None) -> dict[st
         check_adequacy_criteria(run_dir),
         check_review_reentry(run_dir),
         check_compaction_receipt(run_dir),
+        check_scorer_manifest(run_dir),
         check_benchmark_placeholder(run_dir),
+        check_evaluation_ledger_claim_gate(run_dir),
+        check_self_improvement_replay_gate(run_dir),
         check_report_claims_in_ledger(run_dir),
         check_allowed_claims(run_dir),
         check_provider_off_artifacts(run_dir),
@@ -2593,6 +3199,56 @@ def check_compaction_receipt(run_dir: Path) -> dict[str, str]:
     return pass_check("compaction_receipt_present", "Compaction receipt is present.")
 
 
+def check_scorer_manifest(run_dir: Path) -> dict[str, str]:
+    if not is_mesh_run(run_dir):
+        return pass_check(
+            "draco_scorer_manifest_valid", "Legacy bootstrap has no DRACO scorer manifest."
+        )
+    try:
+        manifest = read_json(run_dir / "scorer_manifest.json")
+        score = read_json(run_dir / "benchmark_score.json")
+    except (FileNotFoundError, json.JSONDecodeError) as error:
+        return fail_check("draco_scorer_manifest_valid", f"Scorer artifacts unavailable: {error}")
+    problems = []
+    if manifest.get("schema_version") != "codex-dr.draco_scorer_manifest.v1":
+        problems.append("invalid scorer manifest schema_version")
+    if manifest.get("benchmark_family") != "DRACO":
+        problems.append("benchmark_family must be DRACO")
+    judge_policy = manifest.get("judge_policy")
+    if not isinstance(judge_policy, dict):
+        problems.append("missing judge policy")
+    elif not all(judge_policy.get(field) for field in ["kind", "provider", "model"]):
+        problems.append("judge policy missing kind/provider/model")
+    if not manifest.get("rubric_mapping"):
+        problems.append("missing rubric mapping")
+    if not manifest.get("scoring_formula"):
+        problems.append("missing scoring formula")
+    if not manifest.get("sealed_reference_policy"):
+        problems.append("missing sealed-reference policy")
+    if not manifest.get("retry_policy"):
+        problems.append("missing retry policy")
+    if not manifest.get("variance_policy"):
+        problems.append("missing variance policy")
+    output_paths = manifest.get("output_paths", {})
+    if not output_paths.get("benchmark_score") or not output_paths.get("evaluation_output"):
+        problems.append("missing scorer output paths")
+    score_values = [score.get("score"), score.get("raw_score"), score.get("normalized_score")]
+    score_has_numeric_value = any(value is not None for value in score_values)
+    scorer_has_custody = (
+        manifest.get("scorer_status") == "approved"
+        and manifest.get("execution_allowed") is True
+        and manifest.get("scorer_execution", {}).get("executed_with_custody") is True
+    )
+    if score_has_numeric_value and not scorer_has_custody:
+        problems.append("non-null benchmark score lacks scorer custody")
+    if problems:
+        return fail_check("draco_scorer_manifest_valid", "; ".join(problems))
+    return pass_check(
+        "draco_scorer_manifest_valid",
+        "DRACO scorer manifest is present and scoring remains blocked.",
+    )
+
+
 def check_benchmark_placeholder(run_dir: Path) -> dict[str, str]:
     try:
         score = read_json(run_dir / "benchmark_score.json")
@@ -2610,6 +3266,128 @@ def check_benchmark_placeholder(run_dir: Path) -> dict[str, str]:
             "Provider-off benchmark placeholder looks like a score.",
         )
     return pass_check("benchmark_placeholder_not_score", "Benchmark output is a placeholder only.")
+
+
+def check_evaluation_ledger_claim_gate(run_dir: Path) -> dict[str, str]:
+    if not is_mesh_run(run_dir):
+        return pass_check(
+            "benchmark_evaluation_claim_gate_enforced",
+            "Legacy bootstrap has no benchmark evaluation ledger.",
+        )
+    try:
+        ledger = read_json(run_dir / "evaluation_ledger.json")
+        score = read_json(run_dir / "benchmark_score.json")
+        manifest = read_json(run_dir / "scorer_manifest.json")
+        allowed = read_json(run_dir / "allowed_claims.json")
+    except (FileNotFoundError, json.JSONDecodeError) as error:
+        return fail_check(
+            "benchmark_evaluation_claim_gate_enforced",
+            f"Evaluation ledger artifacts unavailable: {error}",
+        )
+    problems = []
+    for field in [
+        "scorer_manifest",
+        "result_status",
+        "failure_taxonomy",
+        "improvement_recommendations",
+        "allowed_claim_impact",
+    ]:
+        if not ledger.get(field):
+            problems.append(f"missing {field}")
+    impact = ledger.get("allowed_claim_impact", {})
+    scorer_custody = (
+        manifest.get("scorer_status") == "approved"
+        and manifest.get("execution_allowed") is True
+        and manifest.get("scorer_execution", {}).get("executed_with_custody") is True
+    )
+    score_is_supported = (
+        score.get("score") is not None
+        and score.get("claims_enabled") is True
+        and scorer_custody
+    )
+    evaluation_blocks_claims = (
+        score.get("score") is None
+        or score.get("mode") == "provider_off_placeholder"
+        or score.get("claims_enabled") is not True
+        or ledger.get("result_status") in {"blocked_no_score", "failed", "null"}
+        or not scorer_custody
+    )
+    if evaluation_blocks_claims and impact.get("may_widen_claims") is not False:
+        problems.append("evaluation attempts to widen claims without supported score")
+    if evaluation_blocks_claims and impact.get("claim_gate_status") != "blocked":
+        problems.append("claim gate is not blocked for unsupported evaluation")
+    blocked_phrases = ["draco score", "grep parity", "leaderboard rank"]
+    for claim in allowed.get("allowed_claims", []):
+        text = claim.get("claim", "").lower()
+        if evaluation_blocks_claims and any(phrase in text for phrase in blocked_phrases):
+            problems.append(f"allowed claim exceeds evaluation support: {claim['claim']}")
+    if score_is_supported and impact.get("claim_gate_status") not in {"review_required", "open"}:
+        problems.append("supported score still requires explicit claim-gate review status")
+    if problems:
+        return fail_check("benchmark_evaluation_claim_gate_enforced", "; ".join(problems))
+    return pass_check(
+        "benchmark_evaluation_claim_gate_enforced",
+        "Benchmark evaluation ledger keeps unsupported score claims blocked.",
+    )
+
+
+def check_self_improvement_replay_gate(run_dir: Path) -> dict[str, str]:
+    if not is_mesh_run(run_dir):
+        return pass_check(
+            "self_improvement_replay_gate_enforced",
+            "Legacy bootstrap has no self-improvement replay loop.",
+        )
+    try:
+        corpus = read_json(run_dir / "self_improvement" / "replay_corpus.json")
+        taxonomy = read_json(run_dir / "self_improvement" / "failure_taxonomy.json")
+        proposal = read_json(run_dir / "self_improvement" / "improvement_proposal.json")
+        regression = read_json(run_dir / "self_improvement" / "regression_gate.json")
+    except (FileNotFoundError, json.JSONDecodeError) as error:
+        return fail_check(
+            "self_improvement_replay_gate_enforced",
+            f"Self-improvement artifacts unavailable: {error}",
+        )
+    problems = []
+    fixture_kinds = {fixture.get("kind") for fixture in corpus.get("fixtures", [])}
+    if {"failed_evaluation", "corrected_fixture"} - fixture_kinds:
+        problems.append("replay corpus lacks failed and corrected fixtures")
+    required_classes = {
+        "prompt",
+        "source",
+        "citation",
+        "evidence",
+        "synthesis",
+        "task_graph",
+        "reviewer",
+        "writer",
+        "claim_boundary",
+    }
+    present_classes = {item.get("class_id") for item in taxonomy.get("failure_classes", [])}
+    missing_classes = required_classes - present_classes
+    if missing_classes:
+        problems.append(f"failure taxonomy missing classes: {', '.join(sorted(missing_classes))}")
+    if not proposal.get("suggested_patch"):
+        problems.append("improvement proposal lacks suggested patch")
+    if proposal.get("promotion_status") != "proposed_not_promoted":
+        problems.append("improvement proposal was promoted")
+    if proposal.get("auto_promotion_allowed") is not False:
+        problems.append("improvement proposal allows auto-promotion")
+    if proposal.get("automatic_skill_mutation_allowed") is not False:
+        problems.append("improvement proposal allows automatic skill mutation")
+    if regression.get("prior_passing_cases_remain_passing") is not True:
+        problems.append("regression gate does not preserve passing cases")
+    if regression.get("failed_cases_cannot_widen_claims") is not True:
+        problems.append("regression gate allows failed cases to widen claims")
+    if regression.get("automatic_skill_mutation_allowed") is not False:
+        problems.append("regression gate allows automatic skill mutation")
+    if regression.get("proposal_promotion_allowed") is not False:
+        problems.append("regression gate allows proposal promotion")
+    if problems:
+        return fail_check("self_improvement_replay_gate_enforced", "; ".join(problems))
+    return pass_check(
+        "self_improvement_replay_gate_enforced",
+        "Provider-off self-improvement replay loop is bounded and not promoted.",
+    )
 
 
 def check_report_claims_in_ledger(run_dir: Path) -> dict[str, str]:
@@ -2728,6 +3506,7 @@ def build_parser() -> argparse.ArgumentParser:
         "mesh-review",
         "mesh-report",
         "mesh-score",
+        "mesh-self-improve",
     ]:
         command = subparsers.add_parser(name)
         command.add_argument("case_id")
@@ -2751,6 +3530,10 @@ def build_parser() -> argparse.ArgumentParser:
     mesh_live = subparsers.add_parser("mesh-live-plan")
     mesh_live.add_argument("case_id")
     mesh_live.add_argument("--run-control", required=True, type=Path)
+
+    mesh_executor = subparsers.add_parser("mesh-executor-preflight")
+    mesh_executor.add_argument("case_id")
+    mesh_executor.add_argument("--run-control", required=True, type=Path)
 
     provider_backed = subparsers.add_parser("run-planner")
     provider_backed.add_argument("case_id")
@@ -2818,8 +3601,14 @@ def main(argv: list[str] | None = None) -> int:
             mesh_bootstrap_report(args.case_id, runs_dir=args.runs_dir)
         elif args.command == "mesh-score":
             mesh_bootstrap_score(args.case_id, runs_dir=args.runs_dir)
+        elif args.command == "mesh-self-improve":
+            mesh_bootstrap_self_improve(args.case_id, runs_dir=args.runs_dir)
         elif args.command == "mesh-live-plan":
             mesh_live_plan(args.case_id, run_control=args.run_control, runs_dir=args.runs_dir)
+        elif args.command == "mesh-executor-preflight":
+            mesh_executor_preflight(
+                args.case_id, run_control=args.run_control, runs_dir=args.runs_dir
+            )
         elif args.command == "mesh-bootstrap-run":
             mesh_bootstrap_run(args.case_id, runs_dir=args.runs_dir)
         elif args.command == "validate":

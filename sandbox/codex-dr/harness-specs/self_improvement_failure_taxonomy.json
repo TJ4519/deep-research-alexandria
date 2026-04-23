@@ -1,0 +1,41 @@
+{
+  "schema_version": "codex-dr.self_improvement_failure_taxonomy.v1",
+  "failure_classes": [
+    {
+      "class_id": "prompt",
+      "description": "The role prompt omitted instructions needed to produce valid output."
+    },
+    {
+      "class_id": "source",
+      "description": "The run used missing, weak, forbidden, or insufficient sources."
+    },
+    {
+      "class_id": "citation",
+      "description": "A material claim lacks citation or evidence linkage."
+    },
+    {
+      "class_id": "evidence",
+      "description": "Evidence exists but is not admitted, structured, or strong enough."
+    },
+    {
+      "class_id": "synthesis",
+      "description": "Synthesis failed to reconcile evidence, contradictions, or unresolveds."
+    },
+    {
+      "class_id": "task_graph",
+      "description": "Task dependencies, expected outputs, or re-entry links are invalid."
+    },
+    {
+      "class_id": "reviewer",
+      "description": "Review failed to detect or route a material gap."
+    },
+    {
+      "class_id": "writer",
+      "description": "The report introduced unsupported facts or lost claim boundaries."
+    },
+    {
+      "class_id": "claim_boundary",
+      "description": "Allowed claims widened beyond score, evidence, or scorer custody."
+    }
+  ]
+}

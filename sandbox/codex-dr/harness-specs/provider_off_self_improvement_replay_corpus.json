@@ -1,0 +1,29 @@
+{
+  "schema_version": "codex-dr.provider_off_self_improvement_replay_corpus.v1",
+  "fixtures": [
+    {
+      "fixture_id": "failed_eval_claim_widening_001",
+      "kind": "failed_evaluation",
+      "input_artifacts": [
+        "evaluation_ledger.json",
+        "benchmark_score.json",
+        "allowed_claims.json"
+      ],
+      "failure_classes": ["claim_boundary", "evidence"],
+      "failure_summary": "Placeholder benchmark output attempted to widen DRACO score claims.",
+      "expected_gate": "blocked"
+    },
+    {
+      "fixture_id": "corrected_eval_claim_blocked_001",
+      "kind": "corrected_fixture",
+      "input_artifacts": [
+        "evaluation_ledger.json",
+        "benchmark_score.json",
+        "allowed_claims.json"
+      ],
+      "failure_classes": ["claim_boundary"],
+      "correction_summary": "Allowed claims remain provider-off scoped and benchmark claims stay blocked.",
+      "expected_gate": "passed"
+    }
+  ]
+}
