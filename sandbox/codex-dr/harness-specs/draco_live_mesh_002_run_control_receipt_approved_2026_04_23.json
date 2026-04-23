@@ -1,0 +1,121 @@
+{
+  "allowed_claims_if_success": [
+    "Codex CLI roles executed once for a bounded DR mesh smoke with transcript, artifact, event, and claim custody.",
+    "The run exercised the Grep-shaped planner, branch, synthesis, review, re-entry, and writer topology for one DRACO tiny-smoke pointer."
+  ],
+  "approval": {
+    "approval_note": "Principal explicitly authorized live Codex DR mesh execution in chat on 2026-04-23. This second named smoke is a corrective run after draco_live_mesh_001 exposed and gated a writer-before-reentry dependency-order defect. Execution is limited to this named run id, one attempt, one case, one re-entry round, foreground supervision, transcript capture, and blocked scoring.",
+    "approved_for_dry_run_planning": true,
+    "approved_for_execution": true,
+    "prepared_by": "Codex coordinator",
+    "reviewed_by": "Principal"
+  },
+  "authority": {
+    "benchmark_audit": "sandbox/codex-dr/benchmark-manifests/benchmark_acquisition_audit.md",
+    "case_manifest": "sandbox/codex-dr/benchmark-manifests/draco_tiny_smoke_case_manifest.md",
+    "governing_docs": [
+      "sandbox/codex-dr/AGENTS.md",
+      "sandbox/codex-dr/docs/BOOTSTRAP_DOCTRINE.md",
+      "sandbox/codex-dr/docs/codex_mesh_launch_control_2026_04_22.md",
+      "sandbox/codex-dr/harness-specs/dr_mesh_parity_charter.md",
+      "sandbox/codex-dr/harness-specs/live_codex_cli_mesh_adapter_contract.md",
+      "sandbox/codex-dr/harness-specs/live_mesh_executor_contract.md",
+      "sandbox/codex-dr/harness-specs/live_role_prompt_pack.md"
+    ],
+    "scorer_manifest": "sandbox/codex-dr/harness-specs/draco_scorer_manifest.schema.json"
+  },
+  "bead_id": "alexandriacleanroom-91.1.5.16",
+  "created_at": "2026-04-23T00:00:00Z",
+  "expected_artifacts": {
+    "allowed_claims": "allowed_claims.json",
+    "artefact_manifest": "artefact_manifest.json",
+    "benchmark_score": "benchmark_score.json",
+    "branch_returns": "branches/",
+    "case_payload_cache": "sandbox/codex-dr/tmp/draco_tiny_smoke_001/",
+    "claim_ledger": "claim_ledger.json",
+    "event_log": "events.jsonl",
+    "plan": "plan.md",
+    "report": "report.md",
+    "review": "reviews/",
+    "run_bundle": "sandbox/codex-dr/runs/draco_live_mesh_002/",
+    "synthesis": "synthesis.md",
+    "task_graph": "task_graph.json",
+    "transcript_capture": "sandbox/codex-dr/runs/draco_live_mesh_002/transcripts/"
+  },
+  "inputs": {
+    "allowed_sources": [
+      "DRACO row pointer from sandbox/codex-dr/benchmark-manifests/draco_tiny_smoke_case_manifest.md",
+      "public web sources discovered by the approved live smoke run",
+      "sandbox/codex-dr docs, harness specs, and run manifests copied or summarized into role prompts"
+    ],
+    "data_policy": "Raw/full benchmark data must remain out of git. This smoke may use the existing DRACO row pointer and public web sources; it may not persist secrets, customer data, root env files, private benchmark corpora, or paid benchmark corpora.",
+    "forbidden_sources": [
+      "secrets",
+      "customer data",
+      "root env files",
+      "raw private benchmark corpora",
+      "paid benchmark corpora unless separately authorized",
+      "large raw benchmark files in git"
+    ]
+  },
+  "non_claims_even_if_success": [
+    "Grep parity",
+    "DRACO benchmark score",
+    "leaderboard rank",
+    "product-runtime readiness",
+    "full benchmark execution",
+    "reproducibility against Parcha/Grep private setup",
+    "scorer custody",
+    "self-improvement promotion"
+  ],
+  "operational_bounds": {
+    "automatic_retry_allowed": false,
+    "external_monitoring": "foreground coordinator supervision in this Codex thread",
+    "foreground_supervision_required": true,
+    "kill_path": "coordinator terminates the foreground mesh-execute-live process with Ctrl-C/SIGINT, then SIGTERM if needed",
+    "max_cases": 1,
+    "max_live_attempts": 1,
+    "max_reentry_rounds": 1,
+    "max_wall_clock_minutes": 8,
+    "notes": "The executor applies the wall-clock bound per Codex CLI role. No automatic retry is permitted."
+  },
+  "receipt_id": "run_control_draco_live_mesh_002_approved_2026_04_23",
+  "run_id": "draco_live_mesh_002",
+  "run_purpose": "Execute a corrected bounded live Codex CLI DR mesh smoke after the first smoke exposed writer-before-reentry ordering.",
+  "runner": {
+    "approval_policy": "never; non-interactive Codex CLI role execution only under this receipt",
+    "cli_or_sdk_version": "codex-cli 0.120.0",
+    "command_surface": "alexandria-dr mesh-execute-live",
+    "cwd": "sandbox/codex-dr/",
+    "kind": "codex_exec_box",
+    "output_last_message": "sandbox/codex-dr/runs/draco_live_mesh_002/last_messages/",
+    "sandbox_mode": "workspace-write per role workspace",
+    "transcript_root": "sandbox/codex-dr/runs/draco_live_mesh_002/transcripts/",
+    "transcript_wrapper": "mesh-execute-live subprocess capture of codex exec --json stdout/stderr"
+  },
+  "schema_version": "codex-dr.run_control_receipt.v1",
+  "scoring": {
+    "benchmark_family": "DRACO",
+    "judge_or_scorer": "evidence-pending",
+    "prompt_or_code_version": "evidence-pending",
+    "retry_policy": "no scorer retries in this smoke",
+    "scorer_status": "blocked",
+    "variance_policy": "unavailable until scorer bridge is separately approved"
+  },
+  "stop_conditions": {
+    "hard_stop": [
+      "run leaves approved cwd or output roots",
+      "unexpected secret or private data exposure",
+      "benchmark/license/access condition not satisfied",
+      "automatic retry requested without explicit approval",
+      "required transcript or run-bundle path unavailable",
+      "root env file access attempted",
+      "any role fails to produce its declared output files"
+    ],
+    "soft_stop": [
+      "branch evidence is too thin for score claims",
+      "reviewer requests more re-entry rounds than this receipt allows",
+      "scorer bridge is unavailable"
+    ]
+  }
+}

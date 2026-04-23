@@ -6,6 +6,7 @@ import hashlib
 import json
 import re
 import shutil
+import subprocess
 import sys
 from pathlib import Path
 from typing import Any
@@ -230,6 +231,18 @@ MESH_REQUIRED_EVENT_TYPES = [
     "self_improvement.regression_gate_written",
 ]
 
+LIVE_MESH_REQUIRED_FILES = [
+    "live_executor/run_control_receipt.json",
+    "live_executor/execution_summary.json",
+]
+
+LIVE_MESH_REQUIRED_EVENT_TYPES = [
+    "live_executor.run_control_receipt_copied",
+    "live_executor.execution_started",
+    "live_executor.role_completed",
+    "live_executor.execution_completed",
+]
+
 VALIDATOR_NAMES = {
     "branch_triplet_present",
     "mesh_branch_triplets_present",
@@ -294,6 +307,50 @@ def read_jsonl(path: Path) -> list[dict[str, Any]]:
     return [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line]
 
 
+def topologically_order_tasks(tasks: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    by_id = {task["task_id"]: task for task in tasks}
+    ordered: list[dict[str, Any]] = []
+    completed: set[str] = set()
+    pending = [task["task_id"] for task in tasks]
+    while pending:
+        progressed = False
+        for task_id in list(pending):
+            task = by_id[task_id]
+            dependencies = task.get("depends_on", [])
+            missing = [dependency for dependency in dependencies if dependency not in by_id]
+            if missing:
+                raise HarnessError(
+                    f"{task_id} depends on missing task(s): {', '.join(missing)}"
+                )
+            if all(dependency in completed for dependency in dependencies):
+                ordered.append(task)
+                completed.add(task_id)
+                pending.remove(task_id)
+                progressed = True
+        if not progressed:
+            raise HarnessError(
+                "task graph contains a dependency cycle or unsatisfied dependency among: "
+                + ", ".join(pending)
+            )
+    return ordered
+
+
+def path_is_within(path: Path, root: Path) -> bool:
+    resolved_path = path.resolve()
+    resolved_root = root.resolve()
+    return resolved_path == resolved_root or resolved_root in resolved_path.parents
+
+
+def resolve_run_relative_path(run_dir: Path, relative_path: str, label: str) -> Path:
+    path = Path(relative_path)
+    if path.is_absolute():
+        raise HarnessError(f"{label} must be relative to the run bundle: {relative_path}")
+    resolved = (run_dir / path).resolve()
+    if not path_is_within(resolved, run_dir):
+        raise HarnessError(f"{label} escapes the run bundle: {relative_path}")
+    return resolved
+
+
 def run_mode(run_dir: Path) -> str:
     try:
         return str(read_json(run_dir / "run_manifest.json").get("mode", "provider_off_bootstrap"))
@@ -302,18 +359,28 @@ def run_mode(run_dir: Path) -> str:
 
 
 def is_mesh_run(run_dir: Path) -> bool:
-    return run_mode(run_dir) == "provider_off_dr_mesh"
+    return run_mode(run_dir) in {"provider_off_dr_mesh", "live_dr_mesh_smoke"}
+
+
+def is_live_mesh_run(run_dir: Path) -> bool:
+    return (run_dir / "live_executor" / "execution_summary.json").exists()
 
 
 def required_files_for_run(run_dir: Path) -> list[str]:
     if is_mesh_run(run_dir):
-        return MESH_REQUIRED_FILES
+        required = [*MESH_REQUIRED_FILES]
+        if is_live_mesh_run(run_dir):
+            required.extend(LIVE_MESH_REQUIRED_FILES)
+        return required
     return REQUIRED_FILES
 
 
 def required_event_types_for_run(run_dir: Path) -> list[str]:
     if is_mesh_run(run_dir):
-        return MESH_REQUIRED_EVENT_TYPES
+        required = [*MESH_REQUIRED_EVENT_TYPES]
+        if is_live_mesh_run(run_dir):
+            required.extend(LIVE_MESH_REQUIRED_EVENT_TYPES)
+        return required
     return REQUIRED_EVENT_TYPES
 
 
@@ -2526,6 +2593,137 @@ def require_dry_run_control_receipt(
     return receipt
 
 
+def require_live_execution_control_receipt(
+    receipt_path: Path,
+    *,
+    run_id: str,
+) -> dict[str, Any]:
+    receipt = read_run_control_receipt(receipt_path)
+    errors = []
+    if receipt.get("schema_version") != "codex-dr.run_control_receipt.v1":
+        errors.append("schema_version must be codex-dr.run_control_receipt.v1")
+    if receipt.get("run_id") != run_id:
+        errors.append(f"run_id mismatch: {receipt.get('run_id')!r}")
+    if not receipt.get("receipt_id"):
+        errors.append("missing receipt_id")
+    if not receipt.get("bead_id"):
+        errors.append("missing bead_id")
+    if not receipt.get("run_purpose"):
+        errors.append("missing run_purpose")
+    approval = receipt.get("approval", {})
+    if approval.get("approved_for_execution") is not True:
+        errors.append("receipt is not approved_for_execution")
+    if approval.get("approved_for_dry_run_planning") is not True:
+        errors.append("receipt must also be approved_for_dry_run_planning")
+    if not approval.get("approval_note"):
+        errors.append("approval.approval_note is required")
+    runner = receipt.get("runner", {})
+    if runner.get("kind") != "codex_exec_box":
+        errors.append("runner.kind must be codex_exec_box")
+    command_surface = runner.get("command_surface", "")
+    if "mesh-execute-live" not in command_surface:
+        errors.append("runner.command_surface must name mesh-execute-live")
+    if not runner.get("cwd"):
+        errors.append("runner.cwd is required")
+    if not runner.get("transcript_root"):
+        errors.append("runner.transcript_root is required")
+    bounds = receipt.get("operational_bounds", {})
+    if bounds.get("max_cases") != 1:
+        errors.append("operational_bounds.max_cases must be 1")
+    if bounds.get("max_live_attempts") != 1:
+        errors.append("operational_bounds.max_live_attempts must be 1")
+    if bounds.get("max_reentry_rounds") not in {0, 1}:
+        errors.append("operational_bounds.max_reentry_rounds must be 0 or 1")
+    wall_clock = bounds.get("max_wall_clock_minutes")
+    if not isinstance(wall_clock, int) or wall_clock <= 0:
+        errors.append("operational_bounds.max_wall_clock_minutes must be a positive integer")
+    if bounds.get("foreground_supervision_required") is not True:
+        errors.append("foreground_supervision_required must be true")
+    if bounds.get("automatic_retry_allowed") is not False:
+        errors.append("automatic_retry_allowed must be false")
+    if not bounds.get("kill_path"):
+        errors.append("operational_bounds.kill_path is required")
+    expected = receipt.get("expected_artifacts", {})
+    if not expected.get("run_bundle"):
+        errors.append("expected_artifacts.run_bundle is required")
+    if not expected.get("transcript_capture"):
+        errors.append("expected_artifacts.transcript_capture is required")
+    scoring = receipt.get("scoring", {})
+    if scoring.get("scorer_status") != "blocked":
+        errors.append("scoring.scorer_status must remain blocked for this smoke")
+    if not receipt.get("allowed_claims_if_success"):
+        errors.append("allowed_claims_if_success is required")
+    if not receipt.get("non_claims_even_if_success"):
+        errors.append("non_claims_even_if_success is required")
+    inputs = receipt.get("inputs", {})
+    forbidden_sources = {str(item).lower() for item in inputs.get("forbidden_sources", [])}
+    for forbidden in ["secrets", "customer data", "root env files"]:
+        if forbidden not in forbidden_sources:
+            errors.append(f"inputs.forbidden_sources must include {forbidden!r}")
+    if errors:
+        raise HarnessError(
+            f"run-control receipt failed live-execution validation: {'; '.join(errors)}"
+        )
+    return receipt
+
+
+def require_launch_plan_control_receipt(
+    receipt_path: Path,
+    *,
+    run_id: str,
+) -> tuple[dict[str, Any], bool]:
+    receipt = read_run_control_receipt(receipt_path)
+    if receipt.get("approval", {}).get("approved_for_execution") is True:
+        return require_live_execution_control_receipt(receipt_path, run_id=run_id), True
+    return require_dry_run_control_receipt(receipt_path, run_id=run_id), False
+
+
+def order_tasks_for_execution(tasks: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    ordered: list[dict[str, Any]] = []
+    emitted: set[str] = set()
+    remaining = list(tasks)
+    while remaining:
+        ready = [
+            task
+            for task in remaining
+            if all(dependency in emitted for dependency in task.get("depends_on", []))
+        ]
+        if not ready:
+            blocked = ", ".join(task.get("task_id", "<unknown>") for task in remaining)
+            raise HarnessError(f"task graph contains unsatisfied or cyclic dependencies: {blocked}")
+        for task in ready:
+            ordered.append(task)
+            emitted.add(task["task_id"])
+            remaining.remove(task)
+    return ordered
+
+
+def dependency_order_problems(
+    ordered_task_ids: list[str],
+    dependencies_by_task: dict[str, list[str]],
+) -> list[str]:
+    problems = []
+    seen: set[str] = set()
+    known_task_ids = set(dependencies_by_task)
+    for task_id in ordered_task_ids:
+        if task_id not in known_task_ids:
+            problems.append(f"{task_id}: task not present in dependency graph")
+            seen.add(task_id)
+            continue
+        for dependency in dependencies_by_task.get(task_id, []):
+            if dependency not in known_task_ids:
+                problems.append(f"{task_id}: dependency {dependency} is missing")
+            elif dependency not in seen:
+                problems.append(f"{task_id}: dependency {dependency} executed later")
+        seen.add(task_id)
+    missing_executions = [task_id for task_id in known_task_ids if task_id not in seen]
+    if missing_executions:
+        problems.append(
+            "missing live role execution for task(s): " + ", ".join(sorted(missing_executions))
+        )
+    return problems
+
+
 def mesh_live_plan(
     case_id: str,
     *,
@@ -2537,7 +2735,9 @@ def mesh_live_plan(
         raise HarnessError(f"run does not exist: {run_dir}")
     if not is_mesh_run(run_dir):
         raise HarnessError("mesh-live-plan requires a provider-off DR mesh run bundle")
-    receipt = require_dry_run_control_receipt(run_control, run_id=case_id)
+    receipt, execution_approved = require_launch_plan_control_receipt(
+        run_control, run_id=case_id
+    )
     graph = read_json(run_dir / "task_graph.json")
     role_configs = read_json(run_dir / "role_configs.json")
     boxes = read_json(run_dir / "terminal_agent_boxes.json")
@@ -2546,7 +2746,7 @@ def mesh_live_plan(
     launch_root = run_dir / "live_adapter"
     role_launch_plans = []
     prompt_outputs = []
-    for task in graph.get("tasks", []):
+    for task in order_tasks_for_execution(graph.get("tasks", [])):
         task_id = task["task_id"]
         role_config_id = task.get("role_config_id")
         role = roles_by_id.get(role_config_id)
@@ -2558,34 +2758,56 @@ def mesh_live_plan(
                 f"task {task_id} references missing box {task.get('assigned_box_id')}"
             )
         prompt_path = Path("live_adapter") / "prompts" / f"{task_id}.md"
-        workspace = SANDBOX_ROOT / ".agent-workspaces" / case_id / role["role"]
+        workspace = (SANDBOX_ROOT / ".agent-workspaces" / case_id / role["role"]).resolve()
+        last_message_path = (run_dir / "last_messages" / f"{task_id}.md").resolve()
+        transcript_path = Path("transcripts") / f"{task_id}.jsonl"
         write_text(
             run_dir / prompt_path,
             live_adapter_prompt(case_id, task, role, receipt),
         )
         prompt_outputs.append(prompt_path.as_posix())
+        command_plan = [
+            "codex",
+            "exec",
+            "--json",
+            "--sandbox",
+            "workspace-write",
+            "--cd",
+            workspace.as_posix(),
+            "--add-dir",
+            run_dir.resolve().as_posix(),
+            "--output-last-message",
+            last_message_path.as_posix(),
+            "-",
+        ]
         role_launch_plans.append(
             {
                 "task_id": task_id,
                 "role": role["role"],
                 "role_config_id": role_config_id,
                 "box_id": task.get("assigned_box_id"),
-                "adapter_kind": "codex_cli_box_dry_run",
-                "launch_status": "planned_not_launched",
-                "command_plan": [
-                    "codex",
-                    "exec",
-                    "--json",
-                    "--output-last-message",
-                    f"live_adapter/last_messages/{task_id}.txt",
-                    "--",
-                    f"@{prompt_path.as_posix()}",
-                ],
+                "adapter_kind": (
+                    "codex_cli_box_live_pending_execution"
+                    if execution_approved
+                    else "codex_cli_box_dry_run"
+                ),
+                "launch_status": (
+                    "planned_for_live_execution"
+                    if execution_approved
+                    else "planned_not_launched"
+                ),
+                "command_plan": command_plan,
                 "cwd": workspace.as_posix(),
                 "prompt_file": prompt_path.as_posix(),
+                "prompt_file_abs": (run_dir / prompt_path).resolve().as_posix(),
                 "allowed_input_files": task.get("inputs", role.get("input_contract", [])),
+                "depends_on": task.get("depends_on", []),
                 "output_paths": task.get("expected_outputs", role.get("return_contract", [])),
-                "transcript_path": f"transcripts/{task_id}.jsonl",
+                "last_message_path": f"last_messages/{task_id}.md",
+                "last_message_path_abs": last_message_path.as_posix(),
+                "transcript_path": transcript_path.as_posix(),
+                "transcript_path_abs": (run_dir / transcript_path).resolve().as_posix(),
+                "workspace_output_root": (workspace / "outputs").as_posix(),
                 "wall_clock_bound_minutes": receipt["operational_bounds"][
                     "max_wall_clock_minutes"
                 ],
@@ -2595,18 +2817,23 @@ def mesh_live_plan(
                     "blocked_claims": receipt["non_claims_even_if_success"],
                 },
                 "scorer_policy": receipt.get("scoring", {}),
-                "will_execute": False,
+                "will_execute": execution_approved,
             }
         )
     launch_plan = {
         "schema_version": "codex-dr.live_adapter_launch_plan.v1",
         "run_id": case_id,
-        "launch_mode": "dry_run_only",
+        "launch_mode": (
+            "live_authorized_pending_execution"
+            if execution_approved
+            else "dry_run_only"
+        ),
         "run_control_receipt": str(run_control),
         "role_launch_plans": role_launch_plans,
         "non_execution_guarantee": (
             "mesh-live-plan renders command plans and prompt files only; "
-            "it never invokes codex exec."
+            "it never invokes codex exec. A later mesh-execute-live command "
+            "may consume this plan only with a separately approved live receipt."
         ),
         "produced_by_event": "evt_0028_live_adapter_dry_run_plan_written",
     }
@@ -2772,6 +2999,492 @@ def validate_no_launch_executor_plan(
     return role_preflights
 
 
+def mesh_execute_live(
+    case_id: str,
+    *,
+    run_control: Path,
+    runs_dir: Path | str | None = None,
+    codex_runner: Any | None = None,
+) -> Path:
+    run_dir = run_path(case_id, runs_dir)
+    if not run_dir.exists():
+        raise HarnessError(f"run does not exist: {run_dir}")
+    if not is_mesh_run(run_dir):
+        raise HarnessError("mesh-execute-live requires a provider-off DR mesh run bundle")
+    receipt = require_live_execution_control_receipt(run_control, run_id=case_id)
+    execution_summary_path = run_dir / "live_executor" / "execution_summary.json"
+    if execution_summary_path.exists():
+        raise HarnessError("live execution already has an execution_summary.json")
+    launch_plan_path = run_dir / "live_adapter" / "launch_plan.json"
+    if not launch_plan_path.exists():
+        raise HarnessError("live_adapter/launch_plan.json is missing")
+    launch_plan = read_json(launch_plan_path)
+    role_plans = validate_live_executor_launch_plan(
+        case_id=case_id,
+        run_control=run_control,
+        launch_plan=launch_plan,
+    )
+    transcript_root = run_dir / "transcripts"
+    last_message_root = run_dir / "last_messages"
+    transcript_root.mkdir(parents=True, exist_ok=True)
+    last_message_root.mkdir(parents=True, exist_ok=True)
+    write_json(run_dir / "live_executor" / "run_control_receipt.json", receipt)
+    append_event(
+        run_dir,
+        event_id="evt_live_0000_run_control_receipt_copied",
+        event_type="live_executor.run_control_receipt_copied",
+        inputs=[str(run_control)],
+        outputs=["live_executor/run_control_receipt.json"],
+        summary="Copied approved live run-control receipt into the run bundle.",
+    )
+    execution_summary = {
+        "schema_version": "codex-dr.live_execution_summary.v1",
+        "run_id": case_id,
+        "run_control_receipt": str(run_control),
+        "launch_plan": "live_adapter/launch_plan.json",
+        "executor": "codex exec",
+        "max_live_attempts": receipt["operational_bounds"]["max_live_attempts"],
+        "automatic_retry_allowed": False,
+        "scorer_status": receipt.get("scoring", {}).get("scorer_status"),
+        "claim_boundary": {
+            "allowed_claims_if_success": receipt["allowed_claims_if_success"],
+            "non_claims_even_if_success": receipt["non_claims_even_if_success"],
+        },
+        "roles": [],
+    }
+    write_json(execution_summary_path, {**execution_summary, "execution_status": "running"})
+    append_event(
+        run_dir,
+        event_id="evt_live_0001_execution_started",
+        event_type="live_executor.execution_started",
+        inputs=["live_adapter/launch_plan.json", str(run_control)],
+        outputs=["live_executor/execution_summary.json"],
+        summary="Started bounded live Codex CLI DR mesh execution.",
+    )
+    runner = codex_runner or run_codex_cli_role
+    timeout_seconds = int(receipt["operational_bounds"]["max_wall_clock_minutes"]) * 60
+    for index, role_plan in enumerate(role_plans, start=1):
+        role_record = execute_live_role(
+            run_dir=run_dir,
+            receipt=receipt,
+            role_plan=role_plan,
+            role_index=index,
+            timeout_seconds=timeout_seconds,
+            codex_runner=runner,
+        )
+        execution_summary["roles"].append(role_record)
+    execution_summary["execution_status"] = "succeeded"
+    execution_summary["role_count"] = len(execution_summary["roles"])
+    write_json(execution_summary_path, execution_summary)
+    update_live_allowed_claims(run_dir, receipt)
+    mark_run_live_executed(run_dir, receipt)
+    append_event(
+        run_dir,
+        event_id="evt_live_9999_execution_completed",
+        event_type="live_executor.execution_completed",
+        inputs=["live_adapter/launch_plan.json", str(run_control)],
+        outputs=["run_manifest.json", "live_executor/execution_summary.json"],
+        summary="Completed bounded live Codex CLI DR mesh execution.",
+    )
+    update_manifest_status(run_dir, "live_execution_completed")
+    refresh_artifact_manifest(run_dir)
+    return run_dir
+
+
+def validate_live_executor_launch_plan(
+    *,
+    case_id: str,
+    run_control: Path,
+    launch_plan: dict[str, Any],
+) -> list[dict[str, Any]]:
+    errors = []
+    if launch_plan.get("schema_version") != "codex-dr.live_adapter_launch_plan.v1":
+        errors.append("launch plan schema_version is invalid")
+    if launch_plan.get("run_id") != case_id:
+        errors.append(f"launch plan run_id mismatch: {launch_plan.get('run_id')!r}")
+    if launch_plan.get("launch_mode") != "live_authorized_pending_execution":
+        errors.append("launch plan must be live_authorized_pending_execution")
+    recorded_receipt = launch_plan.get("run_control_receipt")
+    if not recorded_receipt:
+        errors.append("launch plan missing run_control_receipt")
+    elif Path(recorded_receipt).resolve() != run_control.resolve():
+        errors.append("launch plan run_control_receipt does not match supplied receipt")
+    role_plans = launch_plan.get("role_launch_plans", [])
+    if not role_plans:
+        errors.append("launch plan has no role_launch_plans")
+    workspace_root = (SANDBOX_ROOT / ".agent-workspaces" / case_id).resolve()
+    for role_plan in role_plans:
+        task_id = role_plan.get("task_id", "<unknown>")
+        if not role_plan.get("prompt_file"):
+            errors.append(f"{task_id}: missing prompt file")
+        if role_plan.get("depends_on") is None:
+            errors.append(f"{task_id}: missing dependency annotation")
+        cwd = role_plan.get("cwd")
+        if not cwd:
+            errors.append(f"{task_id}: missing workspace root")
+        else:
+            workspace_path = Path(cwd).resolve()
+            if workspace_path != workspace_root and workspace_root not in workspace_path.parents:
+                errors.append(f"{task_id}: workspace root is outside sandbox agent workspaces")
+        transcript_path = role_plan.get("transcript_path")
+        if not transcript_path:
+            errors.append(f"{task_id}: missing transcript path")
+        elif Path(transcript_path).is_absolute():
+            errors.append(f"{task_id}: transcript path must be relative")
+        last_message_path = role_plan.get("last_message_path")
+        if not last_message_path:
+            errors.append(f"{task_id}: missing last_message_path")
+        elif Path(last_message_path).is_absolute():
+            errors.append(f"{task_id}: last_message_path must be relative")
+        if not role_plan.get("output_paths"):
+            errors.append(f"{task_id}: missing output contracts")
+        if role_plan.get("adapter_kind") != "codex_cli_box_live_pending_execution":
+            errors.append(f"{task_id}: adapter_kind must be live pending execution")
+        if role_plan.get("will_execute") is not True:
+            errors.append(f"{task_id}: launch plan must have will_execute true")
+        command_plan = role_plan.get("command_plan", [])
+        if command_plan[:3] != ["codex", "exec", "--json"]:
+            errors.append(f"{task_id}: command_plan must start with codex exec --json")
+        if "--dangerously-bypass-approvals-and-sandbox" in command_plan:
+            errors.append(f"{task_id}: command_plan cannot bypass approvals and sandbox")
+        if command_plan[-1:] != ["-"]:
+            errors.append(f"{task_id}: command_plan must read the role prompt from stdin")
+        scorer_status = role_plan.get("scorer_policy", {}).get("scorer_status")
+        if scorer_status and scorer_status != "blocked":
+            errors.append(f"{task_id}: scorer policy must remain blocked")
+    dependencies_by_task = {
+        role_plan.get("task_id", "<unknown>"): role_plan.get("depends_on", [])
+        for role_plan in role_plans
+    }
+    order_errors = dependency_order_problems(
+        [role_plan.get("task_id", "<unknown>") for role_plan in role_plans],
+        dependencies_by_task,
+    )
+    errors.extend(order_errors)
+    if errors:
+        raise HarnessError(f"live executor launch plan failed validation: {'; '.join(errors)}")
+    return role_plans
+
+
+def execute_live_role(
+    *,
+    run_dir: Path,
+    receipt: dict[str, Any],
+    role_plan: dict[str, Any],
+    role_index: int,
+    timeout_seconds: int,
+    codex_runner: Any,
+) -> dict[str, Any]:
+    task_id = role_plan["task_id"]
+    workspace_path = Path(role_plan["cwd"])
+    workspace_root = SANDBOX_ROOT / ".agent-workspaces" / run_dir.name
+    resolved_workspace_root = workspace_root.resolve()
+    resolved_workspace_path = workspace_path.resolve()
+    if (
+        resolved_workspace_root != resolved_workspace_path
+        and resolved_workspace_root not in resolved_workspace_path.parents
+    ):
+        raise HarnessError(f"{task_id}: workspace root is outside sandbox agent workspaces")
+    if workspace_path.exists():
+        shutil.rmtree(workspace_path)
+    workspace_path.mkdir(parents=True, exist_ok=True)
+    copied_inputs = copy_live_role_inputs(run_dir, workspace_path, role_plan)
+    prompt_file = run_dir / role_plan["prompt_file"]
+    if not prompt_file.exists():
+        raise HarnessError(f"{task_id}: prompt file is missing: {prompt_file}")
+    live_prompt = live_execution_prompt_overlay(
+        prompt_file.read_text(encoding="utf-8"),
+        receipt=receipt,
+        role_plan=role_plan,
+        workspace_path=workspace_path,
+    )
+    workspace_prompt = workspace_path / "LIVE_PROMPT.md"
+    write_text(workspace_prompt, live_prompt)
+    transcript_path = run_dir / role_plan["transcript_path"]
+    last_message_path = run_dir / "last_messages" / f"{task_id}.md"
+    transcript_path.parent.mkdir(parents=True, exist_ok=True)
+    last_message_path.parent.mkdir(parents=True, exist_ok=True)
+    result = codex_runner(
+        role_plan=role_plan,
+        prompt=live_prompt,
+        workspace_path=workspace_path,
+        transcript_path=transcript_path,
+        last_message_path=last_message_path,
+        timeout_seconds=timeout_seconds,
+    )
+    if result.get("returncode") != 0:
+        write_json(
+            run_dir / "live_executor" / f"{task_id}_failure.json",
+            {
+                "schema_version": "codex-dr.live_role_failure.v1",
+                "run_id": run_dir.name,
+                "task_id": task_id,
+                "returncode": result.get("returncode"),
+                "transcript_path": rel(transcript_path, run_dir),
+                "last_message_path": rel(last_message_path, run_dir),
+                "automatic_retry_allowed": False,
+            },
+        )
+        raise HarnessError(
+            f"{task_id}: codex exec failed with return code {result.get('returncode')}"
+        )
+    if not transcript_path.exists():
+        raise HarnessError(f"{task_id}: transcript capture was not written")
+    if not last_message_path.exists():
+        raise HarnessError(f"{task_id}: output-last-message capture was not written")
+    copied_outputs = copy_live_role_outputs(run_dir, workspace_path, role_plan)
+    event_id = f"evt_live_{role_index:04d}_{task_id}_completed"
+    event_outputs = [
+        *copied_outputs,
+        rel(transcript_path, run_dir),
+        rel(last_message_path, run_dir),
+    ]
+    append_event(
+        run_dir,
+        event_id=event_id,
+        event_type="live_executor.role_completed",
+        inputs=[
+            *copied_inputs,
+            role_plan["prompt_file"],
+            str(Path("LIVE_PROMPT.md")),
+        ],
+        outputs=event_outputs,
+        decision={
+            "task_id": task_id,
+            "role": role_plan.get("role"),
+            "box_id": role_plan.get("box_id"),
+            "returncode": result.get("returncode"),
+            "automatic_retry_allowed": False,
+            "scorer_status": receipt.get("scoring", {}).get("scorer_status"),
+            "rationale": (
+                "Execute exactly one approved Codex CLI role from the DR mesh "
+                "launch plan and copy only declared outputs back into the run bundle."
+            ),
+        },
+        summary=f"Completed live Codex CLI role {task_id}.",
+    )
+    return {
+        "task_id": task_id,
+        "role": role_plan.get("role"),
+        "box_id": role_plan.get("box_id"),
+        "workspace_path": workspace_path.as_posix(),
+        "prompt_file": role_plan["prompt_file"],
+        "transcript_path": rel(transcript_path, run_dir),
+        "last_message_path": rel(last_message_path, run_dir),
+        "copied_inputs": copied_inputs,
+        "copied_outputs": copied_outputs,
+        "returncode": result.get("returncode"),
+        "event_id": event_id,
+    }
+
+
+def copy_live_role_inputs(
+    run_dir: Path, workspace_path: Path, role_plan: dict[str, Any]
+) -> list[str]:
+    copied = []
+    for relative in role_plan.get("allowed_input_files", []):
+        source = run_dir / relative
+        if not source.exists() or not source.is_file():
+            continue
+        destination = workspace_path / relative
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(source, destination)
+        copied.append(relative)
+    return copied
+
+
+def copy_live_role_outputs(
+    run_dir: Path, workspace_path: Path, role_plan: dict[str, Any]
+) -> list[str]:
+    copied = []
+    missing = []
+    for relative in role_plan.get("output_paths", []):
+        if Path(relative).is_absolute():
+            raise HarnessError(f"{role_plan['task_id']}: output path must be relative")
+        source = workspace_path / relative
+        if not source.exists() or not source.is_file():
+            missing.append(relative)
+            continue
+        destination = (
+            run_dir
+            / "live_executor"
+            / "role_outputs"
+            / role_plan["task_id"]
+            / relative
+        )
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(source, destination)
+        copied.append(rel(destination, run_dir))
+    if missing:
+        raise HarnessError(
+            f"{role_plan['task_id']}: live role did not produce required outputs: "
+            + ", ".join(missing)
+        )
+    return copied
+
+
+def live_execution_prompt_overlay(
+    prompt: str,
+    *,
+    receipt: dict[str, Any],
+    role_plan: dict[str, Any],
+    workspace_path: Path,
+) -> str:
+    output_paths = json.dumps(role_plan.get("output_paths", []), indent=2)
+    input_paths = json.dumps(role_plan.get("allowed_input_files", []), indent=2)
+    return f"""{prompt}
+
+## Live Execution Overlay
+The Principal has approved this specific live smoke run through receipt
+`{receipt["receipt_id"]}`. The dry-run prompt above is now being executed by
+the bounded live executor, once, for this role only.
+
+Current workspace:
+`{workspace_path.as_posix()}`
+
+Input files copied into this workspace:
+{input_paths}
+
+You must write the required outputs as files relative to the current workspace:
+{output_paths}
+
+Do not write outside the current workspace. Do not read env files, secrets,
+customer data, raw private benchmark corpora, paid benchmark corpora, or root
+environment files. Do not claim Grep parity, a DRACO score, leaderboard rank,
+product readiness, or benchmark execution. If evidence is thin or a source is
+unavailable, record the gap in the output files.
+"""
+
+
+def run_codex_cli_role(
+    *,
+    role_plan: dict[str, Any],
+    prompt: str,
+    workspace_path: Path,
+    transcript_path: Path,
+    last_message_path: Path,
+    timeout_seconds: int,
+) -> dict[str, Any]:
+    command = role_plan.get("command_plan") or [
+        "codex",
+        "exec",
+        "--json",
+        "--sandbox",
+        "workspace-write",
+        "--cd",
+        workspace_path.as_posix(),
+        "--add-dir",
+        SANDBOX_ROOT.as_posix(),
+        "--output-last-message",
+        last_message_path.as_posix(),
+        "-",
+    ]
+    if shutil.which(command[0]) is None:
+        raise HarnessError("codex CLI is unavailable on PATH")
+    header = {
+        "schema_version": "codex-dr.live_transcript_header.v1",
+        "task_id": role_plan.get("task_id"),
+        "command": command,
+        "cwd": workspace_path.as_posix(),
+        "transcript_path": transcript_path.as_posix(),
+        "last_message_path": last_message_path.as_posix(),
+    }
+    try:
+        completed = subprocess.run(
+            command,
+            input=prompt,
+            text=True,
+            capture_output=True,
+            cwd=workspace_path,
+            timeout=timeout_seconds,
+            check=False,
+        )
+    except subprocess.TimeoutExpired as error:
+        stdout = error.stdout or ""
+        stderr = error.stderr or ""
+        transcript_path.write_text(
+            json.dumps(header, sort_keys=True) + "\n" + stdout + stderr,
+            encoding="utf-8",
+        )
+        return {"returncode": 124, "command": command}
+    transcript_path.write_text(
+        json.dumps(header, sort_keys=True)
+        + "\n"
+        + completed.stdout
+        + completed.stderr,
+        encoding="utf-8",
+    )
+    return {"returncode": completed.returncode, "command": command}
+
+
+def mark_run_live_executed(run_dir: Path, receipt: dict[str, Any]) -> None:
+    manifest_path = run_dir / "run_manifest.json"
+    manifest = read_json(manifest_path)
+    manifest["mode"] = "live_dr_mesh_smoke"
+    manifest["provider_calls_allowed"] = True
+    manifest["benchmark_execution_allowed"] = False
+    manifest["live_execution"] = {
+        "receipt_id": receipt["receipt_id"],
+        "receipt_ref": "live_executor/run_control_receipt.json",
+        "executor": "mesh-execute-live",
+        "max_cases": receipt["operational_bounds"]["max_cases"],
+        "max_live_attempts": receipt["operational_bounds"]["max_live_attempts"],
+        "automatic_retry_allowed": False,
+        "scorer_status": receipt.get("scoring", {}).get("scorer_status"),
+        "claim_boundary": {
+            "allowed_claims_if_success": receipt["allowed_claims_if_success"],
+            "non_claims_even_if_success": receipt["non_claims_even_if_success"],
+        },
+    }
+    write_json(manifest_path, manifest)
+
+
+def update_live_allowed_claims(run_dir: Path, receipt: dict[str, Any]) -> None:
+    allowed_path = run_dir / "allowed_claims.json"
+    allowed = read_json(allowed_path)
+    blocked = set(allowed.get("blocked_claims", []))
+    blocked.update(
+        [
+            "Grep parity",
+            "DRACO score",
+            "leaderboard rank",
+            "product readiness",
+            "benchmark score",
+            "benchmark execution",
+        ]
+    )
+    live_claim = {
+        "claim": (
+            "A bounded live Codex CLI DR mesh smoke executed per-role boxes "
+            "once with transcript custody for this run."
+        ),
+        "scope": "single_authorized_smoke_run_only",
+        "supporting_artifacts": [
+            "live_executor/run_control_receipt.json",
+            "live_executor/execution_summary.json",
+        ],
+    }
+    existing_claims = allowed.get("allowed_claims", [])
+    if all(claim.get("claim") != live_claim["claim"] for claim in existing_claims):
+        existing_claims.append(live_claim)
+    allowed["allowed_claims"] = existing_claims
+    allowed["blocked_claims"] = sorted(blocked)
+    allowed["produced_by_event"] = "evt_live_9998_allowed_claims_written"
+    write_json(allowed_path, allowed)
+    append_event(
+        run_dir,
+        event_id="evt_live_9998_allowed_claims_written",
+        event_type="allowed_claims.written",
+        inputs=[
+            "allowed_claims.json",
+            "live_executor/run_control_receipt.json",
+            "live_executor/execution_summary.json",
+        ],
+        outputs=["allowed_claims.json"],
+        summary="Updated allowed claims for the bounded live Codex CLI smoke.",
+    )
+
+
 def live_adapter_prompt(
     case_id: str,
     task: dict[str, Any],
@@ -2802,8 +3515,8 @@ Prompt pack: `{LIVE_ROLE_PROMPT_PACK_REF}`
 - Preserve the Grep-shaped loop: planner, task graph, scoped branches,
   pointer-first orchestration, adequacy pressure, synthesis, review, re-entry,
   one-writer report, scorer bridge, and claim custody.
-- This prompt is a no-launch artifact until a named live run-control receipt
-  explicitly authorizes execution.
+- This prompt is rendered during dry-run planning. It may be executed only when
+  `mesh-execute-live` supplies a separately approved live run-control receipt.
 
 ## Objective
 {task["objective"]}
@@ -2868,7 +3581,7 @@ Non-claims even if this future role succeeds:
 Do not claim Grep parity, a DRACO score, leaderboard rank, product readiness,
 or benchmark execution unless a later validated run and scorer bundle proves it.
 
-This prompt file is a dry-run artifact. It does not authorize live execution.
+This prompt file alone does not authorize live execution.
 """
 
 
@@ -2936,6 +3649,7 @@ def validate_run(case_id: str, *, runs_dir: Path | str | None = None) -> dict[st
         check_benchmark_placeholder(run_dir),
         check_evaluation_ledger_claim_gate(run_dir),
         check_self_improvement_replay_gate(run_dir),
+        check_live_execution_custody(run_dir),
         check_report_claims_in_ledger(run_dir),
         check_allowed_claims(run_dir),
         check_provider_off_artifacts(run_dir),
@@ -3390,6 +4104,68 @@ def check_self_improvement_replay_gate(run_dir: Path) -> dict[str, str]:
     )
 
 
+def check_live_execution_custody(run_dir: Path) -> dict[str, str]:
+    if not is_live_mesh_run(run_dir):
+        return pass_check(
+            "live_execution_custody_present",
+            "No live execution manifest is present for this provider-off run.",
+        )
+    try:
+        summary = read_json(run_dir / "live_executor" / "execution_summary.json")
+        receipt = read_json(run_dir / "live_executor" / "run_control_receipt.json")
+        launch_plan = read_json(run_dir / "live_adapter" / "launch_plan.json")
+        task_graph = read_json(run_dir / "task_graph.json")
+    except (FileNotFoundError, json.JSONDecodeError) as error:
+        return fail_check("live_execution_custody_present", f"Live custody unavailable: {error}")
+    problems = []
+    if summary.get("schema_version") != "codex-dr.live_execution_summary.v1":
+        problems.append("invalid live execution summary schema")
+    if summary.get("execution_status") != "succeeded":
+        problems.append("live execution summary did not succeed")
+    if receipt.get("approval", {}).get("approved_for_execution") is not True:
+        problems.append("run-control receipt is not approved for execution")
+    bounds = receipt.get("operational_bounds", {})
+    if bounds.get("max_cases") != 1 or bounds.get("max_live_attempts") != 1:
+        problems.append("live run exceeded bounded max_cases/max_live_attempts policy")
+    if bounds.get("automatic_retry_allowed") is not False:
+        problems.append("automatic retry is not blocked")
+    if receipt.get("scoring", {}).get("scorer_status") != "blocked":
+        problems.append("scorer status is not blocked")
+    if launch_plan.get("launch_mode") != "live_authorized_pending_execution":
+        problems.append("launch plan was not live-authorized pending execution")
+    expected_roles = launch_plan.get("role_launch_plans", [])
+    actual_roles = summary.get("roles", [])
+    if len(actual_roles) != len(expected_roles):
+        problems.append("role execution count does not match launch plan")
+    graph_dependencies = {
+        task.get("task_id", "<unknown>"): task.get("depends_on", [])
+        for task in task_graph.get("tasks", [])
+    }
+    role_order = [role.get("task_id", "<unknown>") for role in actual_roles]
+    problems.extend(dependency_order_problems(role_order, graph_dependencies))
+    for role in actual_roles:
+        task_id = role.get("task_id", "<unknown>")
+        if role.get("returncode") != 0:
+            problems.append(f"{task_id}: non-zero returncode")
+        transcript_path = role.get("transcript_path")
+        if not transcript_path or not (run_dir / transcript_path).exists():
+            problems.append(f"{task_id}: transcript missing")
+        last_message_path = role.get("last_message_path")
+        if not last_message_path or not (run_dir / last_message_path).exists():
+            problems.append(f"{task_id}: last message missing")
+        if not role.get("copied_outputs"):
+            problems.append(f"{task_id}: live role outputs missing")
+        for output in role.get("copied_outputs", []):
+            if not (run_dir / output).exists():
+                problems.append(f"{task_id}: copied output missing {output}")
+    if problems:
+        return fail_check("live_execution_custody_present", "; ".join(problems))
+    return pass_check(
+        "live_execution_custody_present",
+        "Live execution has approved receipt, per-role transcripts, outputs, and no scorer.",
+    )
+
+
 def check_report_claims_in_ledger(run_dir: Path) -> dict[str, str]:
     try:
         ledger = read_json(run_dir / "claim_ledger.json")
@@ -3446,6 +4222,18 @@ def check_allowed_claims(run_dir: Path) -> dict[str, str]:
 
 
 def check_provider_off_artifacts(run_dir: Path) -> dict[str, str]:
+    if is_live_mesh_run(run_dir):
+        forbidden_live = ["provider_metadata.json", "run_control_receipt.yaml"]
+        present_live = [name for name in forbidden_live if (run_dir / name).exists()]
+        if present_live:
+            return fail_check(
+                "provider_off_no_provider_artifacts",
+                f"Forbidden live smoke artifacts: {', '.join(present_live)}",
+            )
+        return pass_check(
+            "provider_off_no_provider_artifacts",
+            "Live smoke uses approved run-control and transcript custody.",
+        )
     forbidden = [
         "run_control_receipt.yaml",
         "provider_metadata.json",
@@ -3535,6 +4323,10 @@ def build_parser() -> argparse.ArgumentParser:
     mesh_executor.add_argument("case_id")
     mesh_executor.add_argument("--run-control", required=True, type=Path)
 
+    mesh_execute = subparsers.add_parser("mesh-execute-live")
+    mesh_execute.add_argument("case_id")
+    mesh_execute.add_argument("--run-control", required=True, type=Path)
+
     provider_backed = subparsers.add_parser("run-planner")
     provider_backed.add_argument("case_id")
     provider_backed.add_argument("--run-control", required=True)
@@ -3609,6 +4401,8 @@ def main(argv: list[str] | None = None) -> int:
             mesh_executor_preflight(
                 args.case_id, run_control=args.run_control, runs_dir=args.runs_dir
             )
+        elif args.command == "mesh-execute-live":
+            mesh_execute_live(args.case_id, run_control=args.run_control, runs_dir=args.runs_dir)
         elif args.command == "mesh-bootstrap-run":
             mesh_bootstrap_run(args.case_id, runs_dir=args.runs_dir)
         elif args.command == "validate":

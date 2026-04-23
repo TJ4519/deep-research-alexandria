@@ -178,6 +178,8 @@ def test_mesh_live_plan_renders_dry_run_launch_plan(tmp_path: Path):
     assert launch_plan["launch_mode"] == "dry_run_only"
     assert launch_plan["run_control_receipt"] == str(receipt_path)
     assert len(launch_plan["role_launch_plans"]) >= 6
+    task_order = [plan["task_id"] for plan in launch_plan["role_launch_plans"]]
+    assert task_order.index("task_reentry_followup") < task_order.index("task_final_writer")
     deep_search = next(
         plan for plan in launch_plan["role_launch_plans"] if plan["task_id"] == "task_deep_search"
     )
@@ -367,6 +369,116 @@ def test_mesh_executor_preflight_fails_closed_on_invalid_preconditions(
     assert not (run_dir / "live_executor").exists()
     assert not (run_dir / "provider_metadata.json").exists()
     assert not (run_dir / "transcripts").exists()
+
+
+def test_mesh_execute_live_refuses_dry_run_receipt(tmp_path: Path):
+    harness, run_dir, runs_dir, receipt_path = fresh_live_planned_mesh(tmp_path)
+
+    result = harness.main(
+        [
+            "--runs-dir",
+            str(runs_dir),
+            "mesh-execute-live",
+            "draco_mesh_fixture_001",
+            "--run-control",
+            str(receipt_path),
+        ]
+    )
+
+    assert result == 2
+    assert not (run_dir / "transcripts").exists()
+    assert not (run_dir / "live_executor" / "execution_summary.json").exists()
+
+
+def test_mesh_execute_live_stubbed_roles_write_custody(tmp_path: Path):
+    harness, run_dir, runs_dir, _dry_receipt = fresh_live_planned_mesh(tmp_path)
+    live_receipt = runs_dir / "live_control.json"
+    write_live_execution_control_receipt(live_receipt, "draco_mesh_fixture_001")
+    assert (
+        harness.main(
+            [
+                "--runs-dir",
+                str(runs_dir),
+                "mesh-live-plan",
+                "draco_mesh_fixture_001",
+                "--run-control",
+                str(live_receipt),
+            ]
+        )
+        == 0
+    )
+
+    harness.mesh_execute_live(
+        "draco_mesh_fixture_001",
+        run_control=live_receipt,
+        runs_dir=runs_dir,
+        codex_runner=fake_live_codex_runner,
+    )
+
+    summary = json.loads(
+        (run_dir / "live_executor" / "execution_summary.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    launch_plan = json.loads(
+        (run_dir / "live_adapter" / "launch_plan.json").read_text(encoding="utf-8")
+    )
+    assert launch_plan["launch_mode"] == "live_authorized_pending_execution"
+    assert launch_plan["run_control_receipt"] == str(live_receipt)
+    assert summary["run_control_receipt"] == str(live_receipt)
+    assert summary["automatic_retry_allowed"] is False
+    assert len(summary["roles"]) == len(launch_plan["role_launch_plans"])
+    role_order = [role["task_id"] for role in summary["roles"]]
+    assert role_order.index("task_reentry_followup") < role_order.index("task_final_writer")
+    assert summary["scorer_status"] == "blocked"
+    assert all(role["returncode"] == 0 for role in summary["roles"])
+    deep_search = next(role for role in summary["roles"] if role["task_id"] == "task_deep_search")
+    assert deep_search["copied_outputs"] == [
+        "live_executor/role_outputs/task_deep_search/branches/deep_search/pointer.md",
+        "live_executor/role_outputs/task_deep_search/branches/deep_search/analysis.md",
+        "live_executor/role_outputs/task_deep_search/branches/deep_search/evidence.jsonl",
+    ]
+    assert (run_dir / deep_search["transcript_path"]).exists()
+    assert (run_dir / deep_search["last_message_path"]).exists()
+    assert (run_dir / "live_executor" / "run_control_receipt.json").exists()
+    events = [
+        json.loads(line)
+        for line in (run_dir / "events.jsonl").read_text(encoding="utf-8").splitlines()
+    ]
+    live_events = [
+        event for event in events if event["event_type"] == "live_executor.role_completed"
+    ]
+    assert len(live_events) == len(launch_plan["role_launch_plans"])
+    assert all(event["decision"]["rationale"] for event in live_events)
+    assert (
+        "Live stub output for task_deep_search"
+        in (
+            run_dir
+            / "live_executor"
+            / "role_outputs"
+            / "task_deep_search"
+            / "branches"
+            / "deep_search"
+            / "pointer.md"
+        ).read_text(encoding="utf-8")
+    )
+    report = harness.validate_run("draco_mesh_fixture_001", runs_dir=runs_dir)
+    assert report["status"] == "passed"
+    assert report["failed_checks"] == []
+
+    writer_index = role_order.index("task_final_writer")
+    reentry_index = role_order.index("task_reentry_followup")
+    summary["roles"][writer_index], summary["roles"][reentry_index] = (
+        summary["roles"][reentry_index],
+        summary["roles"][writer_index],
+    )
+    (run_dir / "live_executor" / "execution_summary.json").write_text(
+        json.dumps(summary, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    report = harness.validate_run("draco_mesh_fixture_001", runs_dir=runs_dir)
+    assert report["status"] == "failed"
+    assert "live_execution_custody_present" in report["failed_checks"]
 
 
 @pytest.mark.parametrize(
@@ -632,6 +744,19 @@ def write_dry_run_control_receipt(path: Path, run_id: str) -> None:
             "run_bundle": f"sandbox/codex-dr/runs/{run_id}/",
             "transcript_capture": f"sandbox/codex-dr/runs/{run_id}/transcripts/",
         },
+        "inputs": {
+            "allowed_sources": [
+                "DRACO row pointer",
+                "public web sources",
+                "sandbox run manifests",
+            ],
+            "forbidden_sources": [
+                "secrets",
+                "customer data",
+                "root env files",
+            ],
+            "data_policy": "No secrets, customer data, or root env files.",
+        },
         "scoring": {
             "benchmark_family": "DRACO",
             "scorer_status": "blocked",
@@ -653,6 +778,126 @@ def write_dry_run_control_receipt(path: Path, run_id: str) -> None:
         },
     }
     path.write_text(json.dumps(receipt, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+
+def write_live_execution_control_receipt(path: Path, run_id: str) -> None:
+    receipt = {
+        "schema_version": "codex-dr.run_control_receipt.v1",
+        "receipt_id": f"run_control_{run_id}_approved",
+        "bead_id": "alexandriacleanroom-91.1.5.16",
+        "run_id": run_id,
+        "run_purpose": "Execute a bounded live Codex CLI DR mesh smoke.",
+        "runner": {
+            "kind": "codex_exec_box",
+            "command_surface": "alexandria-dr mesh-execute-live",
+            "cwd": "sandbox/codex-dr/",
+            "transcript_root": f"sandbox/codex-dr/runs/{run_id}/transcripts/",
+        },
+        "operational_bounds": {
+            "max_cases": 1,
+            "max_live_attempts": 1,
+            "max_reentry_rounds": 1,
+            "max_wall_clock_minutes": 15,
+            "foreground_supervision_required": True,
+            "automatic_retry_allowed": False,
+            "kill_path": "foreground supervisor sends SIGINT, then SIGTERM",
+        },
+        "expected_artifacts": {
+            "run_bundle": f"sandbox/codex-dr/runs/{run_id}/",
+            "transcript_capture": f"sandbox/codex-dr/runs/{run_id}/transcripts/",
+        },
+        "inputs": {
+            "allowed_sources": [
+                "DRACO row pointer",
+                "public web sources",
+                "sandbox run manifests",
+            ],
+            "forbidden_sources": [
+                "secrets",
+                "customer data",
+                "root env files",
+            ],
+            "data_policy": "No secrets, customer data, or root env files.",
+        },
+        "scoring": {
+            "benchmark_family": "DRACO",
+            "scorer_status": "blocked",
+            "judge_or_scorer": "evidence-pending",
+        },
+        "allowed_claims_if_success": [
+            "Codex CLI roles executed once for a bounded DR mesh smoke with transcript custody."
+        ],
+        "non_claims_even_if_success": [
+            "Grep parity",
+            "DRACO score",
+            "leaderboard rank",
+            "product readiness",
+            "benchmark execution",
+        ],
+        "approval": {
+            "approved_for_execution": True,
+            "approved_for_dry_run_planning": True,
+            "approval_note": "Principal authorized the live Codex DR mesh smoke.",
+        },
+    }
+    path.write_text(json.dumps(receipt, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+
+def fake_live_codex_runner(
+    *,
+    role_plan: dict,
+    prompt: str,
+    workspace_path: Path,
+    transcript_path: Path,
+    last_message_path: Path,
+    timeout_seconds: int,
+) -> dict:
+    assert "Live Execution Overlay" in prompt
+    assert timeout_seconds > 0
+    task_id = role_plan["task_id"]
+    for relative in role_plan["output_paths"]:
+        output = workspace_path / relative
+        output.parent.mkdir(parents=True, exist_ok=True)
+        if relative.endswith(".jsonl"):
+            output.write_text(
+                json.dumps(
+                    {
+                        "evidence_id": f"ev_{task_id}",
+                        "admission_status": "admitted",
+                        "source": "stubbed-live-runner",
+                    },
+                    sort_keys=True,
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+        elif relative.endswith(".json"):
+            output.write_text(
+                json.dumps(
+                    {
+                        "schema_version": "codex-dr.stubbed_live_role.v1",
+                        "task_id": task_id,
+                        "requires_reentry": True,
+                    },
+                    indent=2,
+                    sort_keys=True,
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+        else:
+            output.write_text(
+                f"# Live stub output for {task_id}\n\n## Read Next\n- Stubbed live runner.\n",
+                encoding="utf-8",
+            )
+    transcript_path.parent.mkdir(parents=True, exist_ok=True)
+    transcript_path.write_text(
+        json.dumps({"type": "stub", "task_id": task_id}, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    last_message_path.parent.mkdir(parents=True, exist_ok=True)
+    last_message_path.write_text(f"stub completed {task_id}\n", encoding="utf-8")
+    return {"returncode": 0}
 
 
 def fresh_live_planned_mesh(tmp_path: Path):
