@@ -216,6 +216,57 @@ def test_branch_triplets_allow_writer_blocked_reentry_gap_branch(tmp_path: Path)
     assert result["status"] == "passed"
 
 
+def test_improvement_refs_include_reviewer_v2_and_singular_adequacy_gap():
+    harness = load_harness()
+    refs = harness.compile_source_failure_refs(
+        evaluation_failures=[
+            {
+                "failure_class": "scorer_missing",
+                "root_cause": "No approved scorer execution path exists.",
+                "severity": "blocking",
+            }
+        ],
+        review_findings=harness.extract_review_failure_surfaces(
+            {
+                "material_findings": [
+                    {
+                        "finding_id": "F-001",
+                        "category": "citation_support_gap",
+                        "severity": "high",
+                        "summary": "Statement-level support map is missing.",
+                    }
+                ],
+                "proposed_backpressure_items": [
+                    {
+                        "gap_id": "RVW-002",
+                        "failure_type": "non_comparable_inputs",
+                        "severity": "high",
+                        "failure_statement": "Comparable inputs are absent.",
+                    }
+                ],
+            }
+        ),
+        unresolved_adequacy=[
+            {
+                "criterion_id": "adequacy_review_reentry",
+                "status": "not_satisfied",
+                "unresolved_gap": "The verification methodology remains stale.",
+                "target_surface": "branches/verification/analysis.md",
+            }
+        ],
+        claim_review={
+            "decision": "blocked_no_score",
+            "may_widen_public_benchmark_claims": False,
+            "rationale": "No numeric benchmark score exists for review.",
+        },
+    )
+
+    failure_classes = {ref["failure_class"] for ref in refs}
+
+    assert {"citation", "evidence", "reviewer", "claim_boundary"} <= failure_classes
+    assert any(ref["failure_class"] == "scorer_missing" for ref in refs)
+
+
 def test_evidence_quality_handoff_blocks_source_discovery_as_support(tmp_path: Path):
     harness, run_dir, runs_dir = fresh_mesh_run(tmp_path)
     (run_dir / "branches" / "deep_search" / "evidence.jsonl").write_text(

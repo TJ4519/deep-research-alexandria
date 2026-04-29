@@ -4687,11 +4687,16 @@ def deepresearch_bench_improvement_compile(
 
     evaluation_failures = evaluation_ledger.get("failure_taxonomy", [])
     recommendations = evaluation_ledger.get("improvement_recommendations", [])
-    review_findings = review.get("findings", []) if isinstance(review, dict) else []
+    review_findings = extract_review_failure_surfaces(review)
     unresolved_adequacy = [
         row
         for row in adequacy_rows
-        if row.get("remaining_gaps") or "gap" in str(row.get("status", "")).lower()
+        if row.get("remaining_gaps")
+        or row.get("remaining_gap")
+        or row.get("unresolved_gap")
+        or str(row.get("status", "")).lower()
+        in {"open", "not_satisfied", "not_satisfied_for_closure"}
+        or "gap" in str(row.get("status", "")).lower()
     ]
     source_failure_refs = compile_source_failure_refs(
         evaluation_failures=evaluation_failures,
@@ -5005,25 +5010,46 @@ def compile_source_failure_refs(
             }
         )
     for finding in review_findings:
+        raw_class = (
+            finding.get("failure_class")
+            or finding.get("category")
+            or finding.get("failure_type")
+            or finding.get("resolution_mode")
+        )
         refs.append(
             {
-                "source_kind": "review.finding",
+                "source_kind": finding.get("source_kind", "review.finding"),
                 "path": "reviews/review_001.json",
-                "failure_id": finding.get("finding_id"),
-                "failure_class": "reviewer" if finding.get("requires_reentry") else "writer",
+                "failure_id": finding.get("finding_id") or finding.get("gap_id"),
+                "failure_class": normalize_improvement_failure_class(raw_class),
                 "severity": finding.get("severity", "unknown"),
-                "summary": finding.get("detail") or finding.get("title"),
+                "summary": (
+                    finding.get("detail")
+                    or finding.get("title")
+                    or finding.get("summary")
+                    or finding.get("failure_statement")
+                ),
             }
         )
     for row in unresolved_adequacy:
-        gaps = row.get("remaining_gaps", []) or ["open adequacy gap"]
+        gaps = (
+            row.get("remaining_gaps")
+            or row.get("remaining_gap")
+            or row.get("unresolved_gap")
+            or ["open adequacy gap"]
+        )
+        if isinstance(gaps, str):
+            gaps = [gaps]
         for gap_index, gap in enumerate(gaps, start=1):
             refs.append(
                 {
                     "source_kind": "adequacy.remaining_gap",
                     "path": "adequacy_assessments.jsonl",
-                    "failure_id": f"{row.get('criterion_id', 'adequacy')}_{gap_index}",
-                    "failure_class": "evidence",
+                    "failure_id": (
+                        row.get("gap_id")
+                        or f"{row.get('criterion_id', 'adequacy')}_{gap_index}"
+                    ),
+                    "failure_class": adequacy_failure_class(row),
                     "severity": "high",
                     "summary": gap,
                 }
@@ -5040,6 +5066,59 @@ def compile_source_failure_refs(
             }
         )
     return refs
+
+
+def extract_review_failure_surfaces(review: dict[str, Any]) -> list[dict[str, Any]]:
+    if not isinstance(review, dict):
+        return []
+    findings: list[dict[str, Any]] = []
+    for key in ("findings", "material_findings", "proposed_backpressure_items"):
+        value = review.get(key)
+        if isinstance(value, list):
+            for item in value:
+                if isinstance(item, dict):
+                    findings.append({**item, "source_kind": f"review.{key}"})
+    return findings
+
+
+def normalize_improvement_failure_class(raw_class: Any) -> str:
+    raw = str(raw_class or "").lower()
+    if raw in {"citation_support_gap", "citation_gap"} or "citation" in raw:
+        return "citation"
+    if raw in {"methodology_gap", "verification_gap"} or "methodology" in raw:
+        return "reviewer"
+    if raw in {"non_comparable_inputs", "comparability_gap"} or "compar" in raw:
+        return "evidence"
+    if raw in {"provenance_gap", "source_missing"} or "provenance" in raw:
+        return "citation"
+    if raw in {"reentry_research", "scheduler", "task_graph"}:
+        return "scheduler"
+    if raw in {"claim_boundary", "scorer_missing", "provider_off_placeholder"}:
+        return raw
+    return raw or "reviewer"
+
+
+def adequacy_failure_class(row: dict[str, Any]) -> str:
+    text = " ".join(
+        str(row.get(key, ""))
+        for key in (
+            "criterion_id",
+            "summary",
+            "unresolved_gap",
+            "remaining_gap",
+            "required_action",
+            "target_surface",
+        )
+    ).lower()
+    if "citation" in text or "support map" in text:
+        return "citation"
+    if "compar" in text or "ranking" in text:
+        return "evidence"
+    if "verification" in text or "review" in text or "methodology" in text:
+        return "reviewer"
+    if "reentry" in text or "task packet" in text or "queue" in text:
+        return "scheduler"
+    return "evidence"
 
 
 def merge_fixtures(
@@ -5067,7 +5146,15 @@ def merge_failure_classes(
 def deepresearch_bench_candidate_payloads(
     *, source_failure_refs: list[dict[str, Any]], context_index: dict[str, Any]
 ) -> list[dict[str, Any]]:
-    scorer_refs = refs_for_classes(source_failure_refs, {"scorer_blocked", "claim_boundary"})
+    scorer_refs = refs_for_classes(
+        source_failure_refs,
+        {
+            "scorer_blocked",
+            "scorer_missing",
+            "provider_off_placeholder",
+            "claim_boundary",
+        },
+    )
     evidence_refs = refs_for_classes(source_failure_refs, {"reviewer", "evidence", "citation"})
     forecast_refs = [
         ref
