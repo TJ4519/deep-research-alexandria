@@ -1,0 +1,108 @@
+{
+  "baseline": {
+    "diagnostic": {
+      "citation_count": 28,
+      "prompt_facet_coverage_ratio": 1.0,
+      "prompt_facets_covered": [
+        "thermo_king",
+        "carrier_transicold",
+        "off_grid_alternatives",
+        "twelve_hour_no_electricity",
+        "cellular_or_satellite_monitoring",
+        "maintenance_accra",
+        "maintenance_lagos",
+        "maintenance_dakar",
+        "maintenance_abidjan",
+        "cost_per_vaccine_dose",
+        "who_pqs"
+      ],
+      "prompt_facets_missing": [],
+      "prompt_facets_total": 11,
+      "word_count": 2412
+    },
+    "output_contract_violations": [],
+    "returncode": 0,
+    "status": "completed"
+  },
+  "baseline_dir": "sandbox/codex-dr/tmp/draco_shadow_diagnostic_2026_04_29/baselines/draco_baseline_048_20260429_case_001",
+  "benchmark_case_uuid": "056e9cbe-d8eb-48a8-9618-432222100e79",
+  "benchmark_family": "DRACO",
+  "case_id": "draco_test_row_048",
+  "claim_boundary": {
+    "allowed": [
+      "A DRACO shadow diagnostic comparison exists for one selected prompt.",
+      "The comparison reports deterministic coverage and custody signals."
+    ],
+    "blocked": [
+      "DRACO score",
+      "Grep parity",
+      "leaderboard rank",
+      "product readiness",
+      "official benchmark submission",
+      "scorer-backed evaluation"
+    ]
+  },
+  "domain": "Shopping/Product Comparison",
+  "interpretation": {
+    "next_work": [
+      "Normalize live citation-support and adequacy-delta statuses so validation can pass.",
+      "Close procurement comparison and cost-per-dose evidence gaps before final writer.",
+      "Only then run scorer-backed DRACO evaluation or DeepResearch Bench scoring."
+    ],
+    "primary_signal": "The single-pass baseline produces an answer surface, while the mesh currently proves topology and backpressure behavior but blocks final writing on unresolved adequacy gaps.",
+    "useful_comparison": true
+  },
+  "mesh": {
+    "diagnostic": {
+      "citation_count": 0,
+      "prompt_facet_coverage_ratio": 0.909,
+      "prompt_facets_covered": [
+        "thermo_king",
+        "carrier_transicold",
+        "off_grid_alternatives",
+        "twelve_hour_no_electricity",
+        "cellular_or_satellite_monitoring",
+        "maintenance_accra",
+        "maintenance_lagos",
+        "maintenance_dakar",
+        "maintenance_abidjan",
+        "who_pqs"
+      ],
+      "prompt_facets_missing": [
+        "cost_per_vaccine_dose"
+      ],
+      "prompt_facets_total": 11,
+      "word_count": 1577
+    },
+    "execution_status": "blocked_by_adequacy_backpressure",
+    "failed_validation_checks": [
+      "branch_triplets_present",
+      "reentry_synthesis_outputs_valid",
+      "citation_support_maps_valid"
+    ],
+    "open_backpressure_count": 3,
+    "open_backpressure_ids": [
+      "review_001_procurement_comparison_gap",
+      "review_001_cost_per_dose_gap",
+      "review_001_run_custody_claim_gap"
+    ],
+    "recursive_reentry_rounds_used": 1,
+    "role_count": 10,
+    "validation_status": "failed",
+    "writer_blocked": true
+  },
+  "mesh_run_dir": "sandbox/codex-dr/tmp/draco_shadow_diagnostic_2026_04_29/runs/draco_shadow_048_20260429_case_001",
+  "produced_at": "2026-04-22T00:00:00Z",
+  "rubric_surface": {
+    "criteria_count": 54,
+    "rubric_axes": [
+      "factual-accuracy",
+      "breadth-and-depth-of-analysis",
+      "presentation-quality",
+      "citation-quality"
+    ],
+    "scoring_status": "not_executed_shadow_diagnostic_only",
+    "total_weight": 358.0
+  },
+  "schema_version": "codex-dr.draco_shadow_baseline_comparison.v1"
+}

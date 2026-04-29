@@ -2224,6 +2224,484 @@ def draco_live_run_control(
     return output
 
 
+def case_from_manifest(manifest_path: Path, *, case_index: int = 0) -> dict[str, Any]:
+    manifest = read_case_spec_manifest(manifest_path)
+    cases = manifest.get("cases", [])
+    if case_index < 0 or case_index >= len(cases):
+        raise HarnessError(f"case_index {case_index} is outside manifest case range")
+    return cases[case_index]
+
+
+def draco_single_pass_baseline_prompt(case: dict[str, Any]) -> str:
+    generator_visible = case.get("generator_visible", {})
+    question = str(generator_visible.get("question") or "").strip()
+    if not question:
+        raise HarnessError("DRACO baseline case is missing generator_visible.question")
+    source_policy = str(generator_visible.get("source_policy") or "")
+    public_web_allowed = bool(generator_visible.get("public_web_research_allowed"))
+    return f"""# DRACO Single-Pass Baseline
+
+You are running a bounded single-pass baseline for a DRACO shadow diagnostic
+comparison. This is a baseline answer path, not the Codex-DR recursive mesh.
+
+## Benchmark Prompt
+{question}
+
+## Source Policy
+{source_policy}
+
+Public web research allowed by this baseline: {str(public_web_allowed).lower()}.
+
+Do not read local repository files, environment files, secrets, private corpora,
+or scorer-only DRACO answer/rubric fields. Do not claim a DRACO score, Grep
+parity, leaderboard standing, product readiness, or official benchmark status.
+
+Write exactly these files in the current workspace:
+
+1. `answer.md`
+   - Answer the procurement question directly.
+   - Include citations or source notes for factual claims when you have them.
+   - Mark uncertain claims explicitly.
+
+2. `self_audit.json`
+   - JSON object with keys:
+     `schema_version`, `prompt_facets_covered`, `known_gaps`,
+     `citation_count`, `claims_that_need_verification`, and `claim_boundary`.
+
+After writing the files, reply with exactly: `draco baseline complete`.
+"""
+
+
+def run_codex_single_pass_baseline_command(
+    *,
+    command: list[str],
+    prompt: str,
+    workspace_path: Path,
+    transcript_path: Path,
+    last_message_path: Path,
+    timeout_seconds: int,
+) -> dict[str, Any]:
+    if shutil.which(command[0]) is None:
+        raise HarnessError("codex CLI is unavailable on PATH")
+    try:
+        completed = subprocess.run(
+            command,
+            input=prompt,
+            text=True,
+            capture_output=True,
+            cwd=workspace_path,
+            timeout=timeout_seconds,
+            check=False,
+        )
+    except subprocess.TimeoutExpired as error:
+        return {
+            "returncode": 124,
+            "stdout": error.stdout or "",
+            "stderr": error.stderr or "",
+        }
+    return {
+        "returncode": completed.returncode,
+        "stdout": completed.stdout,
+        "stderr": completed.stderr,
+    }
+
+
+def draco_single_pass_baseline(
+    *,
+    manifest_path: Path,
+    output_dir: Path,
+    run_id: str,
+    bead_id: str,
+    case_index: int = 0,
+    timeout_seconds: int = 1800,
+    force: bool = False,
+    runner: Any | None = None,
+) -> Path:
+    validate_id(run_id, "run_id")
+    if timeout_seconds <= 0:
+        raise HarnessError("timeout_seconds must be positive")
+    case = case_from_manifest(manifest_path, case_index=case_index)
+    if case.get("benchmark_family") != BENCHMARK_FAMILY_DRACO:
+        raise HarnessError("single-pass baseline requires a DRACO case manifest")
+    manifest_path = manifest_path.resolve()
+    baseline_dir = (output_dir / run_id).resolve()
+    if baseline_dir.exists():
+        if not force:
+            raise HarnessError(f"baseline output already exists: {baseline_dir}")
+        shutil.rmtree(baseline_dir)
+    workspace_path = baseline_dir / "workspace"
+    transcript_path = baseline_dir / "transcripts" / "single_pass_baseline.jsonl"
+    last_message_path = baseline_dir / "last_message.md"
+    workspace_path.mkdir(parents=True, exist_ok=True)
+    prompt = draco_single_pass_baseline_prompt(case)
+    write_text(baseline_dir / "prompt.md", prompt)
+    receipt = {
+        "schema_version": "codex-dr.draco_single_pass_baseline_receipt.v1",
+        "run_id": run_id,
+        "bead_id": bead_id,
+        "benchmark_family": BENCHMARK_FAMILY_DRACO,
+        "case_id": case.get("case_id"),
+        "case_index": case_index,
+        "manifest_path": manifest_path.as_posix(),
+        "runner": {
+            "kind": "codex_exec_box",
+            "command_surface": "alexandria-dr draco-single-pass-baseline",
+            "model": DEFAULT_CODEX_EXEC_MODEL,
+            "reasoning_effort": DEFAULT_CODEX_EXEC_REASONING,
+        },
+        "operational_bounds": {
+            "max_live_attempts": 1,
+            "timeout_seconds": timeout_seconds,
+            "automatic_retry_allowed": False,
+        },
+        "input_visibility": {
+            "generator_visible_only": True,
+            "forbidden_sources": [
+                "sealed DRACO answer rubrics",
+                "scorer-only criteria",
+                "private benchmark corpora",
+                "secrets",
+                "environment files",
+                "root repo files",
+            ],
+        },
+        "claim_boundary": {
+            "allowed": [
+                "A single-pass Codex baseline answer was attempted for one selected DRACO prompt."
+            ],
+            "blocked": [
+                "DRACO score",
+                "Grep parity",
+                "leaderboard rank",
+                "product readiness",
+                "official benchmark submission",
+            ],
+        },
+        "produced_at": FIXTURE_TIMESTAMP,
+    }
+    write_json(baseline_dir / "baseline_run_receipt.json", receipt)
+    command = [
+        "codex",
+        "exec",
+        "--json",
+        "--model",
+        DEFAULT_CODEX_EXEC_MODEL,
+        "--disable",
+        "apps",
+        "-c",
+        'approval_policy="never"',
+        "-c",
+        f'model_reasoning_effort="{DEFAULT_CODEX_EXEC_REASONING}"',
+        "-c",
+        "plugins={}",
+        "-c",
+        "mcp_servers={}",
+        "--sandbox",
+        "workspace-write",
+        "--cd",
+        workspace_path.as_posix(),
+        "--output-last-message",
+        last_message_path.as_posix(),
+        "-",
+    ]
+    baseline_runner = runner or run_codex_single_pass_baseline_command
+    result = baseline_runner(
+        command=command,
+        prompt=prompt,
+        workspace_path=workspace_path,
+        transcript_path=transcript_path,
+        last_message_path=last_message_path,
+        timeout_seconds=timeout_seconds,
+    )
+    transcript_path.parent.mkdir(parents=True, exist_ok=True)
+    if not transcript_path.exists():
+        header = {
+            "schema_version": "codex-dr.draco_single_pass_transcript_header.v1",
+            "run_id": run_id,
+            "command": command,
+            "cwd": workspace_path.as_posix(),
+        }
+        write_text(
+            transcript_path,
+            json.dumps(header, sort_keys=True)
+            + "\n"
+            + str(result.get("stdout", ""))
+            + str(result.get("stderr", "")),
+        )
+    if "last_message" in result and not last_message_path.exists():
+        write_text(last_message_path, str(result["last_message"]))
+    output_contract_violations = []
+    answer_path = workspace_path / "answer.md"
+    audit_path = workspace_path / "self_audit.json"
+    if not answer_path.exists():
+        if last_message_path.exists() and last_message_path.read_text(encoding="utf-8").strip():
+            write_text(answer_path, last_message_path.read_text(encoding="utf-8"))
+            output_contract_violations.append("answer.md_missing_used_last_message_fallback")
+        else:
+            output_contract_violations.append("answer.md_missing")
+    if not audit_path.exists():
+        answer_text = answer_path.read_text(encoding="utf-8") if answer_path.exists() else ""
+        write_json(
+            audit_path,
+            {
+                "schema_version": "codex-dr.draco_single_pass_self_audit.v1",
+                "prompt_facets_covered": [],
+                "known_gaps": ["self_audit.json was not produced by the baseline agent"],
+                "citation_count": citation_count(answer_text),
+                "claims_that_need_verification": [],
+                "claim_boundary": {
+                    "blocked": [
+                        "DRACO score",
+                        "Grep parity",
+                        "leaderboard rank",
+                        "product readiness",
+                    ]
+                },
+            },
+        )
+        output_contract_violations.append("self_audit.json_missing_harness_fallback")
+    copied_outputs = []
+    for relative in ["answer.md", "self_audit.json"]:
+        source = workspace_path / relative
+        if source.exists():
+            destination = baseline_dir / relative
+            shutil.copy2(source, destination)
+            copied_outputs.append(relative)
+    summary = {
+        "schema_version": "codex-dr.draco_single_pass_baseline_summary.v1",
+        "run_id": run_id,
+        "benchmark_family": BENCHMARK_FAMILY_DRACO,
+        "case_id": case.get("case_id"),
+        "returncode": result.get("returncode"),
+        "status": "completed" if result.get("returncode") == 0 else "failed",
+        "prompt": "prompt.md",
+        "answer": "answer.md" if (baseline_dir / "answer.md").exists() else None,
+        "self_audit": (
+            "self_audit.json" if (baseline_dir / "self_audit.json").exists() else None
+        ),
+        "transcript": rel(transcript_path, baseline_dir),
+        "last_message": (
+            rel(last_message_path, baseline_dir) if last_message_path.exists() else None
+        ),
+        "copied_outputs": copied_outputs,
+        "output_contract_violations": output_contract_violations,
+        "claim_boundary": receipt["claim_boundary"],
+    }
+    write_json(baseline_dir / "baseline_summary.json", summary)
+    return baseline_dir
+
+
+def citation_count(text: str) -> int:
+    markdown_links = re.findall(r"\[[^\]]+\]\((?:https?://|www\.)[^)]+\)", text)
+    bare_urls = re.findall(r"https?://\S+|www\.\S+", text)
+    return len(markdown_links) + len(bare_urls)
+
+
+def draco_prompt_facets(prompt: str) -> list[dict[str, Any]]:
+    lower = prompt.lower()
+    facets = [
+        ("thermo_king", ["thermo king"]),
+        ("carrier_transicold", ["carrier transicold"]),
+        ("off_grid_alternatives", ["off-grid", "off grid", "solar", "passive"]),
+        ("twelve_hour_no_electricity", ["12+ hour", "12 hour", "no electricity"]),
+        ("cellular_or_satellite_monitoring", ["cellular", "satellite", "monitoring"]),
+        ("maintenance_accra", ["accra"]),
+        ("maintenance_lagos", ["lagos"]),
+        ("maintenance_dakar", ["dakar"]),
+        ("maintenance_abidjan", ["abidjan"]),
+        ("cost_per_vaccine_dose", ["cost per vaccine dose", "cost per dose"]),
+        ("who_pqs", ["who pqs", "who prequalification", "prequalification standards"]),
+    ]
+    return [
+        {"facet_id": facet_id, "needles": needles}
+        for facet_id, needles in facets
+        if any(needle in lower for needle in needles)
+    ]
+
+
+def text_diagnostic(text: str, facets: list[dict[str, Any]]) -> dict[str, Any]:
+    lower = text.lower()
+    covered = [
+        facet["facet_id"]
+        for facet in facets
+        if any(str(needle).lower() in lower for needle in facet.get("needles", []))
+    ]
+    missing = [facet["facet_id"] for facet in facets if facet["facet_id"] not in covered]
+    words = re.findall(r"\b\w+\b", text)
+    return {
+        "word_count": len(words),
+        "citation_count": citation_count(text),
+        "prompt_facets_total": len(facets),
+        "prompt_facets_covered": covered,
+        "prompt_facets_missing": missing,
+        "prompt_facet_coverage_ratio": (
+            round(len(covered) / len(facets), 3) if facets else None
+        ),
+    }
+
+
+def read_optional_text(path: Path) -> str:
+    return path.read_text(encoding="utf-8") if path.exists() else ""
+
+
+def mesh_comparison_text(run_dir: Path) -> str:
+    parts = [
+        read_optional_text(run_dir / "synthesis.md"),
+        read_optional_text(run_dir / "report.md"),
+    ]
+    for path in sorted((run_dir / "reentry").glob("*/reentry_synthesis.md")):
+        parts.append(read_optional_text(path))
+    return "\n\n".join(part for part in parts if part.strip())
+
+
+def draco_shadow_compare(
+    *,
+    manifest_path: Path,
+    mesh_run_dir: Path,
+    baseline_dir: Path,
+    output_json: Path,
+    output_md: Path | None = None,
+    case_index: int = 0,
+) -> Path:
+    case = case_from_manifest(manifest_path, case_index=case_index)
+    if case.get("benchmark_family") != BENCHMARK_FAMILY_DRACO:
+        raise HarnessError("DRACO shadow comparison requires a DRACO case")
+    generator_visible = case.get("generator_visible", {})
+    prompt = str(generator_visible.get("question") or "")
+    facets = draco_prompt_facets(prompt)
+    baseline_answer = read_optional_text(baseline_dir / "answer.md")
+    mesh_text = mesh_comparison_text(mesh_run_dir)
+    baseline_summary = (
+        read_json(baseline_dir / "baseline_summary.json")
+        if (baseline_dir / "baseline_summary.json").exists()
+        else {}
+    )
+    execution_summary = (
+        read_json(mesh_run_dir / "live_executor" / "execution_summary.json")
+        if (mesh_run_dir / "live_executor" / "execution_summary.json").exists()
+        else {}
+    )
+    queue = (
+        read_json(mesh_run_dir / "backpressure" / "adequacy_backpressure_queue.json")
+        if (mesh_run_dir / "backpressure" / "adequacy_backpressure_queue.json").exists()
+        else {}
+    )
+    validation_report = (
+        read_json(mesh_run_dir / "validation_report.json")
+        if (mesh_run_dir / "validation_report.json").exists()
+        else {}
+    )
+    failed_checks = validation_report.get("failed_checks", [])
+    rubric = case.get("sealed_scorer_only", {}).get("rubric", {})
+    comparison = {
+        "schema_version": "codex-dr.draco_shadow_baseline_comparison.v1",
+        "benchmark_family": BENCHMARK_FAMILY_DRACO,
+        "case_id": case.get("case_id"),
+        "benchmark_case_uuid": generator_visible.get("benchmark_case_uuid"),
+        "domain": generator_visible.get("domain"),
+        "mesh_run_dir": mesh_run_dir.as_posix(),
+        "baseline_dir": baseline_dir.as_posix(),
+        "rubric_surface": {
+            "criteria_count": rubric.get("criteria_count"),
+            "total_weight": rubric.get("total_weight"),
+            "rubric_axes": rubric.get("rubric_axes", []),
+            "scoring_status": "not_executed_shadow_diagnostic_only",
+        },
+        "baseline": {
+            "status": baseline_summary.get("status", "unknown"),
+            "returncode": baseline_summary.get("returncode"),
+            "diagnostic": text_diagnostic(baseline_answer, facets),
+            "output_contract_violations": baseline_summary.get(
+                "output_contract_violations", []
+            ),
+        },
+        "mesh": {
+            "execution_status": execution_summary.get("execution_status"),
+            "role_count": execution_summary.get("role_count"),
+            "recursive_reentry_rounds_used": execution_summary.get(
+                "recursive_reentry_rounds_used"
+            ),
+            "diagnostic": text_diagnostic(mesh_text, facets),
+            "writer_blocked": queue.get("writer_blocked"),
+            "open_backpressure_count": len(queue.get("items", [])),
+            "open_backpressure_ids": [
+                item.get("item_id") or item.get("gap_id")
+                for item in queue.get("items", [])
+            ],
+            "validation_status": validation_report.get("status"),
+            "failed_validation_checks": failed_checks,
+        },
+        "interpretation": {
+            "useful_comparison": True,
+            "primary_signal": (
+                "The single-pass baseline produces an answer surface, while the mesh "
+                "currently proves topology and backpressure behavior but blocks final "
+                "writing on unresolved adequacy gaps."
+            ),
+            "next_work": [
+                "Normalize live citation-support and adequacy-delta statuses so validation can pass.",
+                "Close procurement comparison and cost-per-dose evidence gaps before final writer.",
+                "Only then run scorer-backed DRACO evaluation or DeepResearch Bench scoring.",
+            ],
+        },
+        "claim_boundary": {
+            "allowed": [
+                "A DRACO shadow diagnostic comparison exists for one selected prompt.",
+                "The comparison reports deterministic coverage and custody signals.",
+            ],
+            "blocked": [
+                "DRACO score",
+                "Grep parity",
+                "leaderboard rank",
+                "product readiness",
+                "official benchmark submission",
+                "scorer-backed evaluation",
+            ],
+        },
+        "produced_at": FIXTURE_TIMESTAMP,
+    }
+    output_json.parent.mkdir(parents=True, exist_ok=True)
+    write_json(output_json, comparison)
+    if output_md:
+        lines = [
+            "# DRACO Shadow Baseline Comparison",
+            "",
+            f"Case: `{case.get('case_id')}`",
+            "",
+            "This is a shadow diagnostic comparison. It is not an official DRACO score.",
+            "",
+            "## Baseline",
+            "",
+            f"- Status: `{comparison['baseline']['status']}`",
+            f"- Prompt facet coverage: `{comparison['baseline']['diagnostic']['prompt_facet_coverage_ratio']}`",
+            f"- Citations detected: `{comparison['baseline']['diagnostic']['citation_count']}`",
+            "",
+            "## Mesh",
+            "",
+            f"- Execution status: `{comparison['mesh']['execution_status']}`",
+            f"- Roles completed: `{comparison['mesh']['role_count']}`",
+            f"- Recursive re-entry rounds: `{comparison['mesh']['recursive_reentry_rounds_used']}`",
+            f"- Writer blocked: `{comparison['mesh']['writer_blocked']}`",
+            f"- Open backpressure items: `{comparison['mesh']['open_backpressure_count']}`",
+            f"- Validation status: `{comparison['mesh']['validation_status']}`",
+            "",
+            "## Interpretation",
+            "",
+            comparison["interpretation"]["primary_signal"],
+            "",
+            "## Next Work",
+            "",
+            *[f"- {item}" for item in comparison["interpretation"]["next_work"]],
+            "",
+            "## Claim Boundary",
+            "",
+            "Blocked: DRACO score, Grep parity, leaderboard rank, product readiness, official benchmark submission.",
+            "",
+        ]
+        write_text(output_md, "\n".join(lines))
+    return output_json
+
+
 def default_report_export_custody_path(output: Path) -> Path:
     if output.suffix == ".jsonl":
         return output.with_name(f"{output.stem}_custody.json")
@@ -15588,6 +16066,23 @@ def build_parser() -> argparse.ArgumentParser:
     draco_run_control.add_argument("--bead-id", required=True)
     draco_run_control.add_argument("--max-wall-clock-minutes", type=int, default=25)
 
+    draco_baseline = subparsers.add_parser("draco-single-pass-baseline")
+    draco_baseline.add_argument("run_id")
+    draco_baseline.add_argument("--manifest", required=True, type=Path)
+    draco_baseline.add_argument("--output-dir", required=True, type=Path)
+    draco_baseline.add_argument("--bead-id", required=True)
+    draco_baseline.add_argument("--case-index", type=int, default=0)
+    draco_baseline.add_argument("--timeout-seconds", type=int, default=1800)
+    draco_baseline.add_argument("--force", action="store_true")
+
+    draco_compare = subparsers.add_parser("draco-shadow-compare")
+    draco_compare.add_argument("--manifest", required=True, type=Path)
+    draco_compare.add_argument("--mesh-run-dir", required=True, type=Path)
+    draco_compare.add_argument("--baseline-dir", required=True, type=Path)
+    draco_compare.add_argument("--output-json", required=True, type=Path)
+    draco_compare.add_argument("--output-md", type=Path)
+    draco_compare.add_argument("--case-index", type=int, default=0)
+
     drb_manifest = subparsers.add_parser("deepresearch-bench-case-manifest")
     drb_manifest.add_argument("--query-jsonl", required=True, type=Path)
     drb_manifest.add_argument("--source-refresh", required=True, type=Path)
@@ -15825,6 +16320,27 @@ def main(argv: list[str] | None = None) -> int:
                 runs_dir=args.runs_dir,
                 max_wall_clock_minutes=args.max_wall_clock_minutes,
             )
+        elif args.command == "draco-single-pass-baseline":
+            output = draco_single_pass_baseline(
+                manifest_path=args.manifest,
+                output_dir=args.output_dir,
+                run_id=args.run_id,
+                bead_id=args.bead_id,
+                case_index=args.case_index,
+                timeout_seconds=args.timeout_seconds,
+                force=args.force,
+            )
+            print(output.as_posix())
+        elif args.command == "draco-shadow-compare":
+            output = draco_shadow_compare(
+                manifest_path=args.manifest,
+                mesh_run_dir=args.mesh_run_dir,
+                baseline_dir=args.baseline_dir,
+                output_json=args.output_json,
+                output_md=args.output_md,
+                case_index=args.case_index,
+            )
+            print(output.as_posix())
         elif args.command == "deepresearch-bench-case-manifest":
             output = deepresearch_bench_case_manifest(
                 query_jsonl=args.query_jsonl,

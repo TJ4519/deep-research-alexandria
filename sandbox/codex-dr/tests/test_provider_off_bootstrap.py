@@ -2886,6 +2886,239 @@ def test_draco_live_run_control_validates(tmp_path: Path):
     assert "DRACO benchmark score" in receipt["non_claims_even_if_success"]
 
 
+def write_draco_fixture_manifest(path: Path) -> None:
+    path.write_text(
+        json.dumps(
+            {
+                "schema_version": "codex-dr.case_spec_manifest.v1",
+                "benchmark_family": "DRACO",
+                "source": {
+                    "dataset_id": "perplexity-ai/draco",
+                    "dataset_commit": "fixture",
+                    "split": "test",
+                    "source_file": "test.jsonl",
+                    "row_indices": [48],
+                    "license_observed": "mit",
+                    "access_observed": "public_ungated",
+                    "manifest_ref": "fixture",
+                },
+                "selection": {
+                    "reference_and_rubric_visibility": "scorer_only",
+                    "public_web_research_allowed": True,
+                },
+                "cases": [
+                    {
+                        "case_id": "draco_test_row_048",
+                        "benchmark_family": "DRACO",
+                        "row_indices": [48],
+                        "generator_visible": {
+                            "question": (
+                                "As procurement lead for a pharmaceutical cold chain spanning "
+                                "West Africa, compare Thermo King, Carrier Transicold, and "
+                                "off-grid alternatives on 12+ hour no electricity journeys, "
+                                "cellular or satellite monitoring, maintenance in Accra, "
+                                "Lagos, Dakar, and Abidjan, total cost per vaccine dose, "
+                                "and WHO Prequalification standards."
+                            ),
+                            "benchmark_case_uuid": "case-048",
+                            "domain": "Shopping/Product Comparison",
+                            "source_policy": (
+                                "Use the DRACO prompt and permitted public sources. Do not "
+                                "read scorer-only rubric or answer fields."
+                            ),
+                            "public_web_research_allowed": True,
+                        },
+                        "sealed_scorer_only": {
+                            "rubric": {
+                                "visibility": "scorer_only",
+                                "criteria_count": 54,
+                                "total_weight": 358.0,
+                                "rubric_axes": [
+                                    "factual-accuracy",
+                                    "breadth-and-depth-of-analysis",
+                                    "presentation-quality",
+                                    "citation-quality",
+                                ],
+                                "secret_requirement": "thermo-king-independent-power",
+                            },
+                            "reference_answer": {
+                                "visibility": "scorer_only",
+                                "payload_status": "fixture_hidden",
+                            },
+                        },
+                    }
+                ],
+                "claim_boundary": {
+                    "allowed_claims_if_valid": [
+                        "DRACO cases were imported as sealed manifests."
+                    ],
+                    "blocked_claims": [
+                        "DRACO score",
+                        "Grep parity",
+                        "leaderboard rank",
+                        "product readiness",
+                    ],
+                },
+            },
+            indent=2,
+            sort_keys=True,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+
+def test_draco_single_pass_baseline_runs_without_rubric_leak(tmp_path: Path):
+    harness = load_harness()
+    manifest = tmp_path / "draco_manifest.json"
+    write_draco_fixture_manifest(manifest)
+    prompts_seen = []
+
+    def fake_baseline_runner(
+        *,
+        command: list[str],
+        prompt: str,
+        workspace_path: Path,
+        transcript_path: Path,
+        last_message_path: Path,
+        timeout_seconds: int,
+    ) -> dict:
+        assert command[:4] == ["codex", "exec", "--json", "--model"]
+        assert timeout_seconds == 30
+        assert "thermo-king-independent-power" not in prompt
+        assert "secret_requirement" not in prompt
+        prompts_seen.append(prompt)
+        (workspace_path / "answer.md").write_text(
+            "Thermo King, Carrier Transicold, and off-grid options are compared. "
+            "WHO PQS and Accra/Lagos/Dakar/Abidjan maintenance are noted. "
+            "Source: https://example.com/cold-chain\n",
+            encoding="utf-8",
+        )
+        (workspace_path / "self_audit.json").write_text(
+            json.dumps(
+                {
+                    "schema_version": "codex-dr.draco_single_pass_self_audit.v1",
+                    "prompt_facets_covered": ["thermo_king"],
+                    "known_gaps": ["fixture"],
+                    "citation_count": 1,
+                    "claims_that_need_verification": [],
+                    "claim_boundary": {"blocked": ["DRACO score"]},
+                },
+                indent=2,
+                sort_keys=True,
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+        transcript_path.parent.mkdir(parents=True, exist_ok=True)
+        transcript_path.write_text('{"type":"stub"}\n', encoding="utf-8")
+        last_message_path.write_text("draco baseline complete\n", encoding="utf-8")
+        return {"returncode": 0, "stdout": "", "stderr": ""}
+
+    baseline_dir = harness.draco_single_pass_baseline(
+        manifest_path=manifest,
+        output_dir=tmp_path / "baselines",
+        run_id="draco_baseline_048",
+        bead_id="alexandriacleanroom-104",
+        timeout_seconds=30,
+        runner=fake_baseline_runner,
+    )
+
+    assert prompts_seen
+    assert (baseline_dir / "answer.md").exists()
+    summary = json.loads((baseline_dir / "baseline_summary.json").read_text(encoding="utf-8"))
+    assert summary["status"] == "completed"
+    assert summary["output_contract_violations"] == []
+
+
+def test_draco_shadow_compare_reports_baseline_and_mesh_gap(tmp_path: Path):
+    harness = load_harness()
+    manifest = tmp_path / "draco_manifest.json"
+    write_draco_fixture_manifest(manifest)
+    baseline_dir = tmp_path / "baseline"
+    baseline_dir.mkdir()
+    (baseline_dir / "answer.md").write_text(
+        "Thermo King, Carrier Transicold, off-grid alternatives, cellular, "
+        "satellite, Accra, Lagos, Dakar, Abidjan, cost per vaccine dose, WHO PQS. "
+        "https://example.com\n",
+        encoding="utf-8",
+    )
+    (baseline_dir / "baseline_summary.json").write_text(
+        json.dumps(
+            {
+                "schema_version": "codex-dr.draco_single_pass_baseline_summary.v1",
+                "run_id": "baseline",
+                "status": "completed",
+                "returncode": 0,
+                "output_contract_violations": [],
+            },
+            indent=2,
+            sort_keys=True,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    mesh_dir = tmp_path / "mesh"
+    (mesh_dir / "live_executor").mkdir(parents=True)
+    (mesh_dir / "backpressure").mkdir()
+    (mesh_dir / "synthesis.md").write_text(
+        "The mesh found Thermo King and Carrier Transicold evidence but blocked "
+        "total cost per vaccine dose closure.\n",
+        encoding="utf-8",
+    )
+    (mesh_dir / "live_executor" / "execution_summary.json").write_text(
+        json.dumps(
+            {
+                "execution_status": "blocked_by_adequacy_backpressure",
+                "role_count": 10,
+                "recursive_reentry_rounds_used": 1,
+            },
+            indent=2,
+            sort_keys=True,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    (mesh_dir / "backpressure" / "adequacy_backpressure_queue.json").write_text(
+        json.dumps(
+            {
+                "writer_blocked": True,
+                "items": [{"item_id": "gap_cost_per_dose"}],
+            },
+            indent=2,
+            sort_keys=True,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    (mesh_dir / "validation_report.json").write_text(
+        json.dumps(
+            {"status": "failed", "failed_checks": ["citation_support_maps_valid"]},
+            indent=2,
+            sort_keys=True,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+    output_json = tmp_path / "comparison.json"
+    output_md = tmp_path / "comparison.md"
+    harness.draco_shadow_compare(
+        manifest_path=manifest,
+        mesh_run_dir=mesh_dir,
+        baseline_dir=baseline_dir,
+        output_json=output_json,
+        output_md=output_md,
+    )
+
+    comparison = json.loads(output_json.read_text(encoding="utf-8"))
+    assert comparison["baseline"]["diagnostic"]["prompt_facets_total"] >= 8
+    assert comparison["mesh"]["writer_blocked"] is True
+    assert comparison["mesh"]["open_backpressure_count"] == 1
+    assert "DRACO score" in comparison["claim_boundary"]["blocked"]
+    assert output_md.exists()
+
+
 def test_deepresearch_bench_case_manifest_imports_sealed_cases(tmp_path: Path):
     harness = load_harness()
     runs_dir = TEST_RUNS_ROOT / f"{tmp_path.name}-drb-manifest-suite"
