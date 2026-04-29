@@ -144,10 +144,13 @@ def test_validator_accepts_reentry_results_derived_from_admitted_inputs():
     assert harness.evidence_status_is_admitted("derived_from_admitted_branch_rows")
     assert harness.evidence_status_is_admitted("inference_from_admitted_evidence")
     assert harness.evidence_status_is_admitted("inference_from_admitted_branch_rows")
+    assert harness.evidence_status_is_admitted("limited_admission")
     assert not harness.evidence_status_is_admitted("derived_from_unadmitted_inputs")
     assert not harness.evidence_status_is_admitted("inference_from_unadmitted_evidence")
     assert harness.evidence_status_is_gap("explicit_gap")
     assert harness.evidence_status_is_gap("blocked_by_input")
+    assert harness.evidence_status_is_gap("missing_reentry_task_packet")
+    assert harness.evidence_status_is_gap("unadmitted")
     assert harness.evidence_status_is_gap("not_admitted_for_claim_support")
     assert harness.evidence_status_is_gap("needs_synthesis")
 
@@ -1260,6 +1263,48 @@ def test_reentry_synthesis_delta_preserves_narrowed_not_closed(tmp_path: Path):
     ]
 
 
+def test_legacy_citation_support_map_shape_remains_inspectable(tmp_path: Path):
+    harness, run_dir, runs_dir = fresh_mesh_run(tmp_path)
+    write_backpressure_queue(run_dir, [citation_reentry_item()])
+    harness.compile_reentry_task_packet(
+        "draco_mesh_fixture_001",
+        runs_dir=runs_dir,
+        compiler_invocation_id="test_legacy_citation_map",
+    )
+    branch_dir = run_dir / "branches" / "reentry_followup_002"
+    write_reentry_result(
+        branch_dir,
+        gap_id="gap_citation_support_001",
+        proposed_next_status="narrowed",
+    )
+    (branch_dir / "citation_support_map.json").write_text(
+        json.dumps(
+            {
+                "schema_version": "codex_dr_citation_support_map_v0.1",
+                "source_gap_id": "gap_citation_support_001",
+                "support_map": [
+                    {
+                        "statement_id": "claim_001",
+                        "statement": "A bounded statement.",
+                        "support_status": "supported",
+                        "evidence_refs": [
+                            "branches/reentry_followup_002/evidence.jsonl#e1"
+                        ],
+                    }
+                ],
+            },
+            indent=2,
+            sort_keys=True,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+    check = harness.check_citation_support_maps(run_dir)
+
+    assert check["status"] == "passed"
+
+
 def test_reentry_synthesis_delta_rejects_self_closure(tmp_path: Path):
     harness, run_dir, runs_dir = fresh_mesh_run(tmp_path)
     write_backpressure_queue(run_dir, [citation_reentry_item()])
@@ -1284,6 +1329,31 @@ def test_reentry_synthesis_delta_rejects_self_closure(tmp_path: Path):
 
     assert check["status"] == "failed"
     assert "adequacy_delta cannot authorize closure" in check["details"]
+
+
+def test_reentry_synthesis_accepts_narrowed_review_pending_delta(tmp_path: Path):
+    harness, run_dir, runs_dir = fresh_mesh_run(tmp_path)
+    write_backpressure_queue(run_dir, [citation_reentry_item()])
+    harness.compile_reentry_task_packet(
+        "draco_mesh_fixture_001",
+        runs_dir=runs_dir,
+        compiler_invocation_id="test_narrowed_review_pending",
+    )
+    branch_dir = run_dir / "branches" / "reentry_followup_002"
+    write_reentry_result(
+        branch_dir,
+        gap_id="gap_citation_support_001",
+        proposed_next_status="narrowed",
+    )
+    write_adequacy_delta(
+        run_dir,
+        gap_id="gap_citation_support_001",
+        proposed_next_status="narrowed_review_pending",
+    )
+
+    check = harness.check_reentry_synthesis_outputs(run_dir)
+
+    assert check["status"] == "passed"
 
 
 def test_mesh_execute_live_fails_on_forbidden_reviewer_queue_output(tmp_path: Path):

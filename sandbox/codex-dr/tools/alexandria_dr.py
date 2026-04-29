@@ -195,6 +195,7 @@ EVIDENCE_ADMITTED_STATUSES = {
     "admitted",
     "admitted_local_artifact",
     "admitted_process_fact",
+    "limited_admission",
     "derived_from_admitted_inputs",
     "inference_from_admitted_artifacts",
 }
@@ -204,9 +205,11 @@ EVIDENCE_GAP_STATUSES = {
     "blocked_by_input",
     "explicit_gap",
     "missing_required_packet",
+    "missing_reentry_task_packet",
     "needs_synthesis",
     "unsupported",
     "not_admitted",
+    "unadmitted",
     "not_admitted_for_claim",
     "not_admitted_for_claim_support",
 }
@@ -255,13 +258,18 @@ REENTRY_MUST_NOT_CLAIM = [
 REENTRY_RESULT_STATUSES = {
     "closed_candidate",
     "narrowed",
+    "narrowed_review_pending",
     "open",
     "blocked_by_input",
     "blocked_by_tooling",
     "contradicted",
     "lawful_partial_candidate",
 }
+CITATION_SUPPORT_MAP_LEGACY_SCHEMA_VERSIONS = {
+    "codex_dr_citation_support_map_v0.1",
+}
 CITATION_SUPPORT_STATUSES = {
+    "supported",
     "directly_supported",
     "partially_supported",
     "indirectly_supported",
@@ -7157,9 +7165,15 @@ def validate_citation_support_map_object(
     require_no_writer_blocking: bool,
 ) -> list[str]:
     problems: list[str] = []
-    if support_map.get("schema_version") != CITATION_SUPPORT_MAP_SCHEMA_VERSION:
+    schema_version = support_map.get("schema_version")
+    if schema_version not in {
+        CITATION_SUPPORT_MAP_SCHEMA_VERSION,
+        *CITATION_SUPPORT_MAP_LEGACY_SCHEMA_VERSIONS,
+    }:
         problems.append("invalid citation_support_map schema_version")
     claims = support_map.get("claims")
+    if not isinstance(claims, list):
+        claims = support_map.get("support_map")
     if not isinstance(claims, list) or not claims:
         problems.append("citation_support_map claims must be a non-empty list")
         return problems
@@ -7167,12 +7181,16 @@ def validate_citation_support_map_object(
         if not isinstance(claim, dict):
             problems.append(f"claim {index} is not an object")
             continue
-        claim_id = str(claim.get("claim_id") or f"claim_{index}").strip()
+        claim_id = str(
+            claim.get("claim_id") or claim.get("statement_id") or f"claim_{index}"
+        ).strip()
         status = str(claim.get("support_status") or "").strip()
         if status not in CITATION_SUPPORT_STATUSES:
             problems.append(f"{claim_id}: invalid support_status {status!r}")
             continue
         evidence_refs = claim.get("evidence_refs", [])
+        if status == "supported":
+            status = "directly_supported"
         if status in {
             "directly_supported",
             "partially_supported",
@@ -15002,7 +15020,13 @@ def check_claim_review_artifact(run_dir: Path) -> dict[str, str]:
             + ", ".join(sorted(missing_policy_blocks))
         )
     for label, relative in review.get("inputs", {}).items():
-        if relative and not (run_dir / str(relative)).exists():
+        if not relative:
+            continue
+        relative_text = str(relative)
+        if not (
+            (run_dir / relative_text).exists()
+            or resolve_sandbox_display_path(relative_text).exists()
+        ):
             problems.append(f"claim_review input {label} missing: {relative}")
     if allowed_review:
         if allowed_review.get("review_ref") != "claim_review.json":
