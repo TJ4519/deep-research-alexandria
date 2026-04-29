@@ -6398,7 +6398,7 @@ def safe_relative_path(value: Any) -> bool:
 
 
 def safe_reentry_identifier(value: Any) -> str | None:
-    text = str(value or "").strip()
+    text = re.sub(r"[^a-z0-9_-]+", "_", str(value or "").lower()).strip("_")
     if not text or not ID_RE.match(text):
         return None
     return text
@@ -6537,7 +6537,9 @@ def reentry_source_ref_is_bounded(ref: dict[str, Any]) -> bool:
 def normalized_reentry_required_action(
     item: dict[str, Any], source_refs: list[dict[str, Any]]
 ) -> dict[str, Any]:
-    raw = item.get("required_action", {})
+    raw = item.get("required_action_detail")
+    if not isinstance(raw, dict):
+        raw = item.get("required_action", {})
     if isinstance(raw, dict):
         action_type = str(raw.get("action_type") or raw.get("type") or "").strip()
         role_family = str(
@@ -6631,6 +6633,65 @@ def reentry_queue_item_is_work_candidate(item: dict[str, Any]) -> bool:
         return False
     gates = normalized_gate_effects(item)
     return gates.get("writer_blocking") is True or gates.get("reentry_required") is True
+
+
+def select_reentry_work_candidate(
+    run_dir: Path, work_items: list[dict[str, Any]]
+) -> tuple[dict[str, Any] | None, dict[str, Any] | None, list[str]]:
+    ranked = sorted(work_items, key=reentry_work_item_sort_key)
+    first_candidate: dict[str, Any] | None = None
+    first_problems: list[str] = []
+    for item in ranked:
+        candidate, problems = normalize_reentry_candidate(run_dir, item)
+        if first_candidate is None:
+            first_candidate = candidate
+            first_problems = problems
+        if not problems:
+            return item, candidate, []
+    if ranked:
+        return ranked[0], first_candidate, first_problems
+    return None, None, ["no unresolved writer-blocking or reentry-required item exists"]
+
+
+def reentry_work_item_sort_key(item: dict[str, Any]) -> tuple[int, int, int, str]:
+    gates = normalized_gate_effects(item)
+    failure_type = str(item.get("failure_type") or "").lower()
+    action = item.get("required_action_detail")
+    action_type = ""
+    if isinstance(action, dict):
+        action_type = str(action.get("action_type") or "").lower()
+    else:
+        action_type = str(item.get("required_action") or "").lower()
+    gap_id = str(item.get("gap_id") or item.get("item_id") or "")
+    return (
+        0 if gates.get("reentry_required") else 1,
+        reentry_failure_type_priority(failure_type),
+        reentry_action_priority(action_type),
+        gap_id,
+    )
+
+
+def reentry_failure_type_priority(failure_type: str) -> int:
+    priorities = {
+        "citation_support_gap": 0,
+        "non_comparable_inputs": 1,
+        "methodology_gap": 2,
+        "evidence_gap": 3,
+        "provenance_gap": 4,
+        "contradiction": 5,
+    }
+    return priorities.get(failure_type, 50)
+
+
+def reentry_action_priority(action_type: str) -> int:
+    priorities = {
+        "citation_verification": 0,
+        "statement_to_source_verification": 0,
+        "reentry_research": 1,
+        "methodology_repair": 2,
+        "comparability_repair": 2,
+    }
+    return priorities.get(action_type, 50)
 
 
 def normalize_reentry_candidate(
@@ -6979,17 +7040,6 @@ def compile_reentry_task_packet_for_run(
                 blocked_reason=f"assigned gap_id not found: {assigned_gap_id}",
             )
             return write_reentry_task_packet(run_dir, packet)
-    elif len(work_items) > 1:
-        packet = blocked_reentry_task_packet(
-            run_dir=run_dir,
-            compiler_invocation_id=compiler_invocation_id,
-            compiler_status="blocked_by_assignment_ambiguity",
-            blocked_reason=(
-                "multiple eligible backpressure items exist and no assigned gap_id "
-                "was provided"
-            ),
-        )
-        return write_reentry_task_packet(run_dir, packet)
     elif not work_items:
         packet = blocked_reentry_task_packet(
             run_dir=run_dir,
@@ -6998,8 +7048,15 @@ def compile_reentry_task_packet_for_run(
             blocked_reason="no unresolved writer-blocking or reentry-required item exists",
         )
         return write_reentry_task_packet(run_dir, packet)
-
-    candidate, problems = normalize_reentry_candidate(run_dir, work_items[0])
+    selected_item, candidate, problems = select_reentry_work_candidate(run_dir, work_items)
+    if selected_item is None or candidate is None:
+        packet = blocked_reentry_task_packet(
+            run_dir=run_dir,
+            compiler_invocation_id=compiler_invocation_id,
+            compiler_status="blocked_by_assignment_ambiguity",
+            blocked_reason="no eligible singular item could be selected",
+        )
+        return write_reentry_task_packet(run_dir, packet)
     if problems:
         packet = blocked_reentry_task_packet(
             run_dir=run_dir,

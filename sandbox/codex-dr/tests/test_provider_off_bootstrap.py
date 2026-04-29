@@ -857,7 +857,7 @@ def citation_reentry_item(gap_id: str = "gap_citation_support_001") -> dict:
     }
 
 
-def test_reentry_task_packet_compiler_blocks_multiple_items_without_assignment(
+def test_reentry_task_packet_compiler_selects_citation_from_multiple_items(
     tmp_path: Path,
 ):
     harness, run_dir, runs_dir = fresh_mesh_run(tmp_path)
@@ -876,10 +876,10 @@ def test_reentry_task_packet_compiler_blocks_multiple_items_without_assignment(
     )
 
     packet = json.loads(packet_path.read_text(encoding="utf-8"))
-    assert packet["compiler_status"] == "blocked_by_assignment_ambiguity"
-    assert packet["task"] is None
+    assert packet["compiler_status"] == "ready"
+    assert packet["source_gap_id"] == "gap_citation_support_001"
+    assert "citation_support_map.json" in packet["task"]["required_outputs"]
     assert packet["writer_permission"] is False
-    assert packet["packet_path"].startswith("reentry/_blocked/")
     check = harness.check_reentry_task_packets(run_dir)
     assert check["status"] == "passed"
 
@@ -957,6 +957,79 @@ def test_reentry_task_packet_compiler_writes_ready_citation_packet(tmp_path: Pat
     assert packet["trace"]["closure_condition_from"] == "queue.closure_condition"
     check = harness.check_reentry_task_packets(run_dir)
     assert check["status"] == "passed"
+
+
+def comparability_reentry_item(gap_id: str = "gap_comparability_001") -> dict:
+    return {
+        "gap_id": gap_id,
+        "status": "open",
+        "failure_type": "non_comparable_inputs",
+        "adequacy_criterion_id": "adequacy_review_reentry",
+        "target_surface": "synthesis.md",
+        "source_refs": [
+            "synthesis.md",
+            "branches/data_analysis/analysis.md#Comparability Limits And Follow-up",
+            "branches/deep_search/analysis.md#Contradictions And Gaps",
+        ],
+        "gates": [
+            "writer_blocking",
+            "reentry_required",
+            "review_required",
+            "claim_blocking",
+        ],
+        "writer_blocking": True,
+        "failure_statement": "The comparison is not closed on a common metric.",
+        "required_action_detail": {
+            "action_type": "reentry_research",
+            "objective": "Collect comparison-ready evidence or preserve a narrowed answer.",
+            "allowed_inputs": [
+                "synthesis.md",
+                "branches/data_analysis/analysis.md",
+                "branches/deep_search/analysis.md",
+            ],
+            "required_outputs": ["comparability_assessment.json"],
+        },
+        "closure_condition": (
+            "Reviewer verifies the comparison is closed or explicitly narrowed."
+        ),
+        "closure_authority": "reviewer_semantic_adjudication_after_reentry",
+    }
+
+
+def test_reentry_task_packet_compiler_selects_reentry_required_comparability(
+    tmp_path: Path,
+):
+    harness, run_dir, runs_dir = fresh_mesh_run(tmp_path)
+    methodology_item = citation_reentry_item("gap_methodology_001")
+    methodology_item["failure_type"] = "methodology_gap"
+    methodology_item["gates"] = ["writer_blocking", "review_required"]
+    methodology_item["gate_effects"] = {
+        "writer_blocking": True,
+        "reentry_required": False,
+        "review_required": True,
+        "claim_blocking": True,
+    }
+    write_backpressure_queue(
+        run_dir,
+        [
+            methodology_item,
+            comparability_reentry_item("RVW-002"),
+        ],
+    )
+
+    packet_path = harness.compile_reentry_task_packet(
+        "draco_mesh_fixture_001",
+        runs_dir=runs_dir,
+        compiler_invocation_id="test_comparability_selection",
+    )
+
+    packet = json.loads(packet_path.read_text(encoding="utf-8"))
+    assert packet["compiler_status"] == "ready"
+    assert packet["source_gap_id"] == "RVW-002"
+    assert packet["packet_path"] == "reentry/rvw-002/reentry_task_packet.json"
+    assert packet["task"]["action_type"] == "reentry_research"
+    assert "comparability_assessment.json" in packet["task"]["required_outputs"]
+    assert packet["writer_permission"] is False
 
 
 def write_reentry_result(
