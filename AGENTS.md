@@ -47,6 +47,12 @@ product service runtime work needs a separate bridge.
 - Generated Codex-DR sandbox runs belong under ignored paths in
   `sandbox/codex-dr/runs/`, `sandbox/codex-dr/tmp/`, or
   `sandbox/codex-dr/.agent-workspaces/`.
+- Autonomous continuation is the default after intent is clear. When an agent
+  finishes analysis and can name the next valid bead, proof artifact, command,
+  or patch, it should continue without waiting for another chat authorization.
+  Ask the Principal only for true blockers: destructive actions, missing
+  credentials or data, scope changes outside the active authority surface, or
+  live/provider execution that lacks an approved run-control receipt.
 
 ## Commands
 
@@ -81,6 +87,10 @@ product service runtime work needs a separate bridge.
 - Active Program 90 owner:
   `docs/exec-plans/active/program90_harness_centered_deep_research_rebuild.md`
 - Codex-DR sandbox architect handoff: `sandbox/codex-dr/docs/ARCHITECT_HANDOFF.md`
+- Codex-DR autonomous parity runway:
+  `sandbox/codex-dr/AUTONOMOUS_PARITY_RUNWAY.md`
+- Codex-DR DeepResearch Bench parity ExecPlan:
+  `docs/exec-plans/active/codex_dr_deepresearch_bench_parity_runway.md`
 - Reimagined root charter:
   `ALEXANDRIA_CHARTER.md`
 - Reimagined root plan:
@@ -113,6 +123,9 @@ product service runtime work needs a separate bridge.
 
 - Use `bd ready --no-daemon` to see the current unblocked queue.
 - Claim, close, and update beads with `bd --no-daemon` so the runtime lane stays deterministic.
+- If the current task is not blocked and the next bead is clear, claim or update
+  the bead and keep working. Do not stop at "I can proceed" after deriving the
+  next action.
 - Keep complex or session-spanning work in an ExecPlan under `docs/exec-plans/active/`.
 - Read the relevant active ExecPlan before touching Program `90`, report,
   topology, or claim-boundary work.
