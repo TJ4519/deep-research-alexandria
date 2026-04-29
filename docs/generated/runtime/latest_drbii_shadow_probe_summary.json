@@ -1,0 +1,68 @@
+{
+  "schema_version": "alexandria.drbii_shadow_probe_summary.v1",
+  "generated_at": "2026-04-30T00:09:55+01:00",
+  "benchmark_family": "DeepResearch Bench II",
+  "task": {
+    "idx": 73,
+    "id": "task28+",
+    "theme": "Health",
+    "language": "zh",
+    "description": "A Survey of Knowledge Graphs for Drug Repurposing",
+    "rubric_counts": {
+      "info_recall": 78,
+      "analysis": 8,
+      "presentation": 5,
+      "total": 91
+    }
+  },
+  "artifacts": {
+    "run_root": "sandbox/codex-dr/tmp/deepresearch_bench_ii_shadow_2026_04_30",
+    "candidate_report": "sandbox/codex-dr/tmp/deepresearch_bench_ii_shadow_2026_04_30/workspace/idx-73.md",
+    "self_audit": "sandbox/codex-dr/tmp/deepresearch_bench_ii_shadow_2026_04_30/workspace/self_audit.json",
+    "codex_shadow_eval": "sandbox/codex-dr/tmp/deepresearch_bench_ii_shadow_2026_04_30/codex_shadow_eval.json",
+    "official_repo_clone": "sandbox/codex-dr/tmp/deepresearch_bench_ii_official"
+  },
+  "codex_shadow_scores": {
+    "info_recall": {
+      "total": 78,
+      "positive": 46,
+      "zero": 32,
+      "negative": 0,
+      "ratio": 0.5897435897
+    },
+    "analysis": {
+      "total": 8,
+      "positive": 0,
+      "zero": 8,
+      "negative": 0,
+      "ratio": 0.0
+    },
+    "presentation": {
+      "total": 5,
+      "positive": 5,
+      "zero": 0,
+      "negative": 0,
+      "ratio": 1.0
+    },
+    "overall": {
+      "total": 91,
+      "positive": 51,
+      "zero": 40,
+      "negative": 0,
+      "ratio": 0.5604395604
+    }
+  },
+  "blocked_source_scan": {
+    "blocked_terms_found_in_report_or_eval": false,
+    "scan_patterns": [
+      "bbae461",
+      "39325460",
+      "Perdomo",
+      "Belmonte",
+      "Knowledge Graphs for drug repurposing: a review",
+      "academic.oup",
+      "10.1093/bib"
+    ]
+  },
+  "claim_boundary": "This is a non-official Codex shadow rubric diagnostic. It is not an official DeepResearch Bench II score, not a Grep parity score, not a leaderboard result, not product readiness evidence, and not a validated research-quality proof."
+}
