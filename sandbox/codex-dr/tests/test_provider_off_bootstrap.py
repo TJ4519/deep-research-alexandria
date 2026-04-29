@@ -1105,6 +1105,31 @@ def test_reentry_task_packet_compiler_selects_reentry_required_comparability(
     assert packet["writer_permission"] is False
 
 
+def test_reentry_task_packet_compiler_ignores_prose_required_outputs(tmp_path: Path):
+    harness, run_dir, runs_dir = fresh_mesh_run(tmp_path)
+    item = comparability_reentry_item("gap_prose_output_001")
+    item["required_action_detail"]["required_outputs"] = [
+        "comparability_assessment.json",
+        "updated synthesis.md if rerun",
+        "../unsafe.json",
+    ]
+    write_backpressure_queue(run_dir, [item])
+
+    packet_path = harness.compile_reentry_task_packet(
+        "draco_mesh_fixture_001",
+        runs_dir=runs_dir,
+        compiler_invocation_id="test_prose_output",
+    )
+
+    packet = json.loads(packet_path.read_text(encoding="utf-8"))
+    assert packet["compiler_status"] == "ready"
+    assert "comparability_assessment.json" in packet["task"]["required_outputs"]
+    assert "updated synthesis.md if rerun" not in packet["task"]["required_outputs"]
+    assert "../unsafe.json" not in packet["task"]["required_outputs"]
+    check = harness.check_reentry_task_packets(run_dir)
+    assert check["status"] == "passed"
+
+
 def write_reentry_result(
     branch_dir: Path,
     *,
@@ -1785,9 +1810,9 @@ def test_model_probe_records_unavailable_model_without_promotion(tmp_path: Path)
     assert receipt["model"] == "gpt-5.5"
     assert receipt["status"] == "unavailable"
     assert receipt["observed_error_class"] == "model_unavailable_or_no_access"
-    assert receipt["current_live_default"] == "gpt-5.4"
+    assert receipt["current_live_default"] == "gpt-5.5"
     assert receipt["may_promote_live_default"] is False
-    assert receipt["recommendation"] == "keep gpt-5.4 as live default"
+    assert receipt["recommendation"] == "keep gpt-5.5 as live default"
     assert Path(receipt["receipt_path"]).exists()
     assert Path(receipt["transcript_path"]).exists()
     assert "--model" in receipt["command"]
@@ -2732,6 +2757,133 @@ def test_multi_case_from_manifest_fails_closed_on_generator_leak(tmp_path: Path)
         / "draco_manifest_suite_001_case_001"
         / "case_manifest.json"
     ).exists()
+
+
+def test_draco_case_manifest_imports_prompt_without_rubric_leak(tmp_path: Path):
+    harness = load_harness()
+    runs_dir = TEST_RUNS_ROOT / f"{tmp_path.name}-draco-manifest-suite"
+    shutil.rmtree(runs_dir, ignore_errors=True)
+    dataset_jsonl = tmp_path / "test.jsonl"
+    output_manifest = tmp_path / "draco_case_spec_manifest.json"
+    rubric = {
+        "id": "cold-chain-rubric",
+        "sections": [
+            {
+                "id": "factual-accuracy",
+                "criteria": [
+                    {
+                        "id": "thermo-king-independent-power",
+                        "weight": 10,
+                        "requirement": "Mentions independent power for long journeys.",
+                    }
+                ],
+            },
+            {
+                "id": "citation-quality",
+                "criteria": [
+                    {
+                        "id": "who-pqs",
+                        "weight": 8,
+                        "requirement": "References WHO PQS categories.",
+                    }
+                ],
+            },
+        ],
+    }
+    dataset_jsonl.write_text(
+        json.dumps(
+            {
+                "id": "case-001",
+                "domain": "Shopping/Product Comparison",
+                "problem": "Compare pharmaceutical cold-chain transport options.",
+                "answer": json.dumps(rubric),
+            }
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+    result = harness.main(
+        [
+            "draco-case-manifest",
+            "--dataset-jsonl",
+            str(dataset_jsonl),
+            "--output",
+            str(output_manifest),
+            "--row-indices",
+            "0",
+            "--allow-public-web",
+        ]
+    )
+
+    assert result == 0
+    manifest = json.loads(output_manifest.read_text(encoding="utf-8"))
+    case = manifest["cases"][0]
+    assert case["case_id"] == "draco_test_row_000"
+    assert case["generator_visible"]["question"].startswith("Compare pharmaceutical")
+    assert case["generator_visible"]["public_web_research_allowed"] is True
+    assert "rubric_payload" not in case["generator_visible"]
+    assert case["sealed_scorer_only"]["rubric"]["criteria_count"] == 2
+    assert case["sealed_scorer_only"]["rubric"]["total_weight"] == 18.0
+
+    case_result = harness.main(
+        [
+            "--runs-dir",
+            str(runs_dir),
+            "mesh-case-from-manifest",
+            "draco_prompt_case_001",
+            "--manifest",
+            str(output_manifest),
+        ]
+    )
+
+    assert case_result == 0
+    run_manifest = json.loads(
+        (
+            runs_dir
+            / "draco_prompt_case_001"
+            / "case_manifest.json"
+        ).read_text(encoding="utf-8")
+    )
+    skills_tools = json.loads(
+        (
+            runs_dir
+            / "draco_prompt_case_001"
+            / "skills_tools.json"
+        ).read_text(encoding="utf-8")
+    )
+    assert run_manifest["generator_visible"]["question"].startswith(
+        "Compare pharmaceutical"
+    )
+    assert "public_web_research" in skills_tools["selected_tools"]
+    assert "network" not in skills_tools["blocked_tools"]
+
+
+def test_draco_live_run_control_validates(tmp_path: Path):
+    harness = load_harness()
+    runs_dir = TEST_RUNS_ROOT / f"{tmp_path.name}-draco-controls"
+    output = tmp_path / "run_control.json"
+
+    result = harness.main(
+        [
+            "--runs-dir",
+            str(runs_dir),
+            "draco-live-run-control",
+            "draco_prompt_suite_001_case_001",
+            "--output",
+            str(output),
+            "--bead-id",
+            "alexandriacleanroom-103",
+            "--max-wall-clock-minutes",
+            "12",
+        ]
+    )
+
+    assert result == 0
+    receipt = json.loads(output.read_text(encoding="utf-8"))
+    assert receipt["run_id"] == "draco_prompt_suite_001_case_001"
+    assert receipt["scoring"]["scorer_status"] == "blocked"
+    assert "DRACO benchmark score" in receipt["non_claims_even_if_success"]
 
 
 def test_deepresearch_bench_case_manifest_imports_sealed_cases(tmp_path: Path):

@@ -97,7 +97,10 @@ COMPARATIVE_PROMPT_MARKERS = [
 FIXTURE_TIMESTAMP = "2026-04-22T00:00:00Z"
 ID_RE = re.compile(r"^[a-z0-9][a-z0-9_-]*$")
 MODEL_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]*$")
-DEFAULT_CODEX_EXEC_MODEL = "gpt-5.4"
+REENTRY_OUTPUT_PATH_RE = re.compile(
+    r"^[a-z0-9][a-z0-9_.-]*(/[a-z0-9][a-z0-9_.-]*)*$"
+)
+DEFAULT_CODEX_EXEC_MODEL = "gpt-5.5"
 DEFAULT_CODEX_EXEC_REASONING = "medium"
 MODEL_PROBE_PROMPT = "Write exactly: codex-dr model probe ok"
 MODEL_PROBE_EXPECTED_MESSAGE = "codex-dr model probe ok"
@@ -1968,6 +1971,259 @@ def deepresearch_bench_case_manifest(
     return output
 
 
+def draco_case_spec_manifest(
+    *,
+    dataset_jsonl: Path,
+    output: Path,
+    row_indices: str | None = None,
+    limit: int | None = None,
+    allow_public_web: bool = False,
+) -> Path:
+    rows = read_jsonl(dataset_jsonl)
+    selected_indices = parse_row_indices(row_indices, row_count=len(rows))
+    if limit is not None:
+        if limit < 1:
+            raise HarnessError("--limit must be positive")
+        selected_indices = selected_indices[:limit]
+    if not selected_indices:
+        raise HarnessError("DRACO manifest selection is empty")
+    if max(selected_indices) >= len(rows):
+        raise HarnessError("row index exceeds DRACO file length")
+
+    cases = []
+    for row_index in selected_indices:
+        row = rows[row_index]
+        problem = row.get("problem")
+        if not isinstance(problem, str) or not problem.strip():
+            raise HarnessError(f"row {row_index} is missing problem")
+        answer = row.get("answer")
+        try:
+            rubric_payload = json.loads(answer)
+        except (TypeError, json.JSONDecodeError) as error:
+            raise HarnessError(f"row {row_index} has invalid answer rubric JSON") from error
+        sections = rubric_payload.get("sections", [])
+        if not isinstance(sections, list) or not sections:
+            raise HarnessError(f"row {row_index} rubric has no sections")
+        criteria_count = 0
+        total_weight = 0.0
+        rubric_axes = []
+        for section in sections:
+            section_id = section.get("id")
+            if section_id:
+                rubric_axes.append(section_id)
+            criteria = section.get("criteria", [])
+            if not isinstance(criteria, list):
+                raise HarnessError(f"row {row_index} rubric section has invalid criteria")
+            criteria_count += len(criteria)
+            for criterion in criteria:
+                try:
+                    total_weight += float(criterion.get("weight", 0))
+                except (TypeError, ValueError) as error:
+                    raise HarnessError(
+                        f"row {row_index} criterion has invalid weight"
+                    ) from error
+        cases.append(
+            {
+                "case_id": f"draco_test_row_{row_index:03d}",
+                "benchmark_family": BENCHMARK_FAMILY_DRACO,
+                "row_indices": [row_index],
+                "generator_visible": {
+                    "question": problem,
+                    "benchmark_case_uuid": row.get("id"),
+                    "domain": row.get("domain"),
+                    "case_pointer": (
+                        f"DRACO test row {row_index}; answer rubric is scorer-only."
+                    ),
+                    "allowed_context": [
+                        "benchmark prompt",
+                        "case source metadata",
+                        "local run-bundle artifacts",
+                        *(
+                            ["public sources allowed by run control"]
+                            if allow_public_web
+                            else []
+                        ),
+                    ],
+                    "source_policy": (
+                        "Use the DRACO prompt and permitted public sources. "
+                        "Do not read scorer-only rubric or answer fields."
+                        if allow_public_web
+                        else (
+                            "Use only case source metadata and local run-bundle "
+                            "artifacts; do not perform external research."
+                        )
+                    ),
+                    "public_web_research_allowed": allow_public_web,
+                },
+                "sealed_scorer_only": {
+                    "reference_answer": {
+                        "visibility": "scorer_only",
+                        "payload_status": "not_materialized_in_git",
+                        "generator_visible": False,
+                        "source_file": dataset_jsonl.as_posix(),
+                        "row_index": row_index,
+                        "answer_field": "answer",
+                    },
+                    "rubric": {
+                        "visibility": "scorer_only",
+                        "payload_status": "not_materialized_in_git",
+                        "generator_visible": False,
+                        "source_file": dataset_jsonl.as_posix(),
+                        "row_index": row_index,
+                        "answer_field": "answer",
+                        "rubric_axes": rubric_axes,
+                        "criteria_count": criteria_count,
+                        "total_weight": total_weight,
+                    },
+                },
+            }
+        )
+
+    manifest = {
+        "schema_version": "codex-dr.case_spec_manifest.v1",
+        "benchmark_family": BENCHMARK_FAMILY_DRACO,
+        "source": {
+            **DEFAULT_DRACO_DATASET_SOURCE,
+            "source_file": dataset_jsonl.name,
+            "row_indices": selected_indices,
+        },
+        "selection": {
+            "method": "explicit_row_indices" if row_indices else "first_n_rows",
+            "row_indices": selected_indices,
+            "raw_data_in_git": False,
+            "reference_and_rubric_visibility": "scorer_only",
+            "public_web_research_allowed": allow_public_web,
+        },
+        "cases": cases,
+        "claim_boundary": {
+            "allowed_claims_if_valid": [
+                "DRACO cases were imported as sealed generator/scorer manifests."
+            ],
+            "blocked_claims": [
+                "DRACO score",
+                "Grep parity",
+                "leaderboard rank",
+                "product readiness",
+            ],
+        },
+    }
+    output.parent.mkdir(parents=True, exist_ok=True)
+    write_json(output, manifest)
+    read_case_spec_manifest(output)
+    return output
+
+
+def draco_live_run_control_payload(
+    *,
+    run_id: str,
+    bead_id: str,
+    runs_dir: Path,
+    max_wall_clock_minutes: int,
+) -> dict[str, Any]:
+    run_bundle = (runs_dir / run_id).as_posix().rstrip("/") + "/"
+    return {
+        "schema_version": "codex-dr.run_control_receipt.v1",
+        "receipt_id": f"run_control_{run_id}_draco_shadow_2026_04_29",
+        "run_id": run_id,
+        "bead_id": bead_id,
+        "run_purpose": (
+            "Execute one selected DRACO prompt through the live Codex CLI DR mesh "
+            "as a shadow diagnostic comparison lane with benchmark claims blocked."
+        ),
+        "approval": {
+            "approved_for_dry_run_planning": True,
+            "approved_for_execution": True,
+            "approval_note": (
+                "Principal authorized autonomous Codex-DR benchmark flywheel work; "
+                "this receipt scopes one live DRACO diagnostic case and keeps "
+                "official DRACO, Grep-parity, and product claims blocked."
+            ),
+        },
+        "runner": {
+            "kind": "codex_exec_box",
+            "command_surface": "alexandria-dr mesh-execute-live",
+            "cwd": "sandbox/codex-dr/",
+            "transcript_root": f"{run_bundle}transcripts/",
+        },
+        "operational_bounds": {
+            "max_cases": 1,
+            "max_live_attempts": 1,
+            "max_reentry_rounds": 1,
+            "max_wall_clock_minutes": max_wall_clock_minutes,
+            "foreground_supervision_required": True,
+            "automatic_retry_allowed": False,
+            "kill_path": "foreground supervisor sends SIGINT, then SIGTERM",
+        },
+        "inputs": {
+            "allowed_sources": [
+                "DRACO generator-visible prompt",
+                "case_manifest.json",
+                "plan.md",
+                "task_graph.json",
+                "public web sources",
+                "sandbox run artifacts",
+            ],
+            "forbidden_sources": [
+                "secrets",
+                "customer data",
+                "root env files",
+                "sealed DRACO answer rubrics",
+                "scorer-only criteria",
+                "private benchmark corpora",
+            ],
+            "data_policy": (
+                "Generator roles may use the DRACO prompt, public sources, and "
+                "local run-bundle artifacts. They must not read scorer-only "
+                "answer rubrics, secrets, or private corpora."
+            ),
+        },
+        "expected_artifacts": {
+            "run_bundle": run_bundle,
+            "event_log": f"{run_bundle}events.jsonl",
+            "transcript_capture": f"{run_bundle}transcripts/",
+        },
+        "scoring": {
+            "benchmark_family": BENCHMARK_FAMILY_DRACO,
+            "judge_or_scorer": "shadow diagnostic scorer",
+            "scorer_status": "blocked",
+        },
+        "allowed_claims_if_success": [
+            (
+                "One selected DRACO case executed through the live Codex CLI DR "
+                "mesh with transcript, artifact, event, and claim custody."
+            )
+        ],
+        "non_claims_even_if_success": [
+            "DRACO benchmark score",
+            "Grep parity",
+            "leaderboard rank",
+            "product readiness",
+            "official benchmark submission",
+            "scorer-backed evaluation",
+        ],
+    }
+
+
+def draco_live_run_control(
+    *,
+    run_id: str,
+    output: Path,
+    bead_id: str,
+    runs_dir: Path,
+    max_wall_clock_minutes: int,
+) -> Path:
+    payload = draco_live_run_control_payload(
+        run_id=run_id,
+        bead_id=bead_id,
+        runs_dir=runs_dir,
+        max_wall_clock_minutes=max_wall_clock_minutes,
+    )
+    output.parent.mkdir(parents=True, exist_ok=True)
+    write_json(output, payload)
+    require_live_execution_control_receipt(output, run_id=run_id)
+    return output
+
+
 def default_report_export_custody_path(output: Path) -> Path:
     if output.suffix == ".jsonl":
         return output.with_name(f"{output.stem}_custody.json")
@@ -3182,11 +3438,19 @@ def mesh_bootstrap_plan(
     benchmark_family = case_manifest["benchmark_family"]
     question = case_manifest["generator_visible"]["question"]
     source_policy = case_manifest["generator_visible"]["source_policy"]
-    if benchmark_family == BENCHMARK_FAMILY_DEEPRESEARCH_BENCH:
+    public_web_allowed = (
+        benchmark_family == BENCHMARK_FAMILY_DEEPRESEARCH_BENCH
+        or case_manifest["generator_visible"].get("public_web_research_allowed") is True
+    )
+    if public_web_allowed:
         context_line = "External context: public web sources allowed by run control."
         scorer_line = (
-            "The DeepResearch Bench RACE bridge remains blocked until scorer "
-            "credentials and explicit provider-run authority exist."
+            "The benchmark scorer bridge remains blocked until scorer "
+            "credentials or explicit scorer-run authority exist."
+        )
+        non_claims_line = (
+            "No benchmark score, Grep parity, official submission readiness, or "
+            "product readiness."
         )
         selected_tools = [
             "filesystem",
@@ -3198,6 +3462,10 @@ def mesh_bootstrap_plan(
     else:
         context_line = "External context: blocked in provider-off mode."
         scorer_line = "The scorer bridge remains a placeholder and cannot enable benchmark claims."
+        non_claims_line = (
+            "No benchmark score, Grep parity, provider-backed execution, or "
+            "product readiness."
+        )
         selected_tools = ["filesystem", "json_validator", "artifact_manifest_hasher"]
         blocked_tools = ["codex_exec", "provider_calls", "benchmark_execution", "network"]
     write_json(
@@ -3231,7 +3499,7 @@ a re-entry branch when the review requires more research, then write one report.
 - {scorer_line}
 
 ## Non-Claims
-No benchmark score, Grep parity, provider-backed execution, or product readiness.
+{non_claims_line}
 """,
     )
     write_json(
@@ -6406,6 +6674,15 @@ def safe_relative_path(value: Any) -> bool:
     return ".." not in path.parts and path.as_posix() not in {"", "."}
 
 
+def safe_reentry_output_path(value: Any) -> bool:
+    if not safe_relative_path(value):
+        return False
+    path = Path(str(value))
+    if len(path.parts) > 2:
+        return False
+    return bool(REENTRY_OUTPUT_PATH_RE.match(path.as_posix()))
+
+
 def safe_reentry_identifier(value: Any) -> str | None:
     text = re.sub(r"[^a-z0-9_-]+", "_", str(value or "").lower()).strip("_")
     if not text or not ID_RE.match(text):
@@ -6596,7 +6873,7 @@ def task_specific_reentry_outputs(
     outputs = [
         output
         for output in action.get("required_outputs", [])
-        if output not in REENTRY_BASE_OUTPUTS
+        if output not in REENTRY_BASE_OUTPUTS and safe_reentry_output_path(output)
     ]
     if (
         failure_type == "citation_support_gap"
@@ -6752,7 +7029,7 @@ def normalize_reentry_candidate(
         *task_specific_reentry_outputs(failure_type, action),
     ]
     for output in required_outputs:
-        if not safe_relative_path(output):
+        if not safe_reentry_output_path(output):
             problems.append(f"unsafe required output path: {output}")
         if output in REENTRY_FORBIDDEN_OUTPUTS:
             problems.append(f"forbidden required output path: {output}")
@@ -6936,6 +7213,9 @@ def validate_reentry_task_packet_object(packet: dict[str, Any]) -> list[str]:
             for base_output in REENTRY_BASE_OUTPUTS:
                 if base_output not in required_outputs:
                     problems.append(f"ready packet missing base output {base_output}")
+            for output in required_outputs:
+                if not safe_reentry_output_path(output):
+                    problems.append(f"ready packet has unsafe required output {output}")
             if not task.get("objective"):
                 problems.append("ready packet missing task objective")
             if not task.get("resolved_input_files"):
@@ -10665,6 +10945,35 @@ def multi_case_from_manifest(
             + "; ".join(summary["failed_checks"])
         )
     return suite_dir
+
+
+def mesh_case_from_manifest(
+    case_id: str,
+    *,
+    manifest_path: Path,
+    case_index: int = 0,
+    runs_dir: Path | str | None = None,
+) -> Path:
+    validate_id(case_id, "case_id")
+    manifest = read_case_spec_manifest(manifest_path)
+    cases = manifest["cases"]
+    if case_index < 0 or case_index >= len(cases):
+        raise HarnessError("case-index is outside manifest cases")
+    run_dir = mesh_bootstrap_run(
+        case_id,
+        runs_dir=runs_dir,
+        case_index=case_index,
+        case_spec=cases[case_index],
+        manifest_source=manifest.get("source", {}),
+    )
+    report = validate_run(case_id, runs_dir=runs_dir)
+    write_json(run_dir / "validation_report.json", report)
+    if report["status"] != "passed":
+        raise HarnessError(
+            "manifest-driven case failed validation: "
+            + "; ".join(report["failed_checks"])
+        )
+    return run_dir
 
 
 def validate_multi_case_suite(
@@ -15261,6 +15570,24 @@ def build_parser() -> argparse.ArgumentParser:
     multi_case_manifest.add_argument("--manifest", required=True, type=Path)
     multi_case_manifest.add_argument("--force", action="store_true")
 
+    case_manifest_run = subparsers.add_parser("mesh-case-from-manifest")
+    case_manifest_run.add_argument("case_id")
+    case_manifest_run.add_argument("--manifest", required=True, type=Path)
+    case_manifest_run.add_argument("--case-index", type=int, default=0)
+
+    draco_manifest = subparsers.add_parser("draco-case-manifest")
+    draco_manifest.add_argument("--dataset-jsonl", required=True, type=Path)
+    draco_manifest.add_argument("--output", required=True, type=Path)
+    draco_manifest.add_argument("--row-indices")
+    draco_manifest.add_argument("--limit", type=int)
+    draco_manifest.add_argument("--allow-public-web", action="store_true")
+
+    draco_run_control = subparsers.add_parser("draco-live-run-control")
+    draco_run_control.add_argument("run_id")
+    draco_run_control.add_argument("--output", required=True, type=Path)
+    draco_run_control.add_argument("--bead-id", required=True)
+    draco_run_control.add_argument("--max-wall-clock-minutes", type=int, default=25)
+
     drb_manifest = subparsers.add_parser("deepresearch-bench-case-manifest")
     drb_manifest.add_argument("--query-jsonl", required=True, type=Path)
     drb_manifest.add_argument("--source-refresh", required=True, type=Path)
@@ -15474,6 +15801,29 @@ def main(argv: list[str] | None = None) -> int:
                 manifest_path=args.manifest,
                 runs_dir=args.runs_dir,
                 force=args.force,
+            )
+        elif args.command == "mesh-case-from-manifest":
+            mesh_case_from_manifest(
+                args.case_id,
+                manifest_path=args.manifest,
+                case_index=args.case_index,
+                runs_dir=args.runs_dir,
+            )
+        elif args.command == "draco-case-manifest":
+            draco_case_spec_manifest(
+                dataset_jsonl=args.dataset_jsonl,
+                output=args.output,
+                row_indices=args.row_indices,
+                limit=args.limit,
+                allow_public_web=args.allow_public_web,
+            )
+        elif args.command == "draco-live-run-control":
+            draco_live_run_control(
+                run_id=args.run_id,
+                output=args.output,
+                bead_id=args.bead_id,
+                runs_dir=args.runs_dir,
+                max_wall_clock_minutes=args.max_wall_clock_minutes,
             )
         elif args.command == "deepresearch-bench-case-manifest":
             output = deepresearch_bench_case_manifest(
