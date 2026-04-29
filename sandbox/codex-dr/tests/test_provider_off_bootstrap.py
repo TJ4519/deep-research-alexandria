@@ -149,6 +149,7 @@ def test_validator_accepts_reentry_results_derived_from_admitted_inputs():
     assert harness.evidence_status_is_gap("explicit_gap")
     assert harness.evidence_status_is_gap("blocked_by_input")
     assert harness.evidence_status_is_gap("not_admitted_for_claim_support")
+    assert harness.evidence_status_is_gap("needs_synthesis")
 
 
 def test_validator_treats_bounded_result_as_non_evidence_result_status():
@@ -180,6 +181,75 @@ def test_pointer_receipts_keep_stronger_schema_receipt_over_selection_receipt(
         )
 
     result = harness.check_pointer_first_receipts(run_dir)
+
+    assert result["status"] == "passed"
+
+
+def test_pointer_receipts_accept_pointer_first_read_alias(tmp_path: Path):
+    harness, run_dir, _runs_dir = fresh_mesh_run(tmp_path)
+    receipts_path = run_dir / "pointer_read_receipts.jsonl"
+    receipts = [
+        {
+            "branch_id": branch_id,
+            "pointer_path": f"branches/{branch_id}/pointer.md",
+            "pointer_first_read": True,
+            "selected_analysis_spans": [
+                {
+                    "analysis_path": f"branches/{branch_id}/analysis.md",
+                    "section_heading": "Read Next",
+                }
+            ],
+            "evidence_paths": [f"branches/{branch_id}/evidence.jsonl"],
+        }
+        for branch_id in harness.MESH_ALL_BRANCH_IDS
+    ]
+    receipts_path.write_text(
+        "\n".join(json.dumps(receipt, sort_keys=True) for receipt in receipts) + "\n",
+        encoding="utf-8",
+    )
+
+    result = harness.check_pointer_first_receipts(run_dir)
+
+    assert result["status"] == "passed"
+
+
+def test_pointer_receipts_accept_pointer_read_first_alias(tmp_path: Path):
+    harness, run_dir, _runs_dir = fresh_mesh_run(tmp_path)
+    receipts_path = run_dir / "pointer_read_receipts.jsonl"
+    receipts = [
+        {
+            "branch_id": branch_id,
+            "pointer_path": f"branches/{branch_id}/pointer.md",
+            "pointer_read_first": True,
+            "selected_analysis_spans": [
+                {
+                    "analysis_path": f"branches/{branch_id}/analysis.md",
+                    "section_heading": "Read Next",
+                }
+            ],
+            "evidence_paths": [f"branches/{branch_id}/evidence.jsonl"],
+        }
+        for branch_id in harness.MESH_ALL_BRANCH_IDS
+    ]
+    receipts_path.write_text(
+        "\n".join(json.dumps(receipt, sort_keys=True) for receipt in receipts) + "\n",
+        encoding="utf-8",
+    )
+
+    result = harness.check_pointer_first_receipts(run_dir)
+
+    assert result["status"] == "passed"
+
+
+def test_branch_triplets_accept_any_read_next_heading_level(tmp_path: Path):
+    harness, run_dir, _runs_dir = fresh_mesh_run(tmp_path)
+    pointer_path = run_dir / "branches" / "data_analysis" / "pointer.md"
+    pointer_path.write_text(
+        pointer_path.read_text(encoding="utf-8").replace("## Read Next", "# Read Next"),
+        encoding="utf-8",
+    )
+
+    result = harness.check_branch_triplets(run_dir)
 
     assert result["status"] == "passed"
 
@@ -1493,6 +1563,11 @@ def test_live_role_prompts_include_hardened_sections(tmp_path: Path):
     assert "selected_analysis_spans" in reentry_synthesis_prompt
     assert "Treat `repair_returned`, `narrowed`, and" in reentry_synthesis_prompt
     assert "adjudicates closure; the harness updates queue" in reentry_synthesis_prompt
+    assert "schema_version: \"codex_dr_reentry_adequacy_delta.v1\"" in (
+        reentry_synthesis_prompt
+    )
+    assert "source_reentry_result_path" in reentry_synthesis_prompt
+    assert "Do not use `codex_dr_adequacy_delta_v0.1`" in reentry_synthesis_prompt
     assert "Adjudicate admitted synthesis" in (
         prompt_root / "task_review.md"
     ).read_text(encoding="utf-8")

@@ -339,6 +339,15 @@ Role-specific duties:
   candidate;
 - write `reentry/<gap_id>/adequacy_delta.json` when the role plan names that
   output, with `closure_authorized: false` and `writer_permission: false`;
+- write `adequacy_delta.json` with exact `schema_version:
+  "codex_dr_reentry_adequacy_delta.v1"`, `source_gap_id`,
+  `source_task_packet_path`, `source_reentry_result_path`,
+  `reentry_synthesis_path`, `evidence_delta`, `proposed_next_status`,
+  `remaining_blockers`, `reviewer_next_action`, `closure_authority`,
+  `closure_authorized: false`, and `writer_permission: false`;
+- do not use `codex_dr_adequacy_delta_v0.1`, do not omit
+  `closure_authority`, and do not rename `source_reentry_result_path` to
+  `source_reentry_result`;
 - treat `repair_returned`, `narrowed`, and `closed_candidate` as review inputs,
   not closure;
 - write synthesis/report-outline changes only from admitted repair evidence and

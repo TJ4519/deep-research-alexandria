@@ -204,6 +204,7 @@ EVIDENCE_GAP_STATUSES = {
     "blocked_by_input",
     "explicit_gap",
     "missing_required_packet",
+    "needs_synthesis",
     "unsupported",
     "not_admitted",
     "not_admitted_for_claim",
@@ -10227,9 +10228,28 @@ but any material gap remains, write an adequacy assessment that preserves the
 gap as narrowed or still open.
 
 `adequacy_delta.json` must name the source gap id, source task packet path,
-source re-entry result, what evidence changed, proposed next status, remaining
-blockers, reviewer next action, `closure_authorized: false`, and
+source re-entry result path, re-entry synthesis path, what evidence changed,
+proposed next status, remaining blockers, reviewer next action,
+reviewer-owned closure authority, `closure_authorized: false`, and
 `writer_permission: false`.
+
+Write `adequacy_delta.json` with this exact schema shape:
+- `schema_version: "codex_dr_reentry_adequacy_delta.v1"`
+- `source_gap_id`
+- `source_task_packet_path`
+- `source_reentry_result_path`
+- `reentry_synthesis_path`
+- `evidence_delta`
+- `proposed_next_status`
+- `remaining_blockers`
+- `reviewer_next_action`
+- `closure_authority`
+- `closure_authorized: false`
+- `writer_permission: false`
+
+Do not use `codex_dr_adequacy_delta_v0.1`, do not omit
+`closure_authority`, and do not rename `source_reentry_result_path` to
+`source_reentry_result`.
 
 If branch outputs include task-specific closure evidence such as
 `citation_support_map.json`, `comparability_assessment.json`,
@@ -13389,7 +13409,7 @@ def check_branch_triplets(run_dir: Path) -> dict[str, str]:
     for branch_id in branch_ids:
         branch_dir = run_dir / "branches" / branch_id
         pointer = (branch_dir / "pointer.md").read_text(encoding="utf-8")
-        if "## Read Next" not in pointer:
+        if not pointer_has_read_next_section(pointer):
             return fail_check(
                 "branch_triplets_present", f"Branch {branch_id} pointer lacks Read Next section."
             )
@@ -13432,6 +13452,13 @@ def check_branch_triplets(run_dir: Path) -> dict[str, str]:
             )
     return pass_check(
         "branch_triplets_present", "Branch pointer, analysis, and evidence are present."
+    )
+
+
+def pointer_has_read_next_section(pointer_text: str) -> bool:
+    return any(
+        line.strip().casefold().lstrip("#").strip() == "read next"
+        for line in pointer_text.splitlines()
     )
 
 
@@ -13667,6 +13694,11 @@ def check_pointer_first_receipts(run_dir: Path) -> dict[str, str]:
         )
         if branch_id:
             candidate = {**receipt, "branch_id": branch_id}
+            if "pointer_read_before_analysis" not in candidate:
+                candidate["pointer_read_before_analysis"] = bool(
+                    candidate.get("pointer_first_read")
+                    or candidate.get("pointer_read_first")
+                )
             existing = by_branch.get(branch_id)
             if existing is None or (
                 not existing.get("pointer_read_before_analysis")
