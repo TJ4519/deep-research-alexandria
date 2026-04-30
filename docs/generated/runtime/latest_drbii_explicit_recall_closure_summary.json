@@ -1,0 +1,80 @@
+{
+  "schema_version": "alexandria.drbii_explicit_recall_closure_summary.v1",
+  "generated_at": "2026-04-30T10:14:46.950323+00:00",
+  "bead_id": "alexandriacleanroom-99.29",
+  "run_root": "sandbox/codex-dr/tmp/drbii_task73_explicit_recall_closure_2026_04_30",
+  "claim_boundary": "non-official Codex shadow rubric diagnostic; not official DRB II score, Grep parity, leaderboard rank, product readiness, or research-quality proof",
+  "baseline_sequence": {
+    "initial_shadow_probe": {
+      "overall": "51/91",
+      "info_recall": "46/78",
+      "analysis": "0/8",
+      "presentation": "5/5"
+    },
+    "rubric_rerun": {
+      "overall": "84/91",
+      "info_recall": "71/78",
+      "analysis": "8/8",
+      "presentation": "5/5"
+    },
+    "explicit_recall_closure": {
+      "overall": "91/91",
+      "info_recall": "78/78",
+      "analysis": "8/8",
+      "presentation": "5/5"
+    }
+  },
+  "scores": {
+    "info_recall": {
+      "total": 78,
+      "positive": 78,
+      "zero": 0,
+      "negative": 0,
+      "ratio": 1.0
+    },
+    "analysis": {
+      "total": 8,
+      "positive": 8,
+      "zero": 0,
+      "negative": 0,
+      "ratio": 1.0
+    },
+    "presentation": {
+      "total": 5,
+      "positive": 5,
+      "zero": 0,
+      "negative": 0,
+      "ratio": 1.0
+    },
+    "overall": {
+      "total": 91,
+      "positive": 91,
+      "zero": 0,
+      "negative": 0,
+      "ratio": 1.0
+    }
+  },
+  "failure_indices": {
+    "info_recall": [],
+    "analysis": [],
+    "presentation": []
+  },
+  "blocked_source_scan": {
+    "blocked_terms_in_report_or_source_claim_map": false,
+    "blocked_terms_in_audit_or_search_log": false,
+    "note": "No blocked-source terms found in closure workspace artifacts scanned."
+  },
+  "required_artifacts_present": [
+    "sandbox/codex-dr/tmp/drbii_task73_explicit_recall_closure_2026_04_30/codex_shadow_eval.json",
+    "sandbox/codex-dr/tmp/drbii_task73_explicit_recall_closure_2026_04_30/execution_packet.json",
+    "sandbox/codex-dr/tmp/drbii_task73_explicit_recall_closure_2026_04_30/generator_prompt.md",
+    "sandbox/codex-dr/tmp/drbii_task73_explicit_recall_closure_2026_04_30/run_control_receipt.json",
+    "sandbox/codex-dr/tmp/drbii_task73_explicit_recall_closure_2026_04_30/shadow_evaluator_prompt_strict.md",
+    "sandbox/codex-dr/tmp/drbii_task73_explicit_recall_closure_2026_04_30/workspace/draft_report.md",
+    "sandbox/codex-dr/tmp/drbii_task73_explicit_recall_closure_2026_04_30/workspace/idx-73.md",
+    "sandbox/codex-dr/tmp/drbii_task73_explicit_recall_closure_2026_04_30/workspace/search_log.jsonl",
+    "sandbox/codex-dr/tmp/drbii_task73_explicit_recall_closure_2026_04_30/workspace/self_audit.json",
+    "sandbox/codex-dr/tmp/drbii_task73_explicit_recall_closure_2026_04_30/workspace/source_claim_map.json"
+  ],
+  "interpretation": "The local shadow lane now closes DRB II task 73 under a rubric-visible Codex evaluator. This proves the repair loop can improve a shadow diagnostic run; it does not prove official DRB II performance, Grep parity, or product readiness."
+}
