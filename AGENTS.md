@@ -53,6 +53,11 @@ product service runtime work needs a separate bridge.
   Ask the Principal only for true blockers: destructive actions, missing
   credentials or data, scope changes outside the active authority surface, or
   live/provider execution that lacks an approved run-control receipt.
+- When the Principal says the agent has stopped, asks to "release the brakes",
+  grants autonomy, or asks not to babysit the work, use
+  `$autonomous-continuation-release`: continue into the next valid bead if it
+  is known, or recover telos, create/update beads, and execute the first
+  unblocked bead if it is not known.
 
 ## Commands
 

@@ -1,0 +1,7 @@
+interface:
+  display_name: "Autonomous Continuation Release"
+  short_description: "Convert known next work into execution."
+  default_prompt: "Use $autonomous-continuation-release to release the brakes, recover the next valid bead or proof action, and keep working until done, blocked, or continuing."
+
+policy:
+  allow_implicit_invocation: true
