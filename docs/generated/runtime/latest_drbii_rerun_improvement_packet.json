@@ -1,0 +1,87 @@
+{
+  "schema_version": "alexandria.drbii_rerun_improvement_packet.v1",
+  "generated_at": "2026-04-30T09:49:52.568405+00:00",
+  "bead_id": "alexandriacleanroom-99.28",
+  "source_rerun_summary": "docs/generated/runtime/latest_drbii_rubric_rerun_summary.json",
+  "claim_boundary": "non-official Codex shadow rubric diagnostic; not official DRB II score, Grep parity, leaderboard rank, product readiness, or research-quality proof",
+  "baseline_to_rerun_delta": {
+    "info_recall_positive": 25,
+    "analysis_positive": 8,
+    "presentation_positive": 0,
+    "overall_positive": 33
+  },
+  "remaining_failures": [
+    {
+      "dimension": "info_recall",
+      "rubric_index": 1,
+      "rubric": "在介绍OREGANO时，明确指出其数据来源包含约10个精选数据库和本体，如DrugBank、Uniprot、REACTOME和HPO。",
+      "category": "explicit_wording_or_source_reconciliation",
+      "target_surface": "DRB II task-73 generator prompt / report checklist / source_claim_map",
+      "expected_repair": "Force the report to state this item explicitly and map it to a source_claim_map entry or an explicit ledger-reconciled note."
+    },
+    {
+      "dimension": "info_recall",
+      "rubric_index": 10,
+      "rubric": "在介绍HetioNet时，明确指出其可通过Neo4j服务器访问。",
+      "category": "explicit_wording_or_source_reconciliation",
+      "target_surface": "DRB II task-73 generator prompt / report checklist / source_claim_map",
+      "expected_repair": "Force the report to state this item explicitly and map it to a source_claim_map entry or an explicit ledger-reconciled note."
+    },
+    {
+      "dimension": "info_recall",
+      "rubric_index": 12,
+      "rubric": "在介绍PharMeBINet时，明确指出其节点类型从11种扩展到66种。",
+      "category": "explicit_wording_or_source_reconciliation",
+      "target_surface": "DRB II task-73 generator prompt / report checklist / source_claim_map",
+      "expected_repair": "Force the report to state this item explicitly and map it to a source_claim_map entry or an explicit ledger-reconciled note."
+    },
+    {
+      "dimension": "info_recall",
+      "rubric_index": 13,
+      "rubric": "在介绍PharMeBINet时，明确指出其边类型从24种增加到208种。",
+      "category": "explicit_wording_or_source_reconciliation",
+      "target_surface": "DRB II task-73 generator prompt / report checklist / source_claim_map",
+      "expected_repair": "Force the report to state this item explicitly and map it to a source_claim_map entry or an explicit ledger-reconciled note."
+    },
+    {
+      "dimension": "info_recall",
+      "rubric_index": 15,
+      "rubric": "在介绍Multiscale Interactome (MSI)时，明确指出其数据来自约14个精选数据源，包括DrugBank和PsyGeNET等。",
+      "category": "explicit_wording_or_source_reconciliation",
+      "target_surface": "DRB II task-73 generator prompt / report checklist / source_claim_map",
+      "expected_repair": "Force the report to state this item explicitly and map it to a source_claim_map entry or an explicit ledger-reconciled note."
+    },
+    {
+      "dimension": "info_recall",
+      "rubric_index": 19,
+      "rubric": "在介绍BioKG时，明确指出其数据来源包括DrugBank, UniProt, 和KEGG等18个数据源。",
+      "category": "explicit_wording_or_source_reconciliation",
+      "target_surface": "DRB II task-73 generator prompt / report checklist / source_claim_map",
+      "expected_repair": "Force the report to state this item explicitly and map it to a source_claim_map entry or an explicit ledger-reconciled note."
+    },
+    {
+      "dimension": "info_recall",
+      "rubric_index": 21,
+      "rubric": "在介绍NeDRexDB时，明确指出它是通过众包框架（crowdsourcing framework）整合10个源数据库的数据构建的。",
+      "category": "explicit_wording_or_source_reconciliation",
+      "target_surface": "DRB II task-73 generator prompt / report checklist / source_claim_map",
+      "expected_repair": "Force the report to state this item explicitly and map it to a source_claim_map entry or an explicit ledger-reconciled note."
+    }
+  ],
+  "diagnosis": {
+    "root_cause_repaired": "rubric-led analysis and exact-fact pressure before writing",
+    "remaining_root_cause": "some information-recall rubrics require exact explicit wording that the report still leaves implicit or partially sourced",
+    "not_a_current_root_cause": [
+      "general synthesis failure",
+      "presentation failure",
+      "blocked-source reliance"
+    ]
+  },
+  "next_candidate": {
+    "candidate_id": "cand_drbii_task73_explicit_recall_closure_001",
+    "target_surface": "generator prompt/report checklist for DRB II task 73 shadow lane",
+    "expected_effect": "close seven remaining information-recall misses while preserving 8/8 analysis and 5/5 presentation",
+    "validation_gate": "rerun Codex shadow evaluator; require >84/91 or a narrower blocker; no official score or parity claim",
+    "recommended_next_bead_title": "Patch DRB II task 73 explicit-recall misses and rerun shadow eval"
+  }
+}

@@ -1,0 +1,978 @@
+{
+  "schema_version": "alexandria.drbii_rubric_execution_packet.v1",
+  "generated_at": "2026-04-30T09:39:26.340331+00:00",
+  "bead_id": "alexandriacleanroom-99.26",
+  "benchmark_family": "DeepResearch Bench II",
+  "claim_boundary": "Local Codex shadow diagnostic only; not official DRB II score, not Grep parity, not leaderboard rank, not product readiness, not official submission.",
+  "source": {
+    "official_repo_clone": "sandbox/codex-dr/tmp/deepresearch_bench_ii_official",
+    "tasks_and_rubrics_jsonl": "sandbox/codex-dr/tmp/deepresearch_bench_ii_official/tasks_and_rubrics.jsonl",
+    "row_number_1_based": 73,
+    "task_idx": 73,
+    "task_id": "task28+"
+  },
+  "task": {
+    "idx": 73,
+    "id": "task28+",
+    "language": "zh",
+    "theme": "Health",
+    "description": "A Survey of Knowledge Graphs for Drug Repurposing",
+    "prompt": "我想调研一下用于“药物重用”（drug repurposing）的知识图谱（Knowledge Graphs）。请你帮我完成一个调研报告，报告需要包含两部分内容，并且所有信息应截止到2024年4月之前。\n\n第一部分是“主要知识图谱介绍”，请你分别介绍以下几个知识图谱：OREGANO, Clinical Knowledge Graph (CKG), PrimeKG, HetioNet, PharMeBINet, Multiscale Interactome (MSI), DRKG, BioKG, 和 NeDRexDB。对于每一个知识图谱，你需要简要说明它的主要特点、包含哪些重要的实体类型（比如药物、基因、疾病等），以及它主要整合了哪些数据来源。\n\n第二部分是“关键指标对比表”。请你制作一个表格，清晰地对比以下知识图谱的关键指标。表格的列应包括：知识图谱名称, 节点数量, 边数量, 节点类型数量, 边类型数量, 和最后更新时间。表格的行需要完整覆盖这些知识图谱：OREGANO, CKG, PrimeKG, PharMeBINet, MSI, HetioNet, DRKG, BioKG, KEGG, DrugCombDB, 和 NeDRexDB。\n\n输出时，请先给出第一部分的介绍，然后再给出第二部分的对比表格。"
+  },
+  "blocked_source_policy": {
+    "blocked": {
+      "title": "Knowledge Graphs for drug repurposing: a review of databases and methods",
+      "authors": [
+        "Pablo Perdomo-Quinteiro",
+        "Alberto Belmonte-Hernández"
+      ],
+      "urls": [
+        "https://doi.org/10.1093/bib/bbae461",
+        "https://academic.oup.com/bib/article/25/6/bbae461/7774899",
+        "https://pubmed.ncbi.nlm.nih.gov/39325460/",
+        "https://www.semanticscholar.org/paper/Knowledge-Graphs-for-drug-repurposing%3A-a-review-of-Perdomo-Quinteiro-Belmonte-Hern%C3%A1ndez/a5502aae6dcedee1723b3fb98ad153b0c9ac7a61",
+        "https://pdfs.semanticscholar.org/484e/4790059a3dc9265bc03f5c6598d71a6f4fde.pdf",
+        "https://academic.oup.com/bib/article-pdf/25/6/bbae461/59344032/bbae461.pdf",
+        "https://discovery.researcher.life/article/knowledge-graphs-for-drug-repurposing-a-review-of-databases-and-methods/7a16a75bdb7c39f1a2d1c118ef0b1b05",
+        "https://ouci.dntb.gov.ua/en/works/4OgWxkb4/",
+        "https://portalcientifico.upm.es/cat/ipublic/item/10250906"
+      ]
+    },
+    "generator_rule": "Do not open, cite, quote, paraphrase, or rely on blocked sources. Surface encounters in self_audit only.",
+    "required_scan_patterns": [
+      "bbae461",
+      "39325460",
+      "Perdomo",
+      "Belmonte",
+      "Knowledge Graphs for drug repurposing: a review",
+      "academic.oup",
+      "10.1093/bib"
+    ]
+  },
+  "baseline_shadow_result": {
+    "run_root": "sandbox/codex-dr/tmp/deepresearch_bench_ii_shadow_2026_04_30",
+    "info_recall": {
+      "positive": 46,
+      "total": 78,
+      "ratio": 0.5897435897
+    },
+    "analysis": {
+      "positive": 0,
+      "total": 8,
+      "ratio": 0.0
+    },
+    "presentation": {
+      "positive": 5,
+      "total": 5,
+      "ratio": 1.0
+    },
+    "overall": {
+      "positive": 51,
+      "total": 91,
+      "ratio": 0.5604395604
+    },
+    "root_cause": "one-pass source-gathering report without rubric-led synthesis and exact-fact reconciliation before finalization"
+  },
+  "adequacy_criteria": [
+    {
+      "criterion_id": "info_recall_00",
+      "dimension": "info_recall",
+      "rubric_index": 0,
+      "text": "在介绍OREGANO时，明确指出其特点是包含了“天然化合物”(natural compounds)。",
+      "writer_blocking": true,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "info_recall_01",
+      "dimension": "info_recall",
+      "rubric_index": 1,
+      "text": "在介绍OREGANO时，明确指出其数据来源包含约10个精选数据库和本体，如DrugBank、Uniprot、REACTOME和HPO。",
+      "writer_blocking": true,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "info_recall_02",
+      "dimension": "info_recall",
+      "rubric_index": 2,
+      "text": "在介绍Clinical Knowledge Graph (CKG)时，明确指出其数据来自26个生物医学数据库和9个本体。",
+      "writer_blocking": true,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "info_recall_03",
+      "dimension": "info_recall",
+      "rubric_index": 3,
+      "text": "在介绍Clinical Knowledge Graph (CKG)时，明确指出其节点类型有19种，包括出版物、药物、疾病、蛋白质和临床变量。",
+      "writer_blocking": true,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "info_recall_04",
+      "dimension": "info_recall",
+      "rubric_index": 4,
+      "text": "在介绍Clinical Knowledge Graph (CKG)时，明确指出其边类型有57种。",
+      "writer_blocking": true,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "info_recall_05",
+      "dimension": "info_recall",
+      "rubric_index": 5,
+      "text": "在介绍PrimeKG时，明确指出其数据来自20个不同的资源、生物样本库和本体。",
+      "writer_blocking": true,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "info_recall_06",
+      "dimension": "info_recall",
+      "rubric_index": 6,
+      "text": "在介绍PrimeKG时，明确指出其节点类型有10种，包括Biological Process, Protein, Disease等。",
+      "writer_blocking": true,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "info_recall_07",
+      "dimension": "info_recall",
+      "rubric_index": 7,
+      "text": "在介绍PrimeKG时，明确指出其关系类型有30种。",
+      "writer_blocking": true,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "info_recall_08",
+      "dimension": "info_recall",
+      "rubric_index": 8,
+      "text": "在介绍HetioNet时，明确指出其数据来自29个不同的公共资源。",
+      "writer_blocking": true,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "info_recall_09",
+      "dimension": "info_recall",
+      "rubric_index": 9,
+      "text": "在介绍HetioNet时，明确指出其包含11种不同的节点类型和24种关系类型。",
+      "writer_blocking": true,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "info_recall_10",
+      "dimension": "info_recall",
+      "rubric_index": 10,
+      "text": "在介绍HetioNet时，明确指出其可通过Neo4j服务器访问。",
+      "writer_blocking": true,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "info_recall_11",
+      "dimension": "info_recall",
+      "rubric_index": 11,
+      "text": "在介绍PharMeBINet时，明确指出它是在HetioNet基础上，额外整合了19个公共资源而构建的。",
+      "writer_blocking": true,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "info_recall_12",
+      "dimension": "info_recall",
+      "rubric_index": 12,
+      "text": "在介绍PharMeBINet时，明确指出其节点类型从11种扩展到66种。",
+      "writer_blocking": true,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "info_recall_13",
+      "dimension": "info_recall",
+      "rubric_index": 13,
+      "text": "在介绍PharMeBINet时，明确指出其边类型从24种增加到208种。",
+      "writer_blocking": true,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "info_recall_14",
+      "dimension": "info_recall",
+      "rubric_index": 14,
+      "text": "在介绍Multiscale Interactome (MSI)时，明确指出其由药物、疾病、人类蛋白质和生物功能组成。",
+      "writer_blocking": true,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "info_recall_15",
+      "dimension": "info_recall",
+      "rubric_index": 15,
+      "text": "在介绍Multiscale Interactome (MSI)时，明确指出其数据来自约14个精选数据源，包括DrugBank和PsyGeNET等。",
+      "writer_blocking": true,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "info_recall_16",
+      "dimension": "info_recall",
+      "rubric_index": 16,
+      "text": "在介绍DRKG时，明确指出其数据来源包括HetioNet等6个数据库以及文献信息。",
+      "writer_blocking": true,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "info_recall_17",
+      "dimension": "info_recall",
+      "rubric_index": 17,
+      "text": "在介绍DRKG时，明确指出其实体被分为13种不同的节点类型。",
+      "writer_blocking": true,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "info_recall_18",
+      "dimension": "info_recall",
+      "rubric_index": 18,
+      "text": "在介绍DRKG时，明确指出其关系被划分为17种边类型。",
+      "writer_blocking": true,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "info_recall_19",
+      "dimension": "info_recall",
+      "rubric_index": 19,
+      "text": "在介绍BioKG时，明确指出其数据来源包括DrugBank, UniProt, 和KEGG等18个数据源。",
+      "writer_blocking": true,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "info_recall_20",
+      "dimension": "info_recall",
+      "rubric_index": 20,
+      "text": "在介绍BioKG时，明确指出其包含一个映射模块（mapping module），使其能与其他KG互操作。",
+      "writer_blocking": true,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "info_recall_21",
+      "dimension": "info_recall",
+      "rubric_index": 21,
+      "text": "在介绍NeDRexDB时，明确指出它是通过众包框架（crowdsourcing framework）整合10个源数据库的数据构建的。",
+      "writer_blocking": true,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "info_recall_22",
+      "dimension": "info_recall",
+      "rubric_index": 22,
+      "text": "在介绍NeDRexDB时，明确指出它使用Monarch Disease Ontology来处理不一致的疾病标识符问题。",
+      "writer_blocking": true,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "info_recall_23",
+      "dimension": "info_recall",
+      "rubric_index": 23,
+      "text": "在介绍NeDRexDB时，明确指出其v1版本包含6种节点类型和12种边类型。",
+      "writer_blocking": true,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "info_recall_24",
+      "dimension": "info_recall",
+      "rubric_index": 24,
+      "text": "在对比表中，正确给出OREGANO的节点数量为88,937。",
+      "writer_blocking": true,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "info_recall_25",
+      "dimension": "info_recall",
+      "rubric_index": 25,
+      "text": "在对比表中，正确给出OREGANO的边数量为824,231。",
+      "writer_blocking": true,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "info_recall_26",
+      "dimension": "info_recall",
+      "rubric_index": 26,
+      "text": "在对比表中，正确给出OREGANO的节点类型数量为12。",
+      "writer_blocking": true,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "info_recall_27",
+      "dimension": "info_recall",
+      "rubric_index": 27,
+      "text": "在对比表中，正确给出OREGANO的边类型数量为19。",
+      "writer_blocking": true,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "info_recall_28",
+      "dimension": "info_recall",
+      "rubric_index": 28,
+      "text": "在对比表中，正确给出OREGANO的最后更新时间为 '10 Nov 2023'。",
+      "writer_blocking": true,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "info_recall_29",
+      "dimension": "info_recall",
+      "rubric_index": 29,
+      "text": "在对比表中，正确给出CKG的节点数量为16 million (或1600万)。",
+      "writer_blocking": true,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "info_recall_30",
+      "dimension": "info_recall",
+      "rubric_index": 30,
+      "text": "在对比表中，正确给出CKG的边数量为220 million (或2.2亿)。",
+      "writer_blocking": true,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "info_recall_31",
+      "dimension": "info_recall",
+      "rubric_index": 31,
+      "text": "在对比表中，正确给出CKG的节点类型数量为19。",
+      "writer_blocking": true,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "info_recall_32",
+      "dimension": "info_recall",
+      "rubric_index": 32,
+      "text": "在对比表中，正确给出CKG的边类型数量为57。",
+      "writer_blocking": true,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "info_recall_33",
+      "dimension": "info_recall",
+      "rubric_index": 33,
+      "text": "在对比表中，正确给出CKG的最后更新时间为 '17 Aug 2021'。",
+      "writer_blocking": true,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "info_recall_34",
+      "dimension": "info_recall",
+      "rubric_index": 34,
+      "text": "在对比表中，正确给出PrimeKG的节点数量为129,375。",
+      "writer_blocking": true,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "info_recall_35",
+      "dimension": "info_recall",
+      "rubric_index": 35,
+      "text": "在对比表中，正确给出PrimeKG的边数量为4,050,249。",
+      "writer_blocking": true,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "info_recall_36",
+      "dimension": "info_recall",
+      "rubric_index": 36,
+      "text": "在对比表中，正确给出PrimeKG的节点类型数量为10。",
+      "writer_blocking": true,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "info_recall_37",
+      "dimension": "info_recall",
+      "rubric_index": 37,
+      "text": "在对比表中，正确给出PrimeKG的边类型数量为30。",
+      "writer_blocking": true,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "info_recall_38",
+      "dimension": "info_recall",
+      "rubric_index": 38,
+      "text": "在对比表中，正确给出PrimeKG的最后更新时间为 '25 Apr 2022'。",
+      "writer_blocking": true,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "info_recall_39",
+      "dimension": "info_recall",
+      "rubric_index": 39,
+      "text": "在对比表中，正确给出PharMeBINet的节点数量为2,869,407。",
+      "writer_blocking": true,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "info_recall_40",
+      "dimension": "info_recall",
+      "rubric_index": 40,
+      "text": "在对比表中，正确给出PharMeBINet的边数量为15,883,653。",
+      "writer_blocking": true,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "info_recall_41",
+      "dimension": "info_recall",
+      "rubric_index": 41,
+      "text": "在对比表中，正确给出PharMeBINet的节点类型数量为66。",
+      "writer_blocking": true,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "info_recall_42",
+      "dimension": "info_recall",
+      "rubric_index": 42,
+      "text": "在对比表中，正确给出PharMeBINet的边类型数量为208。",
+      "writer_blocking": true,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "info_recall_43",
+      "dimension": "info_recall",
+      "rubric_index": 43,
+      "text": "在对比表中，正确给出PharMeBINet的最后更新时间为 '5 Jan 2024'。",
+      "writer_blocking": true,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "info_recall_44",
+      "dimension": "info_recall",
+      "rubric_index": 44,
+      "text": "在对比表中，正确给出MSI的节点数量为29,959。",
+      "writer_blocking": true,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "info_recall_45",
+      "dimension": "info_recall",
+      "rubric_index": 45,
+      "text": "在对比表中，正确给出MSI的边数量为478,728。",
+      "writer_blocking": true,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "info_recall_46",
+      "dimension": "info_recall",
+      "rubric_index": 46,
+      "text": "在对比表中，正确给出MSI的节点类型数量为4。",
+      "writer_blocking": true,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "info_recall_47",
+      "dimension": "info_recall",
+      "rubric_index": 47,
+      "text": "在对比表中，正确给出MSI的边类型数量为5。",
+      "writer_blocking": true,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "info_recall_48",
+      "dimension": "info_recall",
+      "rubric_index": 48,
+      "text": "在对比表中，正确给出MSI的最后更新时间为 '19 Mar 2021'。",
+      "writer_blocking": true,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "info_recall_49",
+      "dimension": "info_recall",
+      "rubric_index": 49,
+      "text": "在对比表中，正确给出HetioNet的节点数量为47,031。",
+      "writer_blocking": true,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "info_recall_50",
+      "dimension": "info_recall",
+      "rubric_index": 50,
+      "text": "在对比表中，正确给出HetioNet的边数量为2,250,197。",
+      "writer_blocking": true,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "info_recall_51",
+      "dimension": "info_recall",
+      "rubric_index": 51,
+      "text": "在对比表中，正确给出HetioNet的节点类型数量为11。",
+      "writer_blocking": true,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "info_recall_52",
+      "dimension": "info_recall",
+      "rubric_index": 52,
+      "text": "在对比表中，正确给出HetioNet的边类型数量为24。",
+      "writer_blocking": true,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "info_recall_53",
+      "dimension": "info_recall",
+      "rubric_index": 53,
+      "text": "在对比表中，正确给出HetioNet的最后更新时间为 '12 Apr 2016'。",
+      "writer_blocking": true,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "info_recall_54",
+      "dimension": "info_recall",
+      "rubric_index": 54,
+      "text": "在对比表中，正确给出DRKG的节点数量为97,238。",
+      "writer_blocking": true,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "info_recall_55",
+      "dimension": "info_recall",
+      "rubric_index": 55,
+      "text": "在对比表中，正确给出DRKG的边数量为5,874,261。",
+      "writer_blocking": true,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "info_recall_56",
+      "dimension": "info_recall",
+      "rubric_index": 56,
+      "text": "在对比表中，正确给出DRKG的节点类型数量为13。",
+      "writer_blocking": true,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "info_recall_57",
+      "dimension": "info_recall",
+      "rubric_index": 57,
+      "text": "在对比表中，正确给出DRKG的边类型数量为17。",
+      "writer_blocking": true,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "info_recall_58",
+      "dimension": "info_recall",
+      "rubric_index": 58,
+      "text": "在对比表中，正确给出DRKG的最后更新时间为 '4 May 2020'。",
+      "writer_blocking": true,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "info_recall_59",
+      "dimension": "info_recall",
+      "rubric_index": 59,
+      "text": "在对比表中，正确给出BioKG的节点数量为11,479,285。",
+      "writer_blocking": true,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "info_recall_60",
+      "dimension": "info_recall",
+      "rubric_index": 60,
+      "text": "在对比表中，正确给出BioKG的边数量为42,504,077。",
+      "writer_blocking": true,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "info_recall_61",
+      "dimension": "info_recall",
+      "rubric_index": 61,
+      "text": "在对比表中，正确给出BioKG的节点类型数量为12。",
+      "writer_blocking": true,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "info_recall_62",
+      "dimension": "info_recall",
+      "rubric_index": 62,
+      "text": "在对比表中，正确给出BioKG的边类型数量为52。",
+      "writer_blocking": true,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "info_recall_63",
+      "dimension": "info_recall",
+      "rubric_index": 63,
+      "text": "在对比表中，正确给出BioKG的最后更新时间为 '21 Mar 2024'。",
+      "writer_blocking": true,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "info_recall_64",
+      "dimension": "info_recall",
+      "rubric_index": 64,
+      "text": "在对比表中，正确给出KEGG的节点和边数量为“每日更新”或类似表述。",
+      "writer_blocking": true,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "info_recall_65",
+      "dimension": "info_recall",
+      "rubric_index": 65,
+      "text": "在对比表中，正确给出KEGG的节点类型数量为5。",
+      "writer_blocking": true,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "info_recall_66",
+      "dimension": "info_recall",
+      "rubric_index": 66,
+      "text": "在对比表中，正确给出KEGG的边类型数量为10。",
+      "writer_blocking": true,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "info_recall_67",
+      "dimension": "info_recall",
+      "rubric_index": 67,
+      "text": "在对比表中，正确给出KEGG的最后更新时间为“每日更新”或类似表述。",
+      "writer_blocking": true,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "info_recall_68",
+      "dimension": "info_recall",
+      "rubric_index": 68,
+      "text": "在对比表中，正确给出DrugCombDB的节点数量为3,011。",
+      "writer_blocking": true,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "info_recall_69",
+      "dimension": "info_recall",
+      "rubric_index": 69,
+      "text": "在对比表中，正确给出DrugCombDB的边数量为6,891,566。",
+      "writer_blocking": true,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "info_recall_70",
+      "dimension": "info_recall",
+      "rubric_index": 70,
+      "text": "在对比表中，正确给出DrugCombDB的节点类型数量为2。",
+      "writer_blocking": true,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "info_recall_71",
+      "dimension": "info_recall",
+      "rubric_index": 71,
+      "text": "在对比表中，正确给出DrugCombDB的边类型数量为1。",
+      "writer_blocking": true,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "info_recall_72",
+      "dimension": "info_recall",
+      "rubric_index": 72,
+      "text": "在对比表中，正确给出DrugCombDB的最后更新时间为 '31 May 2019'。",
+      "writer_blocking": true,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "info_recall_73",
+      "dimension": "info_recall",
+      "rubric_index": 73,
+      "text": "在对比表中，正确给出NeDRex的节点数量为278826。",
+      "writer_blocking": true,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "info_recall_74",
+      "dimension": "info_recall",
+      "rubric_index": 74,
+      "text": "在对比表中，正确给出NeDRex的边数量为2327974。",
+      "writer_blocking": true,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "info_recall_75",
+      "dimension": "info_recall",
+      "rubric_index": 75,
+      "text": "在对比表中，正确给出NeDRex的节点类型数量为6。",
+      "writer_blocking": true,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "info_recall_76",
+      "dimension": "info_recall",
+      "rubric_index": 76,
+      "text": "在对比表中，正确给出NeDRex的边类型数量为12。",
+      "writer_blocking": true,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "info_recall_77",
+      "dimension": "info_recall",
+      "rubric_index": 77,
+      "text": "在对比表中，正确给出NeDRex的最后更新时间为 '25 Nov 2021'。",
+      "writer_blocking": true,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "analysis_00",
+      "dimension": "analysis",
+      "rubric_index": 0,
+      "text": "解释了CKG是药物重用领域内规模最庞大的知识图谱之一。",
+      "writer_blocking": true,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "analysis_01",
+      "dimension": "analysis",
+      "rubric_index": 1,
+      "text": "解释了PharMeBINet是HetioNet的显著演进版本，并量化了其增长（例如，节点数增长61倍，关系数增长7倍）。",
+      "writer_blocking": true,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "analysis_02",
+      "dimension": "analysis",
+      "rubric_index": 2,
+      "text": "在介绍DrugCombDB时，能够分析并指出其独特之处在于专注于“药物组合”而非单个药物的治疗方案。",
+      "writer_blocking": true,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "analysis_03",
+      "dimension": "analysis",
+      "rubric_index": 3,
+      "text": "在介绍KEGG时，能够解释其节点和边数量不固定的原因是其“每日更新”的动态特性。",
+      "writer_blocking": true,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "analysis_04",
+      "dimension": "analysis",
+      "rubric_index": 4,
+      "text": "在介绍BioKG时，能够分析并指出其包含“映射模块”是其关键优势，因为它提升了与其他知识图谱的互操作性。",
+      "writer_blocking": true,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "analysis_05",
+      "dimension": "analysis",
+      "rubric_index": 5,
+      "text": "在介绍NeDRexDB时，能够分析其构建方法（众包）和使用本体（Monarch Disease Ontology）是为了解决跨数据源的数据整合与一致性问题。",
+      "writer_blocking": true,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "analysis_06",
+      "dimension": "analysis",
+      "rubric_index": 6,
+      "text": "能够总结出不同知识图谱之间存在数据来源重叠的现象，并举例说明，如DrugBank被多个KG使用。",
+      "writer_blocking": true,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "analysis_07",
+      "dimension": "analysis",
+      "rubric_index": 7,
+      "text": "能够总结出“药物”、“基因”、“疾病”是绝大多数用于药物重用的知识图谱中都包含的核心实体类型。",
+      "writer_blocking": true,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "presentation_00",
+      "dimension": "presentation",
+      "rubric_index": 0,
+      "text": "回答被清晰地分为“主要知识图谱介绍”和“关键指标对比表”两个部分。",
+      "writer_blocking": false,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "presentation_01",
+      "dimension": "presentation",
+      "rubric_index": 1,
+      "text": "第一部分（介绍）为每个知识图谱使用了独立的小标题或分段，结构清晰。",
+      "writer_blocking": false,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "presentation_02",
+      "dimension": "presentation",
+      "rubric_index": 2,
+      "text": "第二部分（对比表）以表格形式呈现。",
+      "writer_blocking": false,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "presentation_03",
+      "dimension": "presentation",
+      "rubric_index": 3,
+      "text": "对比表的列标题与任务要求完全一致，包括：“知识图谱名称”, “节点数量”, “边数量”, “节点类型数量”, “边类型数量”, “最后更新时间”。",
+      "writer_blocking": false,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    },
+    {
+      "criterion_id": "presentation_04",
+      "dimension": "presentation",
+      "rubric_index": 4,
+      "text": "整体语言流畅、准确，符合调研报告的风格。",
+      "writer_blocking": false,
+      "closure_evidence_required": "report sentence/table cell plus source_claim_map entry"
+    }
+  ],
+  "expected_fact_ledger": [
+    {
+      "subject": "OREGANO",
+      "node_count": "88,937",
+      "edge_count": "824,231",
+      "node_type_count": "12",
+      "edge_type_count": "19",
+      "last_update": "10 Nov 2023"
+    },
+    {
+      "subject": "CKG",
+      "node_count": "16 million",
+      "edge_count": "220 million",
+      "node_type_count": "19",
+      "edge_type_count": "57",
+      "last_update": "17 Aug 2021"
+    },
+    {
+      "subject": "PrimeKG",
+      "node_count": "129,375",
+      "edge_count": "4,050,249",
+      "node_type_count": "10",
+      "edge_type_count": "30",
+      "last_update": "25 Apr 2022"
+    },
+    {
+      "subject": "PharMeBINet",
+      "node_count": "2,869,407",
+      "edge_count": "15,883,653",
+      "node_type_count": "66",
+      "edge_type_count": "208",
+      "last_update": "5 Jan 2024"
+    },
+    {
+      "subject": "MSI",
+      "node_count": "29,959",
+      "edge_count": "478,728",
+      "node_type_count": "4",
+      "edge_type_count": "5",
+      "last_update": "19 Mar 2021"
+    },
+    {
+      "subject": "HetioNet",
+      "node_count": "47,031",
+      "edge_count": "2,250,197",
+      "node_type_count": "11",
+      "edge_type_count": "24",
+      "last_update": "12 Apr 2016"
+    },
+    {
+      "subject": "DRKG",
+      "node_count": "97,238",
+      "edge_count": "5,874,261",
+      "node_type_count": "13",
+      "edge_type_count": "17",
+      "last_update": "4 May 2020"
+    },
+    {
+      "subject": "BioKG",
+      "node_count": "11,479,285",
+      "edge_count": "42,504,077",
+      "node_type_count": "12",
+      "edge_type_count": "52",
+      "last_update": "21 Mar 2024"
+    },
+    {
+      "subject": "KEGG",
+      "node_count": "daily update or equivalent",
+      "edge_count": "daily update or equivalent",
+      "node_type_count": "5",
+      "edge_type_count": "10",
+      "last_update": "daily update or equivalent"
+    },
+    {
+      "subject": "DrugCombDB",
+      "node_count": "3,011",
+      "edge_count": "6,891,566",
+      "node_type_count": "2",
+      "edge_type_count": "1",
+      "last_update": "31 May 2019"
+    },
+    {
+      "subject": "NeDRex",
+      "node_count": "278,826",
+      "edge_count": "2,327,974",
+      "node_type_count": "6",
+      "edge_type_count": "12",
+      "last_update": "25 Nov 2021"
+    }
+  ],
+  "analysis_checklist": [
+    {
+      "criterion_id": "analysis_00",
+      "required_synthesis": "解释了CKG是药物重用领域内规模最庞大的知识图谱之一。",
+      "must_be_explicit_section": true
+    },
+    {
+      "criterion_id": "analysis_01",
+      "required_synthesis": "解释了PharMeBINet是HetioNet的显著演进版本，并量化了其增长（例如，节点数增长61倍，关系数增长7倍）。",
+      "must_be_explicit_section": true
+    },
+    {
+      "criterion_id": "analysis_02",
+      "required_synthesis": "在介绍DrugCombDB时，能够分析并指出其独特之处在于专注于“药物组合”而非单个药物的治疗方案。",
+      "must_be_explicit_section": true
+    },
+    {
+      "criterion_id": "analysis_03",
+      "required_synthesis": "在介绍KEGG时，能够解释其节点和边数量不固定的原因是其“每日更新”的动态特性。",
+      "must_be_explicit_section": true
+    },
+    {
+      "criterion_id": "analysis_04",
+      "required_synthesis": "在介绍BioKG时，能够分析并指出其包含“映射模块”是其关键优势，因为它提升了与其他知识图谱的互操作性。",
+      "must_be_explicit_section": true
+    },
+    {
+      "criterion_id": "analysis_05",
+      "required_synthesis": "在介绍NeDRexDB时，能够分析其构建方法（众包）和使用本体（Monarch Disease Ontology）是为了解决跨数据源的数据整合与一致性问题。",
+      "must_be_explicit_section": true
+    },
+    {
+      "criterion_id": "analysis_06",
+      "required_synthesis": "能够总结出不同知识图谱之间存在数据来源重叠的现象，并举例说明，如DrugBank被多个KG使用。",
+      "must_be_explicit_section": true
+    },
+    {
+      "criterion_id": "analysis_07",
+      "required_synthesis": "能够总结出“药物”、“基因”、“疾病”是绝大多数用于药物重用的知识图谱中都包含的核心实体类型。",
+      "must_be_explicit_section": true
+    }
+  ],
+  "source_claim_map_contract": {
+    "required_fields": [
+      "claim_id",
+      "report_location",
+      "claim_text",
+      "source_url",
+      "source_type",
+      "supports_criterion_ids",
+      "confidence",
+      "notes"
+    ],
+    "required_policy": "Every table value and every analysis conclusion must have at least one source_claim_map entry or an explicit unresolved marker."
+  },
+  "required_artifacts_for_next_run": {
+    "before_generation": [
+      "run_control_receipt.json",
+      "execution_packet.json",
+      "generator_prompt.md"
+    ],
+    "during_generation": [
+      "search_log.jsonl",
+      "source_claim_map.json",
+      "draft_report.md"
+    ],
+    "after_generation": [
+      "idx-73.md",
+      "self_audit.json",
+      "blocked_source_scan.txt",
+      "shadow_evaluator_prompt.md",
+      "codex_shadow_eval.json",
+      "rerun_summary.md"
+    ]
+  },
+  "completion_gate": {
+    "must_persist_prompts": true,
+    "must_score_all_91_rubrics": true,
+    "must_report_delta_vs_baseline": true,
+    "analysis_success_floor_for_rerun": "greater_than_0_of_8_or_record_narrower_blocker",
+    "blocked_source_terms_allowed": false
+  }
+}

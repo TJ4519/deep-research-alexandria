@@ -1,0 +1,97 @@
+{
+  "schema_version": "alexandria.drbii_rubric_rerun_summary.v1",
+  "generated_at": "2026-04-30T09:48:57.461825+00:00",
+  "bead_id": "alexandriacleanroom-99.27",
+  "run_root": "sandbox/codex-dr/tmp/drbii_task73_rubric_rerun_2026_04_30",
+  "claim_boundary": "non-official Codex shadow rubric diagnostic; not official DRB II score, Grep parity, leaderboard rank, product readiness, or research-quality proof",
+  "baseline": {
+    "info_recall": {
+      "positive": 46,
+      "total": 78,
+      "ratio": 0.5897435897
+    },
+    "analysis": {
+      "positive": 0,
+      "total": 8,
+      "ratio": 0.0
+    },
+    "presentation": {
+      "positive": 5,
+      "total": 5,
+      "ratio": 1.0
+    },
+    "overall": {
+      "positive": 51,
+      "total": 91,
+      "ratio": 0.5604395604
+    }
+  },
+  "rerun": {
+    "info_recall": {
+      "total": 78,
+      "positive": 71,
+      "zero": 7,
+      "negative": 0,
+      "ratio": 0.9102564103
+    },
+    "analysis": {
+      "total": 8,
+      "positive": 8,
+      "zero": 0,
+      "negative": 0,
+      "ratio": 1.0
+    },
+    "presentation": {
+      "total": 5,
+      "positive": 5,
+      "zero": 0,
+      "negative": 0,
+      "ratio": 1.0
+    },
+    "overall": {
+      "total": 91,
+      "positive": 84,
+      "zero": 7,
+      "negative": 0,
+      "ratio": 0.9230769231
+    }
+  },
+  "delta": {
+    "info_recall_positive": 25,
+    "analysis_positive": 8,
+    "presentation_positive": 0,
+    "overall_positive": 33
+  },
+  "remaining_failure_indices": {
+    "info_recall": [
+      1,
+      10,
+      12,
+      13,
+      15,
+      19,
+      21
+    ],
+    "analysis": [],
+    "presentation": []
+  },
+  "required_artifacts_present": [
+    "sandbox/codex-dr/tmp/drbii_task73_rubric_rerun_2026_04_30/codex_shadow_eval.json",
+    "sandbox/codex-dr/tmp/drbii_task73_rubric_rerun_2026_04_30/execution_packet.json",
+    "sandbox/codex-dr/tmp/drbii_task73_rubric_rerun_2026_04_30/generator_prompt.md",
+    "sandbox/codex-dr/tmp/drbii_task73_rubric_rerun_2026_04_30/run_control_receipt.json",
+    "sandbox/codex-dr/tmp/drbii_task73_rubric_rerun_2026_04_30/shadow_evaluator_prompt.md",
+    "sandbox/codex-dr/tmp/drbii_task73_rubric_rerun_2026_04_30/shadow_evaluator_prompt_strict.md",
+    "sandbox/codex-dr/tmp/drbii_task73_rubric_rerun_2026_04_30/workspace/draft_report.md",
+    "sandbox/codex-dr/tmp/drbii_task73_rubric_rerun_2026_04_30/workspace/idx-73.md",
+    "sandbox/codex-dr/tmp/drbii_task73_rubric_rerun_2026_04_30/workspace/search_log.jsonl",
+    "sandbox/codex-dr/tmp/drbii_task73_rubric_rerun_2026_04_30/workspace/self_audit.json",
+    "sandbox/codex-dr/tmp/drbii_task73_rubric_rerun_2026_04_30/workspace/source_claim_map.json"
+  ],
+  "blocked_source_scan": {
+    "blocked_terms_in_report_or_source_claim_map": false,
+    "blocked_terms_only_in_audit_or_search_log": true,
+    "note": "Blocked source was encountered in search results and recorded in self_audit/search_log, not used in report or source_claim_map."
+  },
+  "next_bead": "alexandriacleanroom-99.28"
+}
